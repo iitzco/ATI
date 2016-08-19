@@ -14,23 +14,28 @@ class GUI(tk.Frame):
         self.master.geometry("{0}x{1}+0+0".format(
                         self.master.winfo_screenwidth(), 
                         self.master.winfo_screenheight()))
-        self.grid()
+
+        self.pack(fill=tk.BOTH,expand=tk.YES)
 
         self.create_subframes()
 
 
     def create_subframes(self):
         
-        self.original = tk.Frame(self, bd=1, width=700)
-        self.working = tk.Frame(self, bd=1, width=700)
+        self.original = tk.Frame(self)
+        self.working = tk.Frame(self)
         self.menu = tk.Frame(self, bd=1)
 
-        self.original.grid(row=0, column=0)
-        self.working.grid(row=0, column=1)
-        self.menu.grid(row=0, column=2)
+        self.original.pack(fill=tk.BOTH, expand=tk.YES, side=tk.LEFT)
+        self.working.pack(fill=tk.BOTH, expand=tk.YES, side=tk.LEFT)
+        self.menu.pack(fill=tk.Y, expand=tk.YES,  side=tk.RIGHT)
 
-        self.button = tk.Button(self.menu, text="Load Image", command=self.load_file, width=10)
-        self.button.grid(sticky=tk.W)
+        self.menu.label = tk.Label(self.menu, text="Menu")
+        self.menu.label.grid(pady=10, sticky=tk.W+tk.E+tk.N+tk.S)
+        self.menu.button = tk.Button(self.menu, text="Load Image", command=self.load_file, width=10)
+        self.menu.button.grid(pady=10)
+        self.menu.button2 = tk.Button(self.menu, text="Revert", command=self.revert, width=10)
+        self.menu.button2.grid(pady=10)
 
         self.original.label = tk.Label(self.original, text="Original")
         self.working.label = tk.Label(self.working, text="Working Copy")
@@ -38,21 +43,27 @@ class GUI(tk.Frame):
         self.original.canvas = tk.Canvas(self.original)
         self.working.canvas = tk.Canvas(self.working)
 
-        self.original.canvas.grid(row = 1, column = 0)
-        self.working.canvas.grid(row = 1, column = 0)
+        self.original.label.pack(side=tk.TOP)
+        self.working.label.pack()
 
-        self.original.label.grid(row = 0, column = 0, sticky=tk.W)
-        self.working.label.grid(row = 0, column = 0, sticky=tk.W)
+        self.original.canvas.pack(fill=tk.BOTH, expand=tk.YES)
+        self.working.canvas.pack(fill=tk.BOTH, expand=tk.YES)
+
+
+    def revert(self):
+        self.img = self.img.rotate(180)
+        self.imagerotated = ImageTk.PhotoImage(self.img)
+        # self.working.canvas.config(image=self.image)
+        self.working.canvas.itemconfig(self.id, image = self.imagerotated)
 
     def load_file(self):
         fname = askopenfilename()
         if fname:
-            img = Image.open(fname)
-            imgtk = ImageTk.PhotoImage(img)
+            self.img = Image.open(fname)
+            imgtk = ImageTk.PhotoImage(self.img)
             self.image = imgtk
-            self.working.canvas.create_image(0,0, image=imgtk,anchor="nw")
-            self.working.canvas.config(scrollregion=self.working.canvas.bbox(tk.ALL))
-            self.original.canvas.create_image(200,200, image=imgtk)
+            self.id = self.working.canvas.create_image(0, 0, anchor='nw',image=self.image)
+            self.original.canvas.create_image(0, 0, anchor='nw',image=self.image)
 
 
 if __name__ == "__main__":
