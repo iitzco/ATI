@@ -16,49 +16,26 @@ class GUI(tk.Frame):
                         self.master.winfo_screenheight()))
 
         self.pack(fill=tk.BOTH,expand=tk.YES)
-
         self.create_subframes()
-
 
     def create_subframes(self):
         
-        self.original = tk.Frame(self)
-        self.studio = tk.Frame(self)
-        self.menu = tk.Frame(self, bd=1)
+        self.original = ImageWorkspace(self, title="Original")
+        self.studio = ImageWorkspace(self, title="Studio")
+        self.menu = Menu(self) 
 
         self.original.pack(fill=tk.BOTH, expand=tk.YES, side=tk.LEFT)
         self.studio.pack(fill=tk.BOTH, expand=tk.YES, side=tk.LEFT)
         self.menu.pack(fill=tk.Y, expand=tk.YES,  side=tk.RIGHT)
 
-        self.menu.label = tk.Label(self.menu, text="Menu")
-        self.menu.label.grid(pady=10)
-        self.menu.button = tk.Button(self.menu, text="Load Image", command=self.load_file, width=10)
-        self.menu.button.grid(pady=10)
-        self.menu.button2 = tk.Button(self.menu, text="Revert", command=self.revert, width=10)
-        self.menu.button2.grid(pady=10)
-        self.menu.button3 = tk.Button(self.menu, text="Save", command=self.save_file, width=10)
-        self.menu.button3.grid(pady=10)
+        self.menu.discover()
+        self.original.discover()
+        self.studio.discover()
 
-        self.menu.zoom = tk.Canvas(self.menu, height=150, width=150)
-        self.menu.zoom.grid()
-        self.menu.zoom.create_text(10,10, anchor='nw',text="Click Image to zoom")
-
-        self.menu.slider = tk.Scale(self.menu, from_=0, to=255, orient=tk.HORIZONTAL)
-        self.menu.slider.grid(pady=10)
-
-        self.original.label = tk.Label(self.original, text="Original")
-        self.studio.label = tk.Label(self.studio, text="Studio")
-
-        self.original.canvas = tk.Canvas(self.original)
-        self.studio.canvas = tk.Canvas(self.studio)
-
-        self.original.label.pack(side=tk.TOP)
-        self.studio.label.pack()
-
-        self.original.canvas.pack(fill=tk.BOTH, expand=tk.YES)
-        self.studio.canvas.pack(fill=tk.BOTH, expand=tk.YES)
-        self.studio.canvas.bind("<B1-Motion>", self.zoom)
-        self.studio.canvas.bind("<Button-1>", self.zoom)
+        # self.menu.zoom = tk.Canvas(self.menu, height=150, width=150)
+        # self.menu.zoom.grid(row=0,column=0)
+        # self.menu.zoom.create_text(10,10, anchor='nw',text="Click Image to zoom")
+        
 
     def revert(self):
         self.img = self.img.rotate(180)
@@ -69,10 +46,8 @@ class GUI(tk.Frame):
         fname = askopenfilename()
         if fname:
             self.img = Image.open(fname)
-            imgtk = ImageTk.PhotoImage(self.img)
-            self.image = imgtk
-            self.id = self.studio.canvas.create_image(0, 0, anchor='nw',image=self.image)
-            self.original.canvas.create_image(0, 0, anchor='nw',image=self.image)
+            self.original.show_image(self.img)
+            # self.original.canvas.create_image(0, 0, anchor='nw',image=self.image)
 
     def save_file(self):
         fname = asksaveasfilename()
@@ -83,6 +58,63 @@ class GUI(tk.Frame):
         self.imgCropped = self.img.crop((event.x-20, event.y-20, event.x+20, event.y+20)).resize((150,150))
         self.imagetk = ImageTk.PhotoImage(self.imgCropped)
         self.menu.zoom.create_image(0, 0, anchor='nw',image=self.imagetk)
+        self.menu.zoom2.create_image(0, 0, anchor='nw',image=self.imagetk)
+
+
+class ImageWorkspace(tk.Frame):
+
+    def __init__(self, gui, title):
+        tk.Frame.__init__(self, gui)
+        self.gui = gui
+        self.label = tk.Label(self, text=title)
+        self.canvas_main = tk.Canvas(self)
+        self.canvas_zoom = tk.Canvas(self)
+
+        self.canvas_main.bind("<B1-Motion>", self.zoom)
+        self.canvas_main.bind("<Button-1>", self.zoom)
+
+    def discover(self):
+        self.label.pack(side=tk.TOP)
+        self.canvas_main.pack(fill=tk.BOTH, expand=tk.YES)
+
+    def discover_zoom_mode(self):
+        self.canvas_zoom.pack(fill=tk.BOTH, expand=tk.YES)
+
+    def show_image(self, img):
+        imgtk = ImageTk.PhotoImage(img)
+        self.image = imgtk
+        self.canvas_main.create_image(0, 0, anchor='nw',image=self.image)
+
+    def zoom(self, event):
+        print("{} - {}".format(event.x, event.y))
+        # self.imgCropped = self.img.crop((event.x-20, event.y-20, event.x+20, event.y+20)).resize((150,150))
+        # self.imagetk = ImageTk.PhotoImage(self.imgCropped)
+        # self.menu.zoom.create_image(0, 0, anchor='nw',image=self.imagetk)
+        # self.menu.zoom2.create_image(0, 0, anchor='nw',image=self.imagetk)
+
+
+class Menu(tk.Frame):
+
+    def __init__(self, gui):
+        tk.Frame.__init__(self, gui)
+        self.gui = gui
+        self.add_components()
+
+    def add_components(self):
+        self.label = tk.Label(self, text="Menu")
+        self.button_load = tk.Button(self, text="Load Image", command=self.gui.load_file, width=10)
+        self.button_save = tk.Button(self, text="Save", command=self.gui.save_file, width=10)
+        self.button_revert = tk.Button(self, text="Revert", command=self.gui.revert, width=10)
+        self.color_slider = tk.Scale(self, from_=0, to=255, orient=tk.HORIZONTAL)
+        self.radio_zoom = tk.Checkbutton(self, text= "Zoom Mode", variable=self.gui.zoom)
+
+    def discover(self):
+        self.label.grid(pady=10)
+        self.button_load.grid(pady=10)
+        self.button_save.grid(pady=10)
+        self.radio_zoom.grid(pady=10)
+        self.button_revert.grid(pady=10)
+        self.color_slider.grid(pady=10)
 
 
 if __name__ == "__main__":
