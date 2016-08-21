@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter.filedialog import askopenfilename, asksaveasfilename
+import tkinter.messagebox
 from PIL import ImageTk, Image
 
 from imgprocessor import ImageManager
@@ -50,14 +51,18 @@ class GUI(tk.Frame):
         self.studio.discover()
 
     def revert(self):
-        self.image_manager.rotate(180)
+        self.image_manager.reverse()
         self.studio.show_image()
 
     def load_file(self):
         fname = askopenfilename()
         if fname:
             img = Image.open(fname)
-            self.image_manager.load_image(img)
+            try:
+                self.image_manager.load_image(img)
+            except Exception:
+                tkinter.messagebox.showinfo(
+                    'Alert', 'Unsupported image format')
             self.original.show_image()
             self.studio.show_image()
 
