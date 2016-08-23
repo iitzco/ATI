@@ -22,6 +22,11 @@ class ImageManager:
                 self.bw = False
                 self.mode = 'RGB'
             self.backup = self.img[:]
+            self.cached_backup = Image.frombytes(
+                self.mode, self.size, bytes(self.backup))
+            self.cached_img = Image.frombytes(
+                self.mode, self.size, bytes(self.img))
+            self.modified = False
         else:
             raise Exception('Unsupported Format')
 
@@ -29,10 +34,14 @@ class ImageManager:
         self.get_image().save(fname)
 
     def get_original(self):
-        return Image.frombytes(self.mode, self.size, bytes(self.backup))
+        return self.cached_backup
 
     def get_image(self):
-        return Image.frombytes(self.mode, self.size, bytes(self.img))
+        if self.modified:
+            self.cached_img = Image.frombytes(
+                self.mode, self.size, bytes(self.img))
+        self.modified = False
+        return self.cached_img
 
     def get_zoomed_original(self, x, y, w, h):
         return ImageManager._get_zoomed_img(self.get_original(), x, y, w, h)
@@ -48,4 +57,30 @@ class ImageManager:
              y + ZOOM_INTENSITY)).resize((w, h))
 
     def reverse(self):
+        self.modified = True
         self.img.reverse()
+
+    def get_img_pixel_color(self, x, y):
+        return ImageManager._get_pixel_color(
+            self.img, self.size, self.mode, x, y)
+
+    def get_original_pixel_color(self, x, y):
+        return ImageManager._get_pixel_color(
+            self.backup, self.size, self.mode, x, y)
+
+    def _get_pixel_color(img, size, mode, x, y):
+        pos = y * size[0] + x
+        if mode == 'L':
+            c = img[pos]
+            return (c, c, c)
+        elif mode == 'RGB':
+            pos = pos * 3
+            r = img[pos]
+            g = img[pos + 1]
+            b = img[pos + 2]
+            return (r, g, b)
+
+    def update_img_pixel(self, x, y, color):
+        if self.mode == 'L':
+            self.img[y * self.size[0] + x] = color
+            self.modified = True
