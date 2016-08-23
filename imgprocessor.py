@@ -21,14 +21,18 @@ class ImageManager:
                 self.img = [x for t in img_data for x in t]
                 self.bw = False
                 self.mode = 'RGB'
-            self.backup = self.img[:]
-            self.cached_backup = Image.frombytes(
-                self.mode, self.size, bytes(self.backup))
-            self.cached_img = Image.frombytes(
-                self.mode, self.size, bytes(self.img))
-            self.modified = False
+        elif img.mode == 'L':
+            self.img = [x for x in img.getdata()]
+            self.bw = True
+            self.mode = 'L'
         else:
             raise Exception('Unsupported Format')
+        self.backup = self.img[:]
+        self.cached_backup = Image.frombytes(
+            self.mode, self.size, bytes(self.backup))
+        self.cached_img = Image.frombytes(
+            self.mode, self.size, bytes(self.img))
+        self.modified = False
 
     def save_image(self, fname):
         self.get_image().save(fname)

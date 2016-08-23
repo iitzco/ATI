@@ -260,6 +260,7 @@ class Menu(tk.Frame):
             offvalue=False)
 
         self.first = True
+        self.interaction = False
         self.color_slider.config(command=self.update_color)
 
     def discover(self):
