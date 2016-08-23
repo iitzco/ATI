@@ -84,3 +84,11 @@ class ImageManager:
         if self.mode == 'L':
             self.img[y * self.size[0] + x] = color
             self.modified = True
+
+    def get_outbound_pixel(self, center_x, center_y, x, y, w, h):
+        original_x = int(x / (w / (ZOOM_INTENSITY * 2)))
+        original_y = int(y / (h / (ZOOM_INTENSITY * 2)))
+        # aux_img.show()
+        mapped_x = original_x - ZOOM_INTENSITY + center_x
+        mapped_y = original_y - ZOOM_INTENSITY + center_y
+        return (mapped_x, mapped_y)

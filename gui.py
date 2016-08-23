@@ -146,20 +146,31 @@ class ImageWorkspace(tk.Frame):
 
     def map_bindings(self):
         if self.gui.zoom:
-            event = self.zoom_event
-            # self.canvas_main.bind("<B1-Motion>", event)
-            # self.canvas_main.bind("<Button-1>", event)
+            self.canvas_main.bind("<B1-Motion>", self.zoom_event)
+            self.canvas_main.bind("<Button-1>", self.zoom_event)
+            self.canvas_zoom.bind("<B1-Motion>", self.color_in_zoom_event)
+            self.canvas_zoom.bind("<Button-1>", self.color_in_zoom_event)
         else:
-            event = self.color_event
-        self.canvas_main.bind("<B1-Motion>", event)
-        self.canvas_main.bind("<Button-1>", event)
+            self.canvas_main.bind("<B1-Motion>", self.color_event)
+            self.canvas_main.bind("<Button-1>", self.color_event)
+
+    def color_in_zoom_event(self, event):
+        x = self.canvas_zoom.canvasx(event.x)
+        y = self.canvas_zoom.canvasy(event.y)
+        (x, y) = self.gui.image_manager.get_outbound_pixel(
+            self.x_zoom, self.y_zoom, x, y, self.winfo_width(), self.winfo_width())
+        self.color_common_event(x, y)
 
     def zoom_event(self, event):
         x = self.canvas_main.canvasx(event.x)
         y = self.canvas_main.canvasy(event.y)
+        self.x_zoom = x
+        self.y_zoom = y
         self.zoom(x, y)
         if self.gui.sync.get():
             for each in self.others:
+                each.x_zoom = x
+                each.y_zoom = y
                 each.zoom(x, y)
 
     def zoom(self, x, y):
@@ -168,6 +179,9 @@ class ImageWorkspace(tk.Frame):
     def color_event(self, event):
         x = self.canvas_main.canvasx(event.x)
         y = self.canvas_main.canvasy(event.y)
+        self.color_common_event(x, y)
+
+    def color_common_event(self, x, y):
         self.gui.menu.x_pixel = x
         self.gui.menu.y_pixel = y
         self.gui.menu.show_color(self.get_pixel_color(x, y))
@@ -214,8 +228,6 @@ class Menu(tk.Frame):
     def __init__(self, gui):
         tk.Frame.__init__(self, gui)
         self.gui = gui
-        self.y_pixel = 0
-        self.x_pixel = 0
         self.add_components()
 
     def add_components(self):
@@ -273,23 +285,31 @@ class Menu(tk.Frame):
             text="Turn Mirror Mode {}".format(
                 "OFF" if self.gui.mirror else "ON"))
 
-    def show_color(self, color, from_slider=False):
+    def show_color(self, color, from_slider=False, from_original=False):
         c_in_hex = [hex(e)[-2:] for e in [x + 256 for x in color]]
         label_c = '#' + ''.join(c_in_hex)
         self.color_label.config(text=label_c)
         self.color_canvas.config(bg=label_c)
         if not from_slider and color[0] == color[1] == color[2]:
+            self.interaction = False
             self.color_slider.set(color[0])
 
     def update_color(self, event):
         if self.first:
             self.first = False
             return
+        if not self.interaction:
+            self.interaction = True
+            return
         c = self.color_slider.get()
         self.gui.image_manager.update_img_pixel(
             int(self.x_pixel), int(self.y_pixel), c)
         self.show_color((c, c, c), from_slider=True)
         self.gui.studio.show_image()
+        if self.gui.zoom:
+            self.gui.studio.zoom(
+                self.gui.studio.x_zoom,
+                self.gui.studio.y_zoom)
 
 if __name__ == "__main__":
     gui = GUI()
