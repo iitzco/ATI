@@ -92,7 +92,23 @@ class ImageManager:
     def get_outbound_pixel(self, center_x, center_y, x, y, w, h):
         original_x = int(x / (w / (ZOOM_INTENSITY * 2)))
         original_y = int(y / (h / (ZOOM_INTENSITY * 2)))
-        # aux_img.show()
         mapped_x = original_x - ZOOM_INTENSITY + center_x
         mapped_y = original_y - ZOOM_INTENSITY + center_y
         return (mapped_x, mapped_y)
+
+    def get_original_selection(self, x1, y1, x2, y2, in_zoom, t=None):
+        ((x0, y0), (xf, yf)) = self._map_selection(x1, y1, x2, y2, in_zoom, t)
+        return self.get_original().crop((x0, y0, xf, yf))
+
+    def get_studio_selection(self, x1, y1, x2, y2, in_zoom, t=None):
+        ((x0, y0), (xf, yf)) = self._map_selection(x1, y1, x2, y2, in_zoom, t)
+        return self.get_image().crop((x0, y0, xf, yf))
+
+    def _map_selection(self, x1, y1, x2, y2, in_zoom, t=None):
+        if in_zoom:
+            (x0, y0) = self.get_outbound_pixel(t[0], t[1], x1, y1, t[2], t[3])
+            (xf, yf) = self.get_outbound_pixel(t[0], t[1], x2, y2, t[2], t[3])
+        else:
+            (x0, y0) = (x1, y1)
+            (xf, yf) = (x2, y2)
+        return ((x0, y0), (xf, yf))

@@ -66,8 +66,12 @@ class GUI(tk.Frame):
             except Exception:
                 tkinter.messagebox.showinfo(
                     'Alert', 'Unsupported image format')
-            self.original.show_image()
-            self.studio.show_image()
+            self.load_images()
+
+    def load_images(self):
+        self.original.show_image()
+        self.studio.show_image()
+
 
     def save_file(self):
         fname = asksaveasfilename()
@@ -114,6 +118,7 @@ class ImageWorkspace(tk.Frame):
             yscrollcommand=self.yscroll.set)
         self.canvas_zoom = tk.Canvas(self)
         self.others = []
+        self.x_selection, self.y_selection = (None, None)
 
     def discover(self):
         self.label.pack(side=tk.TOP)
@@ -150,9 +155,43 @@ class ImageWorkspace(tk.Frame):
             self.canvas_main.bind("<Button-1>", self.zoom_event)
             self.canvas_zoom.bind("<B1-Motion>", self.color_in_zoom_event)
             self.canvas_zoom.bind("<Button-1>", self.color_in_zoom_event)
+            self.canvas_zoom.bind("<Button-2>", self.selection_event_in_zoom)
         else:
             self.canvas_main.bind("<B1-Motion>", self.color_event)
             self.canvas_main.bind("<Button-1>", self.color_event)
+            self.canvas_main.bind("<Button-2>", self.selection_event)
+
+    def selection_event_in_zoom(self, event):
+        if not self.x_selection or not self.y_selection:
+            self.x_selection = self.canvas_zoom.canvasx(event.x)
+            self.y_selection = self.canvas_zoom.canvasy(event.y)
+        else:
+            x = self.canvas_zoom.canvasx(event.x)
+            y = self.canvas_zoom.canvasy(event.y)
+            img = self.get_selection_img(self.x_selection, self.y_selection, x, y, in_zoom=True)
+            self.rectangle_selection_id = self.canvas_zoom.create_rectangle(self.x_selection, self.y_selection, x, y)
+            ret = tkinter.messagebox.askyesno("Confirm selection", "Want to create new image with that selection? ATTENTION: unsaved studio image will be lost.")
+            if ret:
+                self.gui.image_manager.load_image(img)
+                self.gui.load_images()
+            self.canvas_zoom.delete(self.rectangle_selection_id)
+            self.x_selection, self.y_selection = (None, None)
+
+    def selection_event(self, event):
+        if not self.x_selection or not self.y_selection:
+            self.x_selection = self.canvas_main.canvasx(event.x)
+            self.y_selection = self.canvas_main.canvasy(event.y)
+        else:
+            x = self.canvas_main.canvasx(event.x)
+            y = self.canvas_main.canvasy(event.y)
+            img = self.get_selection_img(self.x_selection, self.y_selection, x, y, in_zoom=False)
+            self.rectangle_selection_id = self.canvas_main.create_rectangle(self.x_selection, self.y_selection, x, y)
+            ret = tkinter.messagebox.askyesno("Confirm selection", "Want to create new image with that selection? ATTENTION: unsaved studio image will be lost.")
+            if ret:
+                self.gui.image_manager.load_image(img)
+                self.gui.load_images()
+            self.canvas_main.delete(self.rectangle_selection_id)
+            self.x_selection, self.y_selection = (None, None)
 
     def color_in_zoom_event(self, event):
         x = self.canvas_zoom.canvasx(event.x)
@@ -206,6 +245,8 @@ class OriginalImageWorkspace(ImageWorkspace):
     def get_pixel_color(self, x, y):
         return self.gui.image_manager.get_original_pixel_color(int(x), int(y))
 
+    def get_selection_img(self, x_o, y_o, x_f, y_f, in_zoom):
+        return self.gui.image_manager.get_original_selection(x_o, y_o, x_f, y_f, in_zoom, (self.x_zoom, self.y_zoom, self.winfo_width(), self.winfo_width()))
 
 class StudioImageWorkspace(ImageWorkspace):
 
@@ -221,6 +262,9 @@ class StudioImageWorkspace(ImageWorkspace):
 
     def get_pixel_color(self, x, y):
         return self.gui.image_manager.get_img_pixel_color(int(x), int(y))
+
+    def get_selection_img(self, x_o, y_o, x_f, y_f, in_zoom):
+        return self.gui.image_manager.get_studio_selection(x_o, y_o, x_f, y_f, in_zoom, (self.x_zoom, self.y_zoom, self.winfo_width(), self.winfo_width()))
 
 
 class Menu(tk.Frame):
