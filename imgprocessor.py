@@ -1,6 +1,6 @@
 from PIL import Image
 
-ZOOM_INTENSITY = 40
+ZOOM_INTENSITY = 50
 
 
 class ImageManager:
@@ -112,3 +112,30 @@ class ImageManager:
             (x0, y0) = (x1, y1)
             (xf, yf) = (x2, y2)
         return ((x0, y0), (xf, yf))
+
+    def get_statistics(self, img):
+        if img.mode == 'L':
+            array = [e for e in img.getdata()]
+            return (len(array), round(sum(array) / len(array), 2))
+        elif img.mode == 'RGB':
+            array = [item for sublist in img.getdata() for item in sublist]
+            r, g, b = [], [], []
+            for idx, elem in enumerate(array):
+                if idx % 3 == 0:
+                    r.append(elem)
+                elif idx % 3 == 1:
+                    g.append(elem)
+                elif idx % 3 == 2:
+                    b.append(elem)
+            l = int(len(array) / 3)
+            return (
+                l,
+                (round(
+                    sum(r) / l,
+                    2),
+                    round(
+                    sum(g) / l,
+                    2),
+                    round(
+                    sum(b) / l),
+                    2))

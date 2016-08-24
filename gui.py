@@ -72,7 +72,6 @@ class GUI(tk.Frame):
         self.original.show_image()
         self.studio.show_image()
 
-
     def save_file(self):
         fname = asksaveasfilename()
         if fname:
@@ -161,36 +160,35 @@ class ImageWorkspace(tk.Frame):
             self.canvas_main.bind("<Button-1>", self.color_event)
             self.canvas_main.bind("<Button-2>", self.selection_event)
 
-    def selection_event_in_zoom(self, event):
-        if not self.x_selection or not self.y_selection:
-            self.x_selection = self.canvas_zoom.canvasx(event.x)
-            self.y_selection = self.canvas_zoom.canvasy(event.y)
-        else:
-            x = self.canvas_zoom.canvasx(event.x)
-            y = self.canvas_zoom.canvasy(event.y)
-            img = self.get_selection_img(self.x_selection, self.y_selection, x, y, in_zoom=True)
-            self.rectangle_selection_id = self.canvas_zoom.create_rectangle(self.x_selection, self.y_selection, x, y)
-            ret = tkinter.messagebox.askyesno("Confirm selection", "Want to create new image with that selection? ATTENTION: unsaved studio image will be lost.")
-            if ret:
-                self.gui.image_manager.load_image(img)
-                self.gui.load_images()
-            self.canvas_zoom.delete(self.rectangle_selection_id)
-            self.x_selection, self.y_selection = (None, None)
-
     def selection_event(self, event):
+        self.common_selection_event(event, self.canvas_main, False)
+
+    def selection_event_in_zoom(self, event):
+        self.common_selection_event(event, self.canvas_zoom, True)
+
+    def common_selection_event(self, event, canvas, in_zoom):
         if not self.x_selection or not self.y_selection:
-            self.x_selection = self.canvas_main.canvasx(event.x)
-            self.y_selection = self.canvas_main.canvasy(event.y)
+            self.x_selection = canvas.canvasx(event.x)
+            self.y_selection = canvas.canvasy(event.y)
         else:
-            x = self.canvas_main.canvasx(event.x)
-            y = self.canvas_main.canvasy(event.y)
-            img = self.get_selection_img(self.x_selection, self.y_selection, x, y, in_zoom=False)
-            self.rectangle_selection_id = self.canvas_main.create_rectangle(self.x_selection, self.y_selection, x, y)
-            ret = tkinter.messagebox.askyesno("Confirm selection", "Want to create new image with that selection? ATTENTION: unsaved studio image will be lost.")
+            x = canvas.canvasx(event.x)
+            y = canvas.canvasy(event.y)
+            img = self.get_selection_img(
+                self.x_selection, self.y_selection, x, y, in_zoom)
+            self.rectangle_selection_id = canvas.create_rectangle(
+                self.x_selection, self.y_selection, x, y)
+            ret = tkinter.messagebox.askyesno("Selection", "Want statistics?")
+            if ret:
+                t = self.gui.image_manager.get_statistics(img)
+                tkinter.messagebox.showinfo(
+                    "Statistics", "# of Pixel: {} --- Mean: {}".format(t[0], t[1]))
+            ret = tkinter.messagebox.askyesno(
+                "Confirm selection",
+                "Want to create new image with that selection? ATTENTION: unsaved studio image will be lost.")
             if ret:
                 self.gui.image_manager.load_image(img)
                 self.gui.load_images()
-            self.canvas_main.delete(self.rectangle_selection_id)
+            canvas.delete(self.rectangle_selection_id)
             self.x_selection, self.y_selection = (None, None)
 
     def color_in_zoom_event(self, event):
@@ -246,7 +244,17 @@ class OriginalImageWorkspace(ImageWorkspace):
         return self.gui.image_manager.get_original_pixel_color(int(x), int(y))
 
     def get_selection_img(self, x_o, y_o, x_f, y_f, in_zoom):
-        return self.gui.image_manager.get_original_selection(x_o, y_o, x_f, y_f, in_zoom, (self.x_zoom, self.y_zoom, self.winfo_width(), self.winfo_width()))
+        if in_zoom:
+            t = (
+                self.x_zoom,
+                self.y_zoom,
+                self.winfo_width(),
+                self.winfo_width())
+        else:
+            t = None
+        return self.gui.image_manager.get_original_selection(
+            x_o, y_o, x_f, y_f, in_zoom, t)
+
 
 class StudioImageWorkspace(ImageWorkspace):
 
@@ -264,7 +272,16 @@ class StudioImageWorkspace(ImageWorkspace):
         return self.gui.image_manager.get_img_pixel_color(int(x), int(y))
 
     def get_selection_img(self, x_o, y_o, x_f, y_f, in_zoom):
-        return self.gui.image_manager.get_studio_selection(x_o, y_o, x_f, y_f, in_zoom, (self.x_zoom, self.y_zoom, self.winfo_width(), self.winfo_width()))
+        if in_zoom:
+            t = (
+                self.x_zoom,
+                self.y_zoom,
+                self.winfo_width(),
+                self.winfo_width())
+        else:
+            t = None
+        return self.gui.image_manager.get_studio_selection(
+            x_o, y_o, x_f, y_f, in_zoom, t)
 
 
 class Menu(tk.Frame):
