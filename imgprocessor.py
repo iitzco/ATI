@@ -76,7 +76,10 @@ class ImageManager:
 
     def reverse(self):
         self.modified = True
-        self.img.reverse()
+        if self.mode == '1':
+            self.img.invert()
+        elif self.mode == 'L':
+            self.img = list(map(lambda x: 255 - x, self.img))
 
     def get_img_pixel_color(self, x, y):
         return ImageManager._get_pixel_color(
