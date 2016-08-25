@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter.filedialog import askopenfilename, asksaveasfilename
+from tkinter.simpledialog import askinteger
 import tkinter.messagebox
 from PIL import ImageTk, Image
 
@@ -50,8 +51,13 @@ class GUI(tk.Frame):
         self.original.discover()
         self.studio.discover()
 
-    def revert(self):
+    def negative(self):
         self.image_manager.reverse()
+        self.studio.show_image()
+
+    def umbral(self):
+        value = askinteger("Umbral", "Umbral Value?", minvalue=0, maxvalue=255)
+        self.image_manager.umbral(value)
         self.studio.show_image()
 
     def load_file(self, name=None):
@@ -301,7 +307,9 @@ class Menu(tk.Frame):
         self.button_save = tk.Button(
             self, text="Save", command=self.gui.save_file, width=10)
         self.button_revert = tk.Button(
-            self, text="Negative", command=self.gui.revert, width=10)
+            self, text="Negative", command=self.gui.negative, width=10)
+        self.button_umbral = tk.Button(
+            self, text="Umbral", command=self.gui.umbral, width=10)
         self.color_label = tk.Label(self)
         self.color_canvas = tk.Label(self, bg='#000000', width=3)
         self.color_slider = tk.Scale(
@@ -331,6 +339,7 @@ class Menu(tk.Frame):
         self.button_zoom.grid(pady=5)
         self.button_mirror.grid(pady=5)
         self.button_revert.grid(pady=5)
+        self.button_umbral.grid(pady=5)
         self.color_label.grid(pady=5)
         self.color_canvas.grid(pady=3)
         self.color_slider.grid(pady=5)
