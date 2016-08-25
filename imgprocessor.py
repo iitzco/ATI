@@ -1,4 +1,5 @@
 from PIL import Image
+from bitarray import bitarray
 
 ZOOM_INTENSITY = 50
 
@@ -21,17 +22,26 @@ class ImageManager:
                 self.img = [x for t in img_data for x in t]
                 self.bw = False
                 self.mode = 'RGB'
+            bytes_func = bytes
         elif img.mode == 'L':
             self.img = [x for x in img.getdata()]
             self.bw = True
             self.mode = 'L'
+            bytes_func = bytes
+        elif img.mode == '1':
+            l = [e for e in img.getdata()]
+            self.img = bitarray(
+                list(map(lambda x: True if x == 255 else False, l)))
+            self.bw = True
+            self.mode = '1'
+            bytes_func = bitarray.tobytes
         else:
             raise Exception('Unsupported Format')
         self.backup = self.img[:]
         self.cached_backup = Image.frombytes(
-            self.mode, self.size, bytes(self.backup))
+            self.mode, self.size, bytes_func(self.backup))
         self.cached_img = Image.frombytes(
-            self.mode, self.size, bytes(self.img))
+            self.mode, self.size, bytes_func(self.img))
         self.modified = False
 
     def save_image(self, fname):
@@ -42,8 +52,12 @@ class ImageManager:
 
     def get_image(self):
         if self.modified:
+            if self.mode == '1':
+                f = bitarray.tobytes
+            else:
+                f = bytes
             self.cached_img = Image.frombytes(
-                self.mode, self.size, bytes(self.img))
+                self.mode, self.size, f(self.img))
         self.modified = False
         return self.cached_img
 
@@ -83,11 +97,21 @@ class ImageManager:
             g = img[pos + 1]
             b = img[pos + 2]
             return (r, g, b)
+        elif mode == '1':
+            c = img[pos]
+            return (c * 255, c * 255, c * 255)
 
     def update_img_pixel(self, x, y, color):
         if self.mode == 'L':
             self.img[y * self.size[0] + x] = color
             self.modified = True
+        elif self.mode == '1':
+            if color == 255:
+                self.img[y * self.size[0] + x] = True
+                self.modified = True
+            elif color == 0:
+                self.img[y * self.size[0] + x] = False
+                self.modified = True
 
     def get_outbound_pixel(self, center_x, center_y, x, y, w, h):
         original_x = int(x / (w / (ZOOM_INTENSITY * 2)))
@@ -114,7 +138,7 @@ class ImageManager:
         return ((x0, y0), (xf, yf))
 
     def get_statistics(self, img):
-        if img.mode == 'L':
+        if img.mode == 'L' or img.mode == '1':
             array = [e for e in img.getdata()]
             return (len(array), round(sum(array) / len(array), 2))
         elif img.mode == 'RGB':
