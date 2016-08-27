@@ -1,3 +1,14 @@
+def max_matrix(matrix):
+    max([max(each) for each in matrix])
+
+
+def min_matrix(matrix):
+    min([min(each) for each in matrix])
+
+
+def transform(min_v, max_v, v):
+    return (255 / (max_v - min_v)) * (v - min_v)
+
 
 class ImageAbstraction:
 
@@ -28,12 +39,14 @@ class ImageAbstraction:
 
     def get_image_bytes(self):
         flat_list = []
+        max_v = max(255, max_matrix(self.img))
+        min_v = min(0, min_matrix(self.img))
         for j in range(self.h):
             for i in range(self.w):
                 if self.mode == 'RGB':
                     flat_list.extend(list(self.img[i][j]))
                 else:
-                    flat_list.append(self.img[i][j])
+                    flat_list.append(transform(max_v, min_v, self.img[i][j]))
         return bytes(flat_list)
 
     def get_size_tuple(self):
