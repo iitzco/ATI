@@ -1,54 +1,11 @@
 from PIL import Image
 from bitarray import bitarray
 
+from imgprocessor import ImageAbstraction
+
 import copy
 
 ZOOM_INTENSITY = 50
-
-class ImageAbstraction:
-
-      # (0,0)      x 
-      #   | ------ - - - - - - |
-      #   |                    |
-      #   |                    |
-      # y |                    |
-      #   |                    |
-      #   |                    |
-      #   |                    |
-      #   | ------ - - - - - - |(w,h)
-
-    def __init__(self, img_list, img_mode, img_size, bw):
-        self.mode = img_mode
-        self.size = img_size
-        self.img = ImageAbstraction._get_img_matrix(self.size[0], self.size[1], img_list)
-        self.bw = bw
-
-    def _get_img_matrix(w, h, img_list):
-        img = []
-        for i in range(w):
-            img.append([])
-            for j in range(h):
-                img[i].append(img_list[j*w + i])
-        return img
-    
-    def get_image_bytes(self):
-        flat_list = []
-        for j in range(self.size[1]):
-            for i in range(self.size[0]):
-                if self.mode == 'RGB':
-                    flat_list.expand(list(self.img[i][j]))
-                else:
-                    flat_list.append(self.img[i][j])
-        return bytes(flat_list)
-
-    def negative(self):
-        for i in range(self.size[0]):
-            self.img[i] = list(map(lambda x: 255-x, self.img[i]))
-
-    def umbral(self, value):
-        for i in range(self.size[0]):
-            self.img[i] = list(map(lambda x: 255 if x>value else 0, self.img[i]))
-        
 
 class ImageManager:
 
@@ -78,9 +35,9 @@ class ImageManager:
         self.backup = copy.deepcopy(self.image)
 
         self.cached_backup = Image.frombytes(
-                self.backup.mode, self.backup.size, self.backup.get_image_bytes())
+                self.backup.mode, self.backup.get_size_tuple(), self.backup.get_image_bytes())
         self.cached_image = Image.frombytes(
-                self.image.mode, self.image.size, self.image.get_image_bytes())
+                self.image.mode, self.image.get_size_tuple(), self.image.get_image_bytes())
         self.modified = False
 
     def save_image(self, fname):
@@ -92,7 +49,7 @@ class ImageManager:
     def get_image(self):
         if self.modified:
             self.cached_image = Image.frombytes(
-                    self.image.mode, self.image.size, self.image.get_image_bytes())
+                    self.image.mode, self.image.get_size_tuple(), self.image.get_image_bytes())
             self.modified = False
         return self.cached_image
 
@@ -178,7 +135,7 @@ class ImageManager:
                     sum(b) / l),
                     2))
 
-    def reverse(self):
+    def negative(self):
         self.modified = True
         self.image.negative()
 
@@ -186,3 +143,5 @@ class ImageManager:
         if self.image.bw and self.image.mode == 'L':
             self.modified = True
             self.image.umbral(value)
+        else:
+            raise Exception('Unsupported operation')
