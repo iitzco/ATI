@@ -7,6 +7,7 @@ import copy
 
 ZOOM_INTENSITY = 50
 
+
 class ImageManager:
 
     def __init__(self):
@@ -35,9 +36,13 @@ class ImageManager:
         self.backup = copy.deepcopy(self.image)
 
         self.cached_backup = Image.frombytes(
-                self.backup.mode, self.backup.get_size_tuple(), self.backup.get_image_bytes())
+            self.backup.mode,
+            self.backup.get_size_tuple(),
+            self.backup.get_image_bytes())
         self.cached_image = Image.frombytes(
-                self.image.mode, self.image.get_size_tuple(), self.image.get_image_bytes())
+            self.image.mode,
+            self.image.get_size_tuple(),
+            self.image.get_image_bytes())
         self.modified = False
 
     def save_image(self, fname):
@@ -49,7 +54,9 @@ class ImageManager:
     def get_image(self):
         if self.modified:
             self.cached_image = Image.frombytes(
-                    self.image.mode, self.image.get_size_tuple(), self.image.get_image_bytes())
+                self.image.mode,
+                self.image.get_size_tuple(),
+                self.image.get_image_bytes())
             self.modified = False
         return self.cached_image
 
@@ -72,7 +79,7 @@ class ImageManager:
     def get_original_pixel_color(self, x, y):
         return ImageManager._get_pixel_color(self.backup, x, y)
 
-    def _get_pixel_color(img_abstraction,x, y):
+    def _get_pixel_color(img_abstraction, x, y):
         # return in (r,g,b) format
         c = img_abstraction.img[x][y]
         if img_abstraction.bw:
@@ -80,7 +87,9 @@ class ImageManager:
         return c
 
     def update_img_pixel(self, x, y, color):
-        if self.image.mode == 'L' or (self.image.mode == '1' and (color == 0 or color == 255)):
+        if self.image.mode == 'L' or (
+            self.image.mode == '1' and (
+                color == 0 or color == 255)):
             self.image.img[x][y] = color
         self.modified = True
 

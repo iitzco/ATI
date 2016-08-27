@@ -1,7 +1,7 @@
 
 class ImageAbstraction:
 
-      # (0,0)      x 
+      # (0,0)      x
       #   | ------ - - - - - - |
       #   |                    |
       #   |                    |
@@ -23,9 +23,9 @@ class ImageAbstraction:
         for i in range(w):
             img.append([])
             for j in range(h):
-                img[i].append(img_list[j*w + i])
+                img[i].append(img_list[j * w + i])
         return img
-    
+
     def get_image_bytes(self):
         flat_list = []
         for j in range(self.h):
@@ -44,11 +44,10 @@ class ImageAbstraction:
             if self.bw:
                 f = lambda x: 255 - x
             else:
-                f = lambda x : tuple(255 - e for e in x)
+                f = lambda x: tuple(255 - e for e in x)
             self.img[i] = list(map(f, self.img[i]))
 
     def umbral(self, value):
         for i in range(self.w):
-            self.img[i] = list(map(lambda x: 255 if x > value else 0, self.img[i]))
-        
-
+            self.img[i] = list(
+                map(lambda x: 255 if x > value else 0, self.img[i]))
