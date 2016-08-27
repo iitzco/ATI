@@ -31,7 +31,7 @@ class ImageAbstraction:
         for j in range(self.h):
             for i in range(self.w):
                 if self.mode == 'RGB':
-                    flat_list.expand(list(self.img[i][j]))
+                    flat_list.extend(list(self.img[i][j]))
                 else:
                     flat_list.append(self.img[i][j])
         return bytes(flat_list)
@@ -41,10 +41,14 @@ class ImageAbstraction:
 
     def negative(self):
         for i in range(self.w):
-            self.img[i] = list(map(lambda x: 255-x, self.img[i]))
+            if self.bw:
+                f = lambda x: 255 - x
+            else:
+                f = lambda x : tuple(255 - e for e in x)
+            self.img[i] = list(map(f, self.img[i]))
 
     def umbral(self, value):
         for i in range(self.w):
-            self.img[i] = list(map(lambda x: 255 if x>value else 0, self.img[i]))
+            self.img[i] = list(map(lambda x: 255 if x > value else 0, self.img[i]))
         
 
