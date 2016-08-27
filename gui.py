@@ -4,7 +4,7 @@ from tkinter.simpledialog import askinteger
 import tkinter.messagebox
 from PIL import ImageTk, Image
 
-from imgprocessor import ImageManager
+from imgmanager import ImageManager
 
 import sys
 
@@ -216,9 +216,6 @@ class ImageWorkspace(tk.Frame):
                 each.y_zoom = y
                 each.zoom(x, y)
 
-    def zoom(self, x, y):
-        pass
-
     def color_event(self, event):
         x = self.canvas_main.canvasx(event.x)
         y = self.canvas_main.canvasy(event.y)
@@ -228,6 +225,9 @@ class ImageWorkspace(tk.Frame):
         self.gui.menu.x_pixel = x
         self.gui.menu.y_pixel = y
         self.gui.menu.show_color(self.get_pixel_color(x, y))
+
+    def zoom(self, x, y):
+        pass
 
     def get_pixel_color(self, x, y):
         pass
