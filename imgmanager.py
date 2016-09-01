@@ -15,20 +15,20 @@ class ImageManager:
         pass
 
     def load_rectangle(self, w, h):
-        img_list = [0]*(w*h)
-        for j in range(int(0.25*h), int(0.75*h)):
-            for i in range(int(0.25*w), int(0.75*w)):
-                img_list[j*w + i] = 255
-        self.create_images(img_list, 'L', (w,h), True)
-        
+        img_list = [0] * (w * h)
+        for j in range(int(0.25 * h), int(0.75 * h)):
+            for i in range(int(0.25 * w), int(0.75 * w)):
+                img_list[j * w + i] = 255
+        self.create_images(img_list, 'L', (w, h), True)
+
     def load_circle(self, w, h):
-        r = 0.25 * min(w,h)
-        img_list = [0]*(w*h)
+        r = 0.25 * min(w, h)
+        img_list = [0] * (w * h)
         for j in range(h):
             for i in range(w):
-                if math.sqrt(pow(j - 0.5*h,2) + pow(i-0.5*w,2)) < r:
-                    img_list[j*w + i] = 255
-        self.create_images(img_list, 'L', (w,h), True)
+                if math.sqrt(pow(j - 0.5 * h, 2) + pow(i - 0.5 * w, 2)) < r:
+                    img_list[j * w + i] = 255
+        self.create_images(img_list, 'L', (w, h), True)
 
     def load_image(self, img):
         img_list = list(img.getdata())
@@ -157,6 +157,10 @@ class ImageManager:
                     round(
                     sum(b) / l),
                     2))
+
+    def add_img(self, aux_image_manager):
+        self.modified = True
+        self.image.add(aux_image_manager.image)
 
     def negative(self):
         self.modified = True

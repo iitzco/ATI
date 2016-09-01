@@ -65,7 +65,7 @@ class GUI(tk.Frame):
 
         if not w or not h:
             return
-        f(w,h)
+        f(w, h)
         self.load_images()
 
     def load_file(self, name=None):
@@ -77,10 +77,10 @@ class GUI(tk.Frame):
             img = Image.open(fname)
             try:
                 self.image_manager.load_image(img)
-                self.load_images()
             except Exception:
                 tkinter.messagebox.showinfo(
                     'Alert', 'Unsupported image format')
+            self.load_images()
 
     def load_images(self):
         self.original.show_image()
@@ -90,6 +90,25 @@ class GUI(tk.Frame):
         fname = asksaveasfilename()
         if fname:
             self.image_manager.get_image().save(fname)
+
+    def add_img(self):
+        fname = askopenfilename()
+        if fname:
+            img = Image.open(fname)
+            aux_image_manager = ImageManager()
+            try:
+                aux_image_manager.load_image(img)
+            except Exception:
+                tkinter.messagebox.showinfo(
+                    'Alert', 'Unsupported image format')
+            self.image_manager.add_img(aux_image_manager)
+            self.studio.show_image()
+
+    def substrac_img(self):
+        pass
+
+    def multiply_img(self):
+        pass
 
     def zoom_mode_trigger(self):
         self.zoom = not self.zoom

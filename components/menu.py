@@ -49,6 +49,12 @@ class Menu(tk.Frame):
         self.color_slider.config(command=self.update_color)
 
     def add_operators(self):
+        self.button_add = tk.Button(
+            self, text="Add image", command=self.gui.add_img, width=10)
+        self.button_substract = tk.Button(
+            self, text="Substract image", command=self.gui.substrac_img, width=10)
+        self.button_multiply = tk.Button(
+            self, text="Multiply image", command=self.gui.multiply_img, width=10)
         self.button_revert = tk.Button(
             self, text="Negative", command=self.gui.negative, width=10)
         self.button_umbral = tk.Button(
@@ -59,6 +65,7 @@ class Menu(tk.Frame):
             self, text="Product", command=self.gui.product, width=10)
 
 
+
     def discover(self):
         self.label.grid(pady=5)
         self.button_rect.grid(pady=5)
@@ -67,6 +74,9 @@ class Menu(tk.Frame):
         self.button_save.grid(pady=5)
         self.button_zoom.grid(pady=5)
         self.button_mirror.grid(pady=5)
+        self.button_add.grid(pady=5)
+        self.button_substract.grid(pady=5)
+        self.button_multiply.grid(pady=5)
         self.button_revert.grid(pady=5)
         self.button_umbral.grid(pady=5)
         self.button_potencial_operator.grid(pady=5)
