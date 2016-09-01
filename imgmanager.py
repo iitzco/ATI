@@ -3,6 +3,7 @@ from bitarray import bitarray
 
 from imgprocessor import ImageAbstraction
 
+import math
 import copy
 
 ZOOM_INTENSITY = 50
@@ -12,6 +13,22 @@ class ImageManager:
 
     def __init__(self):
         pass
+
+    def load_rectangle(self, w, h):
+        img_list = [0]*(w*h)
+        for j in range(int(0.25*h), int(0.75*h)):
+            for i in range(int(0.25*w), int(0.75*w)):
+                img_list[j*w + i] = 255
+        self.create_images(img_list, 'L', (w,h), True)
+        
+    def load_circle(self, w, h):
+        r = 0.25 * min(w,h)
+        img_list = [0]*(w*h)
+        for j in range(h):
+            for i in range(w):
+                if math.sqrt(pow(j - 0.5*h,2) + pow(i-0.5*w,2)) < r:
+                    img_list[j*w + i] = 255
+        self.create_images(img_list, 'L', (w,h), True)
 
     def load_image(self, img):
         img_list = list(img.getdata())
@@ -87,10 +104,7 @@ class ImageManager:
         return c
 
     def update_img_pixel(self, x, y, color):
-        if self.image.mode == 'L' or (
-            self.image.mode == '1' and (
-                color == 0 or color == 255)):
-            self.image.img[x][y] = color
+        self.image.update_pixel(x, y, color)
         self.modified = True
 
     def get_outbound_pixel(self, center_x, center_y, x, y, w, h):
@@ -149,8 +163,17 @@ class ImageManager:
         self.image.negative()
 
     def umbral(self, value):
+        self.common_operators_on_bw(self.image.umbral, value)
+
+    def power(self, value):
+        self.common_operators_on_bw(self.image.power, value)
+
+    def product(self, value):
+        self.common_operators_on_bw(self.image.product, value)
+
+    def common_operators_on_bw(self, f, value):
         if self.image.bw and self.image.mode == 'L':
             self.modified = True
-            self.image.umbral(value)
+            f(value)
         else:
             raise Exception('Unsupported operation')

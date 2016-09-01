@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter.filedialog import askopenfilename, asksaveasfilename
-from tkinter.simpledialog import askinteger
+from tkinter.simpledialog import askinteger, askfloat
 import tkinter.messagebox
 from PIL import ImageTk, Image
 
@@ -52,6 +52,21 @@ class GUI(tk.Frame):
         self.menu.discover()
         self.original.discover()
         self.studio.discover()
+
+    def load_rectangle(self):
+        self._load_figure(self.image_manager.load_rectangle)
+
+    def load_circle(self):
+        self._load_figure(self.image_manager.load_circle)
+
+    def _load_figure(self, f):
+        w = askinteger("Size Specification", "Width?", minvalue=0)
+        h = askinteger("Size Specification", "Heigth?", minvalue=0)
+
+        if not w or not h:
+            return
+        f(w,h)
+        self.load_images()
 
     def load_file(self, name=None):
         if (name):
@@ -113,6 +128,23 @@ class GUI(tk.Frame):
             tkinter.messagebox.showinfo(
                 'Alert', 'Unsupported operation')
 
+    def power(self):
+        value = askfloat("Power", "Power Value?", minvalue=0, maxvalue=2.5)
+        try:
+            self.image_manager.power(value)
+            self.studio.show_image()
+        except Exception:
+            tkinter.messagebox.showinfo(
+                'Alert', 'Unsupported operation')
+
+    def product(self):
+        value = askfloat("Product", "Product Value?", minvalue=0)
+        try:
+            self.image_manager.product(value)
+            self.studio.show_image()
+        except Exception:
+            tkinter.messagebox.showinfo(
+                'Alert', 'Unsupported operation')
 
 if __name__ == "__main__":
     gui = GUI()

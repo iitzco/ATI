@@ -1,14 +1,29 @@
 def max_matrix(matrix):
-    max([max(each) for each in matrix])
-
+    return max([max(each) for each in matrix])
 
 def min_matrix(matrix):
-    min([min(each) for each in matrix])
+    return min([min(each) for each in matrix])
+
+def generic_transformation(min_from, max_from, min_to, max_to, v):
+    return ((max_to - min_to)/(max_from - min_from))*(v - max_from) + max_to
+
+def transform_to_std(min_v, max_v, v):
+    return generic_transformation(min_v, max_v, 0, 255, v)
+
+def transform_from_std(min_v, max_v, v):
+    return generic_transformation(0, 255, min_v, max_v, v)
+
+def map_matrix(matrix, w, h, f):
+    ret = []
+    for i in range(w):
+        ret.append([])
+        for j in range(h):
+            ret[i].append(f(matrix[i][j]))
+    return ret
 
 
-def transform(min_v, max_v, v):
-    return (255 / (max_v - min_v)) * (v - min_v)
 
+# TODO implement caches for min and max
 
 class ImageAbstraction:
 
@@ -37,30 +52,46 @@ class ImageAbstraction:
                 img[i].append(img_list[j * w + i])
         return img
 
+    def _get_max_min(self):
+        return (max_matrix(self.img), min_matrix(self.img))
+
     def get_image_bytes(self):
         flat_list = []
-        max_v = max(255, max_matrix(self.img))
-        min_v = min(0, min_matrix(self.img))
+        if self.bw:
+            max_v, min_v = self._get_max_min()
         for j in range(self.h):
             for i in range(self.w):
                 if self.mode == 'RGB':
                     flat_list.extend(list(self.img[i][j]))
                 else:
-                    flat_list.append(transform(max_v, min_v, self.img[i][j]))
+                    flat_list.append(int(transform_to_std(min_v, max_v, self.img[i][j])))
         return bytes(flat_list)
+
+    def update_pixel(self, x, y, color):
+        if self.bw:
+            max_v, min_v = self._get_max_min()
+            v = transform_from_std(min_v, max_v)
+            self.img[x][y] = v
 
     def get_size_tuple(self):
         return (self.w, self.h)
 
     def negative(self):
-        for i in range(self.w):
-            if self.bw:
-                f = lambda x: 255 - x
-            else:
-                f = lambda x: tuple(255 - e for e in x)
-            self.img[i] = list(map(f, self.img[i]))
+        if self.bw:
+            max_v, min_v = self._get_max_min()
+            f = lambda x: max_v - x + min_v
+        else:
+            f = lambda x: tuple(255 - e for e in x)
+        self.img = map_matrix(self.img, self.w, self.h, f)
 
     def umbral(self, value):
-        for i in range(self.w):
-            self.img[i] = list(
-                map(lambda x: 255 if x > value else 0, self.img[i]))
+        max_v, min_v = self._get_max_min()
+        v = transform_from_std(min_v, max_v, value)
+        self.img = map_matrix(self.img, self.w, self.h, lambda x: max_v if x > v else min_v)
+
+    def power(self, value):
+        max_v, min_v = self._get_max_min()
+        self.img = map_matrix(self.img, self.w, self.h, lambda x : (255/pow(max_v, value))*pow(x, value))
+
+    def product(self, value):
+        self.img = map_matrix(self.img, self.w, self.h, lambda x : x*value)

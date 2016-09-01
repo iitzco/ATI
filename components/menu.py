@@ -9,6 +9,14 @@ class Menu(tk.Frame):
 
     def add_components(self):
         self.label = tk.Label(self, text="Menu")
+        self.button_rect = tk.Button(self,
+            text="Load Rectangle",
+            command=self.gui.load_rectangle,
+            width=10)
+        self.button_circle = tk.Button(self,
+            text="Load Circle",
+            command=self.gui.load_circle,
+            width=10)
         self.button_load = tk.Button(
             self,
             text="Load Image",
@@ -16,10 +24,6 @@ class Menu(tk.Frame):
             width=10)
         self.button_save = tk.Button(
             self, text="Save", command=self.gui.save_file, width=10)
-        self.button_revert = tk.Button(
-            self, text="Negative", command=self.gui.negative, width=10)
-        self.button_umbral = tk.Button(
-            self, text="Umbral", command=self.gui.umbral, width=10)
         self.color_label = tk.Label(self)
         self.color_canvas = tk.Label(self, bg='#000000', width=3)
         self.color_slider = tk.Scale(
@@ -38,18 +42,35 @@ class Menu(tk.Frame):
             onvalue=True,
             offvalue=False)
 
+        self.add_operators()
+
         self.first = True
         self.interaction = False
         self.color_slider.config(command=self.update_color)
 
+    def add_operators(self):
+        self.button_revert = tk.Button(
+            self, text="Negative", command=self.gui.negative, width=10)
+        self.button_umbral = tk.Button(
+            self, text="Umbral", command=self.gui.umbral, width=10)
+        self.button_potencial_operator = tk.Button(
+            self, text="Power", command=self.gui.power, width=10)
+        self.button_product_operator = tk.Button(
+            self, text="Product", command=self.gui.product, width=10)
+
+
     def discover(self):
         self.label.grid(pady=5)
+        self.button_rect.grid(pady=5)
+        self.button_circle.grid(pady=5)
         self.button_load.grid(pady=5)
         self.button_save.grid(pady=5)
         self.button_zoom.grid(pady=5)
         self.button_mirror.grid(pady=5)
         self.button_revert.grid(pady=5)
         self.button_umbral.grid(pady=5)
+        self.button_potencial_operator.grid(pady=5)
+        self.button_product_operator.grid(pady=5)
         self.color_label.grid(pady=5)
         self.color_canvas.grid(pady=3)
         self.color_slider.grid(pady=5)
