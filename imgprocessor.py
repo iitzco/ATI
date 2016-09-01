@@ -43,6 +43,7 @@ class ImageAbstraction:
         self.h = img_size[1]
         self.img = ImageAbstraction._get_img_matrix(self.w, self.h, img_list)
         self.bw = bw
+        self.modified_min_max = True
 
     def _get_img_matrix(w, h, img_list):
         img = []
@@ -53,7 +54,11 @@ class ImageAbstraction:
         return img
 
     def _get_max_min(self):
-        return (max_matrix(self.img), min_matrix(self.img))
+        if self.modified_min_max:
+            self.cached_max_value = max_matrix(self.img)
+            self.cached_min_value = min_matrix(self.img)
+            self.modified_min_max = False
+        return (self.cached_max_value, self.cached_min_value)
 
     def get_image_bytes(self):
         flat_list = []
@@ -70,7 +75,7 @@ class ImageAbstraction:
     def update_pixel(self, x, y, color):
         if self.bw:
             max_v, min_v = self._get_max_min()
-            v = transform_from_std(min_v, max_v)
+            v = transform_from_std(min_v, max_v, color)
             self.img[x][y] = v
 
     def get_size_tuple(self):
@@ -83,15 +88,19 @@ class ImageAbstraction:
         else:
             f = lambda x: tuple(255 - e for e in x)
         self.img = map_matrix(self.img, self.w, self.h, f)
+        self.modified_min_max = True
 
     def umbral(self, value):
         max_v, min_v = self._get_max_min()
         v = transform_from_std(min_v, max_v, value)
         self.img = map_matrix(self.img, self.w, self.h, lambda x: max_v if x > v else min_v)
+        self.modified_min_max = True
 
     def power(self, value):
         max_v, min_v = self._get_max_min()
         self.img = map_matrix(self.img, self.w, self.h, lambda x : (255/pow(max_v, value))*pow(x, value))
+        self.modified_min_max = True
 
     def product(self, value):
         self.img = map_matrix(self.img, self.w, self.h, lambda x : x*value)
+        self.modified_min_max = True
