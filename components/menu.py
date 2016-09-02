@@ -65,6 +65,8 @@ class Menu(tk.Frame):
             self, text="Product", command=self.gui.product, width=10)
         self.button_compression_operator = tk.Button(
             self, text="Range Compression", command=self.gui.compression, width=10)
+        self.button_histogram = tk.Button(
+            self, text="Histogram", command=self.gui.histogram, width=10)
 
 
 
@@ -84,6 +86,7 @@ class Menu(tk.Frame):
         self.button_potencial_operator.grid(pady=5)
         self.button_product_operator.grid(pady=5)
         self.button_compression_operator.grid(pady=5)
+        self.button_histogram.grid(pady=5)
         self.color_label.grid(pady=5)
         self.color_canvas.grid(pady=3)
         self.color_slider.grid(pady=5)

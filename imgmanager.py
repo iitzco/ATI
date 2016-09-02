@@ -158,6 +158,9 @@ class ImageManager:
                     sum(b) / l),
                     2))
 
+    def get_histogram_values(self):
+        return self.image.get_image_list()
+
     def add_img(self, aux_image_manager):
         self.modified = True
         self.image.add(aux_image_manager.image)

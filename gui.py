@@ -1,4 +1,5 @@
 import tkinter as tk
+import matplotlib.pyplot as plt
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 from tkinter.simpledialog import askinteger, askfloat
 import tkinter.messagebox
@@ -176,6 +177,14 @@ class GUI(tk.Frame):
     def compression(self):
         self.image_manager.compression()
         self.studio.show_image()
+
+    def histogram(self):
+        values = self.image_manager.get_histogram_values()
+
+        plt.figure()
+        plt.xlim(0, 255)
+        plt.hist(values, bins=256)
+        plt.show()
 
 if __name__ == "__main__":
     gui = GUI()

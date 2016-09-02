@@ -1,8 +1,11 @@
 appnope==0.1.0
 autopep8==1.2.4
 bitarray==0.8.1
+cycler==0.10.0
 decorator==4.0.10
 ipython-genutils==0.1.0
+matplotlib==1.5.2
+numpy==1.11.1
 pep8==1.7.0
 pexpect==4.2.1
 pickleshare==0.7.4
@@ -10,6 +13,9 @@ Pillow==3.3.1
 prompt-toolkit==1.0.7
 ptyprocess==0.5.1
 Pygments==2.1.3
+pyparsing==2.1.8
+python-dateutil==2.5.3
+pytz==2016.6.1
 simplegeneric==0.8.1
 six==1.10.0
 traitlets==4.2.2

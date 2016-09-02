@@ -88,6 +88,22 @@ class ImageAbstraction:
     def _get_max_min(self):
         return (max_matrix(self.img), min_matrix(self.img))
 
+    def get_image_list(self):
+        flat_list = []
+        if self.bw:
+            max_v, min_v = self._get_max_min()
+        for j in range(self.h):
+            for i in range(self.w):
+                if self.mode == 'RGB':
+                    flat_list.extend(list(self.img[i][j]))
+                else:
+                    flat_list.append(
+                        int(transform_to_std(min_v, max_v, self.img[i][j])))
+        return flat_list
+
+    def get_image_bytes(self):
+        return bytes(self.get_image_list())
+
     def get_image_bytes(self):
         flat_list = []
         if self.bw:
