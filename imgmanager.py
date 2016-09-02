@@ -162,22 +162,36 @@ class ImageManager:
         self.modified = True
         self.image.add(aux_image_manager.image)
 
+    def substract_img(self, aux_image_manager):
+        self.modified = True
+        self.image.substract(aux_image_manager.image)
+
+    def multiply_img(self, aux_image_manager):
+        self.modified = True
+        self.image.multiply(aux_image_manager.image)
+
     def negative(self):
         self.modified = True
         self.image.negative()
 
     def umbral(self, value):
+        self.modified = True
         self.common_operators_on_bw(self.image.umbral, value)
 
     def power(self, value):
+        self.modified = True
         self.common_operators_on_bw(self.image.power, value)
 
     def product(self, value):
+        self.modified = True
         self.common_operators_on_bw(self.image.product, value)
+
+    def compression(self):
+        self.modified = True
+        self.image.compress()
 
     def common_operators_on_bw(self, f, value):
         if self.image.bw and self.image.mode == 'L':
-            self.modified = True
             f(value)
         else:
             raise Exception('Unsupported operation')

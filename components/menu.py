@@ -52,7 +52,7 @@ class Menu(tk.Frame):
         self.button_add = tk.Button(
             self, text="Add image", command=self.gui.add_img, width=10)
         self.button_substract = tk.Button(
-            self, text="Substract image", command=self.gui.substrac_img, width=10)
+            self, text="Substract image", command=self.gui.substract_img, width=10)
         self.button_multiply = tk.Button(
             self, text="Multiply image", command=self.gui.multiply_img, width=10)
         self.button_revert = tk.Button(
@@ -63,6 +63,8 @@ class Menu(tk.Frame):
             self, text="Power", command=self.gui.power, width=10)
         self.button_product_operator = tk.Button(
             self, text="Product", command=self.gui.product, width=10)
+        self.button_compression_operator = tk.Button(
+            self, text="Range Compression", command=self.gui.compression, width=10)
 
 
 
@@ -81,6 +83,7 @@ class Menu(tk.Frame):
         self.button_umbral.grid(pady=5)
         self.button_potencial_operator.grid(pady=5)
         self.button_product_operator.grid(pady=5)
+        self.button_compression_operator.grid(pady=5)
         self.color_label.grid(pady=5)
         self.color_canvas.grid(pady=3)
         self.color_slider.grid(pady=5)

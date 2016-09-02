@@ -1,3 +1,6 @@
+import math
+
+
 def max_matrix(matrix):
     return max([max(each) for each in matrix])
 
@@ -28,7 +31,32 @@ def map_matrix(matrix, w, h, f):
     return ret
 
 
-# TODO implement caches for min and max
+def common_operation_matrix(matrixA, matrixB, w, h, delta):
+    ret = [[0 for i in range(h)] for j in range(w)]
+    for i in range(w):
+        for j in range(h):
+            ret[i][j] = matrixA[i][j] + delta * matrixB[i][j]
+    return ret
+
+
+def add_matrix(matrixA, matrixB, w, h):
+    return common_operation_matrix(matrixA, matrixB, w, h, 1)
+
+
+def substract_matrix(matrixA, matrixB, w, h):
+    return common_operation_matrix(matrixA, matrixB, w, h, -1)
+
+
+def multiply_matrix(matrixA, matrixB, w, c, h):
+    ret = [[0 for i in range(h)] for j in range(w)]
+    for i in range(w):
+        for j in range(h):
+            aux = 0
+            for x in range(c):
+                aux += matrixA[i][x] * matrixB[x][j]
+            ret[i][j] = aux
+    return ret
+
 
 class ImageAbstraction:
 
@@ -85,9 +113,18 @@ class ImageAbstraction:
     def add(self, image):
         if not self.get_size_tuple() == image.get_size_tuple():
             raise Exception("Not same size")
-        for i in range(self.w):
-            for j in range(self.h):
-                self.img[i][j] += image.img[i][j]
+        self.img = add_matrix(self.img, image.img, self.w, self.h)
+
+    def substract(self, image):
+        if not self.get_size_tuple() == image.get_size_tuple():
+            raise Exception("Not same size")
+        self.img = substract_matrix(self.img, image.img, self.w, self.h)
+
+    def multiply(self, image):
+        if not self.h == image.w:
+            raise Exception("Not valid for product")
+        self.img = multiply_matrix(
+            self.img, image.img, self.w, self.h, image.h)
 
     def negative(self):
         if self.bw:
@@ -113,3 +150,8 @@ class ImageAbstraction:
 
     def product(self, value):
         self.img = map_matrix(self.img, self.w, self.h, lambda x: x * value)
+
+    def compress(self):
+        max_v, min_v = self._get_max_min()
+        self.img = map_matrix(self.img, self.w, self.h, lambda x: (
+            (255) / (math.log(256))) * math.log(1 + transform_to_std(min_v, max_v, x)))

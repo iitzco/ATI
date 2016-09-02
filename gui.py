@@ -91,7 +91,7 @@ class GUI(tk.Frame):
         if fname:
             self.image_manager.get_image().save(fname)
 
-    def add_img(self):
+    def get_auxiliar_img_manager(self):
         fname = askopenfilename()
         if fname:
             img = Image.open(fname)
@@ -101,14 +101,22 @@ class GUI(tk.Frame):
             except Exception:
                 tkinter.messagebox.showinfo(
                     'Alert', 'Unsupported image format')
-            self.image_manager.add_img(aux_image_manager)
-            self.studio.show_image()
+        return aux_image_manager
 
-    def substrac_img(self):
-        pass
+    def add_img(self):
+        aux_image_manager = self.get_auxiliar_img_manager()
+        self.image_manager.add_img(aux_image_manager)
+        self.studio.show_image()
+
+    def substract_img(self):
+        aux_image_manager = self.get_auxiliar_img_manager()
+        self.image_manager.substract_img(aux_image_manager)
+        self.studio.show_image()
 
     def multiply_img(self):
-        pass
+        aux_image_manager = self.get_auxiliar_img_manager()
+        self.image_manager.multiply_img(aux_image_manager)
+        self.studio.show_image()
 
     def zoom_mode_trigger(self):
         self.zoom = not self.zoom
@@ -164,6 +172,10 @@ class GUI(tk.Frame):
         except Exception:
             tkinter.messagebox.showinfo(
                 'Alert', 'Unsupported operation')
+
+    def compression(self):
+        self.image_manager.compression()
+        self.studio.show_image()
 
 if __name__ == "__main__":
     gui = GUI()
