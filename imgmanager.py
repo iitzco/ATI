@@ -30,6 +30,16 @@ class ImageManager:
                     img_list[j * w + i] = 255
         self.create_images(img_list, 'L', (w, h), True)
 
+    def load_black(self, w, h):
+        img_list = [0] * (w * h)
+        img_list[0] = 1
+        self.create_images(img_list, 'L', (w, h), True)
+
+    def load_white(self, w, h):
+        img_list = [255] * (w * h)
+        img_list[0] = 254
+        self.create_images(img_list, 'L', (w, h), True)
+
     def load_image(self, img):
         img_list = list(img.getdata())
         if img.mode == 'RGB':

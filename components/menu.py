@@ -9,19 +9,6 @@ class Menu(tk.Frame):
 
     def add_components(self):
         self.label = tk.Label(self, text="Menu")
-        self.button_rect = tk.Button(self,
-            text="Load Rectangle",
-            command=self.gui.load_rectangle,
-            width=10)
-        self.button_circle = tk.Button(self,
-            text="Load Circle",
-            command=self.gui.load_circle,
-            width=10)
-        self.button_load = tk.Button(
-            self,
-            text="Load Image",
-            command=self.gui.load_file,
-            width=10)
         self.button_save = tk.Button(
             self, text="Save", command=self.gui.save_file, width=10)
         self.color_label = tk.Label(self)
@@ -72,9 +59,6 @@ class Menu(tk.Frame):
 
     def discover(self):
         self.label.grid(pady=5)
-        self.button_rect.grid(pady=5)
-        self.button_circle.grid(pady=5)
-        self.button_load.grid(pady=5)
         self.button_save.grid(pady=5)
         self.button_zoom.grid(pady=5)
         self.button_mirror.grid(pady=5)

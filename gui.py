@@ -5,6 +5,7 @@ from tkinter.simpledialog import askinteger, askfloat
 import tkinter.messagebox
 from PIL import ImageTk, Image
 
+from components.menubar import MenuBar
 from components.menu import Menu
 from components.image_workspace import ImageWorkspace, OriginalImageWorkspace, StudioImageWorkspace
 from imgmanager import ImageManager
@@ -27,7 +28,12 @@ class GUI(tk.Frame):
         self.image_manager = ImageManager()
 
         self.init_main_frame()
+        self.create_menubar()
         self.create_subframes()
+
+    def create_menubar(self):
+        self.menubar = MenuBar(self)
+        self.master.config(menu=self.menubar)
 
     def init_main_frame(self):
         self.master.title("GUI")
@@ -59,6 +65,12 @@ class GUI(tk.Frame):
 
     def load_circle(self):
         self._load_figure(self.image_manager.load_circle)
+
+    def load_black(self):
+        self._load_figure(self.image_manager.load_black)
+
+    def load_white(self):
+        self._load_figure(self.image_manager.load_white)
 
     def _load_figure(self, f):
         w = askinteger("Size Specification", "Width?", minvalue=0)
