@@ -208,6 +208,10 @@ class GUI(tk.Frame):
         self.image_manager.enhance_contrast(value1, value2)
         self.studio.show_image()
 
+    def equalize(self):
+        self.image_manager.equalize()
+        self.studio.show_image()
+
 if __name__ == "__main__":
     gui = GUI()
     if (len(sys.argv) > 1 and sys.argv[1]):

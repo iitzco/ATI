@@ -1,4 +1,5 @@
 import math
+from collections import Counter
 
 
 def max_matrix(matrix):
@@ -99,6 +100,12 @@ class ImageAbstraction:
 
 class BWImageAbstraction(ImageAbstraction):
 
+    def get_mode(self):
+        return 'L'
+    
+    def is_bw(self):
+        return True
+
     def get_image_list(self):
         flat_list = []
         max_v, min_v = self._get_max_min()
@@ -166,11 +173,20 @@ class BWImageAbstraction(ImageAbstraction):
         self.img = map_matrix(self.img, self.w, self.h, lambda x: (
             (255) / (math.log(256))) * math.log(1 + transform_to_std(min_v, max_v, x)))
 
-    def get_mode(self):
-        return 'L'
-    
-    def is_bw(self):
-        return True
+    def equalize(self):
+        normalized_img = self.get_image_list()
+        aux_matrix = ImageAbstraction._get_img_matrix(self.w, self.h, normalized_img)
+        c = Counter(normalized_img)
+        total = self.w*self.h
+        s_list = [0]*256
+        s_list[255] = total
+        for i in range(1, 256):
+            s_list[255 - i] = s_list[256 - i] - c[256 - i]
+        s_list = [each/total for each in s_list]
+        min_value = min(s_list)
+        self.img = map_matrix(aux_matrix, self.w, self.h, lambda x: (
+            int(((s_list[x] - min_value)/(1 - min_value))*255 + 0.5)))
+
 
 class RGBImageAbstraction(ImageAbstraction):
 
@@ -198,7 +214,7 @@ class RGBImageAbstraction(ImageAbstraction):
         self.img = map_matrix(self.img, self.w, self.h, f)
 
     def get_mode(self):
-        return 'RBG'
+        return 'RGB'
 
     def is_bw(self):
         return False

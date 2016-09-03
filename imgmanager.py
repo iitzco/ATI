@@ -211,6 +211,10 @@ class ImageManager:
         self.modified = True
         self.image.enhance_contrast(r1, r2)
 
+    def equalize(self):
+        self.modified = True
+        self.image.equalize()
+
     def common_operators_on_bw(self, f, value):
         if self.image.is_bw() and self.image.get_mode() == 'L':
             f(value)
