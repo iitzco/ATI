@@ -1,4 +1,5 @@
 import math
+import random
 from collections import Counter
 
 
@@ -60,6 +61,7 @@ def multiply_matrix(matrixA, matrixB, w, c, h):
 
 # TODO manage full canvas
 
+
 class ImageAbstraction:
 
       # (0,0)      x
@@ -102,7 +104,7 @@ class BWImageAbstraction(ImageAbstraction):
 
     def get_mode(self):
         return 'L'
-    
+
     def is_bw(self):
         return True
 
@@ -158,7 +160,7 @@ class BWImageAbstraction(ImageAbstraction):
             self.img,
             self.w,
             self.h,
-            lambda x: 0.5*x if x < v1 else 2*x if x > v2 else x)
+            lambda x: 0.5 * x if x < v1 else 2 * x if x > v2 else x)
 
     def power(self, value):
         max_v, min_v = self._get_max_min()
@@ -175,17 +177,62 @@ class BWImageAbstraction(ImageAbstraction):
 
     def equalize(self):
         normalized_img = self.get_image_list()
-        aux_matrix = ImageAbstraction._get_img_matrix(self.w, self.h, normalized_img)
+        aux_matrix = ImageAbstraction._get_img_matrix(
+            self.w, self.h, normalized_img)
         c = Counter(normalized_img)
-        total = self.w*self.h
-        s_list = [0]*256
+        total = self.w * self.h
+        s_list = [0] * 256
         s_list[255] = total
         for i in range(1, 256):
             s_list[255 - i] = s_list[256 - i] - c[256 - i]
-        s_list = [each/total for each in s_list]
+        s_list = [each / total for each in s_list]
         min_value = min(s_list)
         self.img = map_matrix(aux_matrix, self.w, self.h, lambda x: (
-            int(((s_list[x] - min_value)/(1 - min_value))*255 + 0.5)))
+            int(((s_list[x] - min_value) / (1 - min_value)) * 255 + 0.5)))
+
+    def contaminate_multiplicative_noise(self, percentage, generator):
+        total = self.w * self.h
+        pixels = int((total * percentage) / 100)
+        candidates = random.sample(range(total), pixels)
+        for each in candidates:
+            noise = generator(random.random())
+            x = each // self.h
+            y = each % self.h
+            self.img[x][y] = self.img[x][y] * noise
+
+    def contaminate_gauss_noise(self, percentage, mean, deviation):
+        normalized_img = self.get_image_list()
+        aux_matrix = ImageAbstraction._get_img_matrix(
+            self.w, self.h, normalized_img)
+        total = self.w * self.h
+        pixels = int((total * percentage) / 100)
+        noise_list = []
+        for i in range((pixels + 1) // 2):
+            x1, x2 = random.random(), random.random()
+            noise_list.append(math.sqrt(-2 * math.log(x1))
+                              * math.cos(2 * math.pi * x2))
+            noise_list.append(math.sqrt(-2 * math.log(x1))
+                              * math.sin(2 * math.pi * x2))
+        candidates = random.sample(range(total), pixels)
+        for each in candidates:
+            x = each // self.h
+            y = each % self.h
+            self.img[x][y] = aux_matrix[x][y] + \
+                (noise_list.pop() * deviation + mean)
+
+    def contaminate_salt_pepper_noise(self, percentage, p0, p1):
+        max_v, min_v = self._get_max_min()
+        total = self.w * self.h
+        pixels = int((total * percentage) / 100)
+        candidates = random.sample(range(total), pixels)
+        for each in candidates:
+            ran = random.random()
+            x = each // self.h
+            y = each % self.h
+            if ran < p0:
+                self.img[x][y] = min_v
+            elif ran > p1:
+                self.img[x][y] = max_v
 
 
 class RGBImageAbstraction(ImageAbstraction):
@@ -218,4 +265,3 @@ class RGBImageAbstraction(ImageAbstraction):
 
     def is_bw(self):
         return False
-

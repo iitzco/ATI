@@ -1,5 +1,6 @@
 from PIL import Image
 from bitarray import bitarray
+from functools import partial
 
 from imgprocessor import ImageAbstraction, BWImageAbstraction, RGBImageAbstraction
 
@@ -220,3 +221,27 @@ class ImageManager:
             f(value)
         else:
             raise Exception('Unsupported operation')
+
+    def exponential_generator(num, param):
+        return -(1 / param) * math.log(num)
+
+    def rayleigh_generator(num, param):
+        return param * math.sqrt(-2 * math.log(1 - num))
+
+    def exponential_noise(self, param, percentage):
+        self.modified = True
+        self.image.contaminate_multiplicative_noise(
+            percentage, partial(ImageManager.exponential_generator, param=param))
+
+    def rayleigh_noise(self, param, percentage):
+        self.modified = True
+        self.image.contaminate_multiplicative_noise(
+            percentage, partial(ImageManager.rayleigh_generator, param=param))
+
+    def gauss_noise(self, mean, deviation, percentage):
+        self.modified = True
+        self.image.contaminate_gauss_noise(percentage, mean, deviation)
+
+    def salt_pepper_noise(self, p0, p1, percentage):
+        self.modified = True
+        self.image.contaminate_salt_pepper_noise(percentage, p0, p1)

@@ -199,8 +199,19 @@ class GUI(tk.Frame):
         plt.show()
 
     def enhance_contrast(self):
-        value1 = askinteger("Contrast Enhancement", "r1 value?", minvalue=0, maxvalue=255)
-        value2 = askinteger("Contrast Enhancement", "r2 value?", minvalue=0, maxvalue=255)
+        value1 = askinteger(
+            "Contrast Enhancement",
+            "r1 value?",
+            minvalue=0,
+            maxvalue=255)
+        value2 = askinteger(
+            "Contrast Enhancement",
+            "r2 value?",
+            minvalue=0,
+            maxvalue=255)
+
+        if not value1 or not value2:
+            return
 
         if value2 < value1:
             value1, value2 = value2, value1
@@ -211,6 +222,59 @@ class GUI(tk.Frame):
     def equalize(self):
         self.image_manager.equalize()
         self.studio.show_image()
+
+    def input_multiplicative_noise(self, t):
+        param = askfloat("{} Noise".format(t), "Parameter?")
+        percentage = askfloat(
+            "{} Noise".format(t),
+            "Percentage?",
+            minvalue=0,
+            maxvalue=100)
+        return (param, percentage)
+
+    def exponential_noise(self):
+        param, percentage = self.input_multiplicative_noise("Exponential")
+        if any([x is None for x in [param, percentage]]):
+            return
+        self.image_manager.exponential_noise(param, percentage)
+        self.studio.show_image()
+
+    def rayleigh_noise(self):
+        param, percentage = self.input_multiplicative_noise("Rayleigh")
+        if any([x is None for x in [param, percentage]]):
+            return
+        self.image_manager.rayleigh_noise(param, percentage)
+        self.studio.show_image()
+
+    def gauss_noise(self):
+        param1 = askfloat("Gauss Noise", "Mean?")
+        param2 = askfloat("Gauss Noise", "Deviation?")
+        percentage = askfloat(
+            "Gauss Noise",
+            "Percentage?",
+            minvalue=0,
+            maxvalue=100)
+        if any([x is None for x in [param1, param2, percentage]]):
+            return
+        self.image_manager.gauss_noise(param1, param2, percentage)
+        self.studio.show_image()
+
+    def salt_pepper_noise(self):
+        p0 = askfloat("S&P Noise", "P0?", minvalue=0, maxvalue=255)
+        p1 = askfloat("S&P Noise", "P1?", minvalue=0, maxvalue=255)
+        percentage = askfloat(
+            "Gauss Noise",
+            "Percentage?",
+            minvalue=0,
+            maxvalue=100)
+        if any([x is None for x in [p0, p1, percentage]]):
+            return
+        if p1 < p0:
+            p0, p1 = p1, p0
+
+        self.image_manager.salt_pepper_noise(p0, p1, percentage)
+        self.studio.show_image()
+
 
 if __name__ == "__main__":
     gui = GUI()
