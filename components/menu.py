@@ -1,5 +1,6 @@
 import tkinter as tk
 
+
 class Menu(tk.Frame):
 
     def __init__(self, gui):
@@ -39,9 +40,15 @@ class Menu(tk.Frame):
         self.button_add = tk.Button(
             self, text="Add image", command=self.gui.add_img, width=10)
         self.button_substract = tk.Button(
-            self, text="Substract image", command=self.gui.substract_img, width=10)
+            self,
+            text="Substract image",
+            command=self.gui.substract_img,
+            width=10)
         self.button_multiply = tk.Button(
-            self, text="Multiply image", command=self.gui.multiply_img, width=10)
+            self,
+            text="Multiply image",
+            command=self.gui.multiply_img,
+            width=10)
         self.button_revert = tk.Button(
             self, text="Negative", command=self.gui.negative, width=10)
         self.button_umbral = tk.Button(
@@ -58,7 +65,6 @@ class Menu(tk.Frame):
             self, text="Contrast Enhancement", command=self.gui.enhance_contrast, width=10)
         self.button_equalize = tk.Button(
             self, text="Equalize", command=self.gui.equalize, width=10)
-
 
     def discover(self):
         self.label.grid(pady=5)
@@ -117,4 +123,3 @@ class Menu(tk.Frame):
             self.gui.studio.zoom(
                 self.gui.studio.x_zoom,
                 self.gui.studio.y_zoom)
-

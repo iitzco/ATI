@@ -2,6 +2,7 @@ import tkinter as tk
 import tkinter.messagebox
 from PIL import ImageTk, Image
 
+
 class ImageWorkspace(tk.Frame):
 
     def __init__(self, gui, title):
@@ -182,5 +183,3 @@ class StudioImageWorkspace(ImageWorkspace):
             t = None
         return self.gui.image_manager.get_studio_selection(
             x_o, y_o, x_f, y_f, in_zoom, t)
-
-
