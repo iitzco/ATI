@@ -57,6 +57,7 @@ def multiply_matrix(matrixA, matrixB, w, c, h):
             ret[i][j] = aux
     return ret
 
+# TODO manage full canvas
 
 class ImageAbstraction:
 
@@ -70,12 +71,10 @@ class ImageAbstraction:
       #   |                    |
       #   | ------ - - - - - - |(w,h)
 
-    def __init__(self, img_list, img_mode, img_size, bw):
-        self.mode = img_mode
+    def __init__(self, img_list, img_size):
         self.w = img_size[0]
         self.h = img_size[1]
         self.img = ImageAbstraction._get_img_matrix(self.w, self.h, img_list)
-        self.bw = bw
 
     def _get_img_matrix(w, h, img_list):
         img = []
@@ -89,42 +88,30 @@ class ImageAbstraction:
         return (max_matrix(self.img), min_matrix(self.img))
 
     def get_image_list(self):
-        flat_list = []
-        if self.bw:
-            max_v, min_v = self._get_max_min()
-        for j in range(self.h):
-            for i in range(self.w):
-                if self.mode == 'RGB':
-                    flat_list.extend(list(self.img[i][j]))
-                else:
-                    flat_list.append(
-                        int(transform_to_std(min_v, max_v, self.img[i][j])))
-        return flat_list
+        pass
 
     def get_image_bytes(self):
         return bytes(self.get_image_list())
 
-    def get_image_bytes(self):
-        flat_list = []
-        if self.bw:
-            max_v, min_v = self._get_max_min()
-        for j in range(self.h):
-            for i in range(self.w):
-                if self.mode == 'RGB':
-                    flat_list.extend(list(self.img[i][j]))
-                else:
-                    flat_list.append(
-                        int(transform_to_std(min_v, max_v, self.img[i][j])))
-        return bytes(flat_list)
-
     def get_size_tuple(self):
         return (self.w, self.h)
 
+
+class BWImageAbstraction(ImageAbstraction):
+
+    def get_image_list(self):
+        flat_list = []
+        max_v, min_v = self._get_max_min()
+        for j in range(self.h):
+            for i in range(self.w):
+                flat_list.append(
+                    int(transform_to_std(min_v, max_v, self.img[i][j])))
+        return flat_list
+
     def update_pixel(self, x, y, color):
-        if self.bw:
-            max_v, min_v = self._get_max_min()
-            v = transform_from_std(min_v, max_v, color)
-            self.img[x][y] = v
+        max_v, min_v = self._get_max_min()
+        v = transform_from_std(min_v, max_v, color)
+        self.img[x][y] = v
 
     def add(self, image):
         if not self.get_size_tuple() == image.get_size_tuple():
@@ -143,11 +130,8 @@ class ImageAbstraction:
             self.img, image.img, self.w, self.h, image.h)
 
     def negative(self):
-        if self.bw:
-            max_v, min_v = self._get_max_min()
-            f = lambda x: max_v - x + min_v
-        else:
-            f = lambda x: tuple(255 - e for e in x)
+        max_v, min_v = self._get_max_min()
+        f = lambda x: max_v - x + min_v
         self.img = map_matrix(self.img, self.w, self.h, f)
 
     def umbral(self, value):
@@ -181,3 +165,41 @@ class ImageAbstraction:
         max_v, min_v = self._get_max_min()
         self.img = map_matrix(self.img, self.w, self.h, lambda x: (
             (255) / (math.log(256))) * math.log(1 + transform_to_std(min_v, max_v, x)))
+
+    def get_mode(self):
+        return 'L'
+    
+    def is_bw(self):
+        return True
+
+class RGBImageAbstraction(ImageAbstraction):
+
+    def get_image_list(self):
+        flat_list = []
+        for j in range(self.h):
+            for i in range(self.w):
+                flat_list.extend(list(self.img[i][j]))
+        return flat_list
+
+    def update_pixel(self, x, y, color):
+        raise Exception("Not implemented on RGB")
+
+    def add(self, image):
+        raise Exception("Not implemented on RGB")
+
+    def substract(self, image):
+        raise Exception("Not implemented on RGB")
+
+    def multiply(self, image):
+        raise Exception("Not implemented on RGB")
+
+    def negative(self):
+        f = lambda x: tuple(255 - e for e in x)
+        self.img = map_matrix(self.img, self.w, self.h, f)
+
+    def get_mode(self):
+        return 'RBG'
+
+    def is_bw(self):
+        return False
+

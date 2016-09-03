@@ -1,7 +1,7 @@
 from PIL import Image
 from bitarray import bitarray
 
-from imgprocessor import ImageAbstraction
+from imgprocessor import ImageAbstraction, BWImageAbstraction, RGBImageAbstraction
 
 import math
 import copy
@@ -59,15 +59,19 @@ class ImageManager:
         self.create_images(img_list, mode, img.size, bw)
 
     def create_images(self, img_list, mode, img_size, bw):
-        self.image = ImageAbstraction(img_list, mode, img_size, bw)
+        if mode == 'L':
+            self.image = BWImageAbstraction(img_list, img_size)
+        elif mode == 'RGB':
+            self.image = RGBImageAbstraction(img_list, img_size)
+
         self.backup = copy.deepcopy(self.image)
 
         self.cached_backup = Image.frombytes(
-            self.backup.mode,
+            self.backup.get_mode(),
             self.backup.get_size_tuple(),
             self.backup.get_image_bytes())
         self.cached_image = Image.frombytes(
-            self.image.mode,
+            self.image.get_mode(),
             self.image.get_size_tuple(),
             self.image.get_image_bytes())
         self.modified = False
@@ -81,7 +85,7 @@ class ImageManager:
     def get_image(self):
         if self.modified:
             self.cached_image = Image.frombytes(
-                self.image.mode,
+                self.image.get_mode(),
                 self.image.get_size_tuple(),
                 self.image.get_image_bytes())
             self.modified = False
@@ -109,7 +113,7 @@ class ImageManager:
     def _get_pixel_color(img_abstraction, x, y):
         # return in (r,g,b) format
         c = img_abstraction.img[x][y]
-        if img_abstraction.bw:
+        if img_abstraction.is_bw():
             return (c, c, c)
         return c
 
@@ -142,10 +146,10 @@ class ImageManager:
         return ((x0, y0), (xf, yf))
 
     def get_statistics(self, img):
-        if self.image.bw:
+        if self.image.is_bw():
             array = [e for e in img.getdata()]
             return (len(array), round(sum(array) / len(array), 2))
-        elif img.mode == 'RGB':
+        elif img.get_mode() == 'RGB':
             array = [item for sublist in img.getdata() for item in sublist]
             r, g, b = [], [], []
             for idx, elem in enumerate(array):
@@ -208,7 +212,7 @@ class ImageManager:
         self.image.enhance_contrast(r1, r2)
 
     def common_operators_on_bw(self, f, value):
-        if self.image.bw and self.image.mode == 'L':
+        if self.image.is_bw() and self.image.get_mode() == 'L':
             f(value)
         else:
             raise Exception('Unsupported operation')
