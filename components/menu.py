@@ -54,7 +54,8 @@ class Menu(tk.Frame):
             self, text="Range Compression", command=self.gui.compression, width=10)
         self.button_histogram = tk.Button(
             self, text="Histogram", command=self.gui.histogram, width=10)
-
+        self.button_contrast_enhancement = tk.Button(
+            self, text="Contrast Enhancement", command=self.gui.enhance_contrast, width=10)
 
 
     def discover(self):
@@ -71,6 +72,7 @@ class Menu(tk.Frame):
         self.button_product_operator.grid(pady=5)
         self.button_compression_operator.grid(pady=5)
         self.button_histogram.grid(pady=5)
+        self.button_contrast_enhancement.grid(pady=5)
         self.color_label.grid(pady=5)
         self.color_canvas.grid(pady=3)
         self.color_slider.grid(pady=5)

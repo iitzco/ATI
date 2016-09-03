@@ -159,6 +159,16 @@ class ImageAbstraction:
             self.h,
             lambda x: max_v if x > v else min_v)
 
+    def enhance_contrast(self, r1, r2):
+        max_v, min_v = self._get_max_min()
+        v1 = transform_from_std(min_v, max_v, r1)
+        v2 = transform_from_std(min_v, max_v, r2)
+        self.img = map_matrix(
+            self.img,
+            self.w,
+            self.h,
+            lambda x: 0.5*x if x < v1 else 2*x if x > v2 else x)
+
     def power(self, value):
         max_v, min_v = self._get_max_min()
         self.img = map_matrix(self.img, self.w, self.h, lambda x: (

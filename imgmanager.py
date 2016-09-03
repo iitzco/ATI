@@ -203,6 +203,10 @@ class ImageManager:
         self.modified = True
         self.image.compress()
 
+    def enhance_contrast(self, r1, r2):
+        self.modified = True
+        self.image.enhance_contrast(r1, r2)
+
     def common_operators_on_bw(self, f, value):
         if self.image.bw and self.image.mode == 'L':
             f(value)

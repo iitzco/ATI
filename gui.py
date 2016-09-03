@@ -198,6 +198,16 @@ class GUI(tk.Frame):
         plt.hist(values, bins=256)
         plt.show()
 
+    def enhance_contrast(self):
+        value1 = askinteger("Contrast Enhancement", "r1 value?", minvalue=0, maxvalue=255)
+        value2 = askinteger("Contrast Enhancement", "r2 value?", minvalue=0, maxvalue=255)
+
+        if value2 < value1:
+            value1, value2 = value2, value1
+
+        self.image_manager.enhance_contrast(value1, value2)
+        self.studio.show_image()
+
 if __name__ == "__main__":
     gui = GUI()
     if (len(sys.argv) > 1 and sys.argv[1]):
