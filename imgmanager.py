@@ -113,10 +113,7 @@ class ImageManager:
 
     def _get_pixel_color(img_abstraction, x, y):
         # return in (r,g,b) format
-        c = img_abstraction.img[x][y]
-        if img_abstraction.is_bw():
-            return (c, c, c)
-        return c
+        return img_abstraction.get_pixel_color(x, y)
 
     def update_img_pixel(self, x, y, color):
         self.image.update_pixel(x, y, color)

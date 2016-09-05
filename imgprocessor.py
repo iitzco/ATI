@@ -127,6 +127,11 @@ class BWImageAbstraction(ImageAbstraction):
         v = transform_from_std(min_v, max_v, color)
         self.img[x][y] = v
 
+    def get_pixel_color(self, x, y):
+        max_v, min_v = self._get_max_min()
+        c = int(transform_to_std(min_v, max_v, self.img[x][y]))
+        return (c, c, c)
+
     def add(self, image):
         if not self.get_size_tuple() == image.get_size_tuple():
             raise Exception("Not same size")
@@ -307,6 +312,10 @@ class RGBImageAbstraction(ImageAbstraction):
 
     def update_pixel(self, x, y, color):
         raise Exception("Not implemented on RGB")
+
+    def get_pixel_color(self, x, y):
+        c = self.img[x][y]
+        return c
 
     def add(self, image):
         raise Exception("Not implemented on RGB")
