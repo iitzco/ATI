@@ -247,16 +247,15 @@ class GUI(tk.Frame):
         self.studio.show_image()
 
     def gauss_noise(self):
-        param1 = askfloat("Gauss Noise", "Mean?")
-        param2 = askfloat("Gauss Noise", "Deviation?")
+        intensity = askfloat("Gauss Noise", "Intensity?")
         percentage = askfloat(
             "Gauss Noise",
             "Percentage?",
             minvalue=0,
             maxvalue=100)
-        if any([x is None for x in [param1, param2, percentage]]):
+        if any([x is None for x in [intensity, percentage]]):
             return
-        self.image_manager.gauss_noise(param1, param2, percentage)
+        self.image_manager.gauss_noise(intensity, percentage)
         self.studio.show_image()
 
     def salt_pepper_noise(self):
@@ -273,6 +272,31 @@ class GUI(tk.Frame):
             p0, p1 = p1, p0
 
         self.image_manager.salt_pepper_noise(p0, p1, percentage)
+        self.studio.show_image()
+
+    def _common_filter(self, f):
+        size = askinteger("Window", "Window Size?", minvalue=0)
+        if not size or not size % 2:
+            return
+
+        f(size)
+        self.studio.show_image()
+
+    def mean_filter(self):
+        self._common_filter(self.image_manager.mean_filter)
+
+    def median_filter(self):
+        self._common_filter(self.image_manager.median_filter)
+
+    def border_filter(self):
+        self._common_filter(self.image_manager.border_filter)
+
+    def gauss_filter(self):
+        size = askinteger("Gauss", "Window Size?", minvalue=0)
+        sigma = askinteger("Gauss", "Sigma?", minvalue=0)
+        if not sigma or not size or not size % 2:
+            return
+        self.image_manager.gauss_filter(size, sigma)
         self.studio.show_image()
 
 

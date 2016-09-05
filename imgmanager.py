@@ -238,10 +238,26 @@ class ImageManager:
         self.image.contaminate_multiplicative_noise(
             percentage, partial(ImageManager.rayleigh_generator, param=param))
 
-    def gauss_noise(self, mean, deviation, percentage):
+    def gauss_noise(self, intensity, percentage):
         self.modified = True
-        self.image.contaminate_gauss_noise(percentage, mean, deviation)
+        self.image.contaminate_gauss_noise(percentage, intensity)
 
     def salt_pepper_noise(self, p0, p1, percentage):
         self.modified = True
         self.image.contaminate_salt_pepper_noise(percentage, p0, p1)
+
+    def mean_filter(self, size):
+        self.modified = True
+        self.image.mean_filter(size)
+
+    def median_filter(self, size):
+        self.modified = True
+        self.image.median_filter(size)
+
+    def gauss_filter(self, size, sigma):
+        self.modified = True
+        self.image.gauss_filter(size, sigma)
+
+    def border_filter(self, size):
+        self.modified = True
+        self.image.border_filter(size)

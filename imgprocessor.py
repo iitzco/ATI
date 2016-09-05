@@ -1,6 +1,7 @@
 import math
 import random
 from collections import Counter
+from statistics import median
 
 
 def max_matrix(matrix):
@@ -58,6 +59,10 @@ def multiply_matrix(matrixA, matrixB, w, c, h):
                 aux += matrixA[i][x] * matrixB[x][j]
             ret[i][j] = aux
     return ret
+
+
+def flat_matrix(matrix):
+    return [item for sublist in matrix for item in sublist]
 
 # TODO manage full canvas
 
@@ -200,7 +205,7 @@ class BWImageAbstraction(ImageAbstraction):
             y = each % self.h
             self.img[x][y] = self.img[x][y] * noise
 
-    def contaminate_gauss_noise(self, percentage, mean, deviation):
+    def contaminate_gauss_noise(self, percentage, intensity):
         normalized_img = self.get_image_list()
         aux_matrix = ImageAbstraction._get_img_matrix(
             self.w, self.h, normalized_img)
@@ -218,7 +223,7 @@ class BWImageAbstraction(ImageAbstraction):
             x = each // self.h
             y = each % self.h
             self.img[x][y] = aux_matrix[x][y] + \
-                (noise_list.pop() * deviation + mean)
+                (noise_list.pop() * intensity)
 
     def contaminate_salt_pepper_noise(self, percentage, p0, p1):
         max_v, min_v = self._get_max_min()
@@ -233,6 +238,62 @@ class BWImageAbstraction(ImageAbstraction):
                 self.img[x][y] = min_v
             elif ran > p1:
                 self.img[x][y] = max_v
+
+    def _get_sorrounding(self, x, y, size):
+        half = size // 2
+        r = range(-(half), half + 1)
+        m = [[0 for i in range(size)] for j in range(size)]
+        for delta_y in list(r):
+            for delta_x in list(r):
+                i = x + delta_x
+                j = y + delta_y
+                i = 0 if i < 0 else (self.w - 1 if i > self.w - 1 else i)
+                j = 0 if j < 0 else (self.h - 1 if j > self.h - 1 else j)
+                m[delta_x + half][delta_y + half] = self.img[i][j]
+        return m
+
+    def _common_filter(self, size, f):
+        aux_matrix = [[0 for i in range(self.h)] for j in range(self.w)]
+        for i in range(self.w):
+            for j in range(self.h):
+                m = self._get_sorrounding(i, j, size)
+                aux_matrix[i][j] = f(m)
+        return aux_matrix
+
+    def mean_filter(self, size):
+        def f(m):
+            l = flat_matrix(m)
+            return sum(l) / len(l)
+        self.img = self._common_filter(size, f)
+
+    def median_filter(self, size):
+        def f(m):
+            l = flat_matrix(m)
+            return median(l)
+        self.img = self._common_filter(size, f)
+
+    def gauss_filter(self, size, sigma):
+        def f(m):
+            aux = 0
+            for i in range(size):
+                for j in range(size):
+                    coe = (1 / (2 * math.pi * math.pow(sigma, 2))) * math.pow(math.e, - \
+                           (math.pow(i, 2) + math.pow(j, 2)) / math.pow(sigma, 2))
+                    aux += coe * m[i][j]
+            return aux
+        self.img = self._common_filter(size, f)
+
+    def border_filter(self, size):
+        def f(m):
+            coe = 1 / (size**2)
+            half = size // 2
+            aux = coe * m[half][half] * ((size**2) - 1)
+            for i in range(size):
+                for j in range(size):
+                    if not i == half or not j == half:
+                        aux -= coe * m[i][j]
+            return aux
+        self.img = self._common_filter(size, f)
 
 
 class RGBImageAbstraction(ImageAbstraction):
