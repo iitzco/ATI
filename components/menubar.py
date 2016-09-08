@@ -12,6 +12,8 @@ class MenuBar(tk.Menu):
         self.add_cascade(label="Load", menu=LoadMenuBar(self))
         self.add_cascade(label="Noise", menu=NoiseMenuBar(self))
         self.add_cascade(label="Filtering", menu=FilteringMenuBar(self))
+        self.add_cascade(label="Operations", menu=OperationsMenuBar(self))
+        self.add_cascade(label="Stats", menu=StatsMenuBar(self))
 
 
 class LoadMenuBar(tk.Menu):
@@ -59,3 +61,36 @@ class FilteringMenuBar(tk.Menu):
         self.add_command(
             label="Border Filter",
             command=parent.gui.border_filter)
+
+
+class OperationsMenuBar(tk.Menu):
+
+    def __init__(self, parent):
+        tk.Menu.__init__(self, parent)
+        self.add_command(
+            label="Negative",
+            command=parent.gui.negative)
+        self.add_command(
+            label="Umbralize",
+            command=parent.gui.umbral)
+        self.add_command(label="Power", command=parent.gui.power)
+        self.add_command(label="Product", command=parent.gui.product)
+        self.add_command(label="Range Compression", command=parent.gui.compression)
+        self.add_command(label="Contrast Enhancement", command=parent.gui.enhance_contrast)
+        self.add_command(label="Equalize", command=parent.gui.equalize)
+        self.add_separator()
+        self.add_command(
+            label="Add Image",
+            command=parent.gui.add_img)
+        self.add_command(
+            label="Substract image",
+            command=parent.gui.substract_img)
+        self.add_command(label="Multiply Image", command=parent.gui.multiply_img)
+
+class StatsMenuBar(tk.Menu):
+
+    def __init__(self, parent):
+        tk.Menu.__init__(self, parent)
+        self.add_command(
+            label="Histogram",
+            command=parent.gui.histogram)
