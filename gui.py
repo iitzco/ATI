@@ -104,6 +104,14 @@ class GUI(tk.Frame):
         if fname:
             self.image_manager.get_image().save(fname)
 
+    def undo(self):
+        try:
+            self.image_manager.undo()
+        except Exception:
+                tkinter.messagebox.showinfo(
+                    'Alert', 'Already at latest change')
+        self.studio.show_image()
+
     def to_bw(self):
         self.image_manager.to_bw()
         self.studio.show_image()

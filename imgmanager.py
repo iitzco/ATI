@@ -66,6 +66,7 @@ class ImageManager:
             self.image = RGBImageAbstraction(img_list, img_size)
 
         self.backup = copy.deepcopy(self.image)
+        self.undo_list = []
 
         self.cached_backup = Image.frombytes(
             self.backup.get_mode(),
@@ -117,7 +118,7 @@ class ImageManager:
 
     def update_img_pixel(self, x, y, color):
         self.image.update_pixel(x, y, color)
-        self.modified = True
+        self.modify()
 
     def get_outbound_pixel(self, center_x, center_y, x, y, w, h):
         original_x = int(x / (w / (ZOOM_INTENSITY * 2)))
@@ -173,48 +174,59 @@ class ImageManager:
     def get_histogram_values(self):
         return self.image.get_image_list()
 
+    def modify(self):
+        self.modified=True
+        self.undo_list.append(copy.deepcopy(self.image))
+
     def to_bw(self):
-        self.modified = True
+        self.modify()
         self.image = self.image.get_bw_img()
 
     def add_img(self, aux_image_manager):
-        self.modified = True
+        self.modify()
         self.image.add(aux_image_manager.image)
 
-    def substract_img(self, aux_image_manager):
+    def undo(self):
+        if not self.undo_list:
+            raise Exception()
+        self.image = self.undo_list.pop()
         self.modified = True
+
+    def substract_img(self, aux_image_manager):
+        self.modify()
         self.image.substract(aux_image_manager.image)
 
     def multiply_img(self, aux_image_manager):
-        self.modified = True
+        self.modify()
         self.image.multiply(aux_image_manager.image)
 
     def negative(self):
-        self.modified = True
+        self.modify()
+        self.undo_list.append(copy.deepcopy(self.image))
         self.image.negative()
 
     def umbral(self, value):
-        self.modified = True
+        self.modify()
         self.common_operators_on_bw(self.image.umbral, value)
 
     def power(self, value):
-        self.modified = True
+        self.modify()
         self.common_operators_on_bw(self.image.power, value)
 
     def product(self, value):
-        self.modified = True
+        self.modify()
         self.common_operators_on_bw(self.image.product, value)
 
     def compression(self):
-        self.modified = True
+        self.modify()
         self.image.compress()
 
     def enhance_contrast(self, r1, r2):
-        self.modified = True
+        self.modify()
         self.image.enhance_contrast(r1, r2)
 
     def equalize(self):
-        self.modified = True
+        self.modify()
         self.image.equalize()
 
     def common_operators_on_bw(self, f, value):
@@ -230,35 +242,35 @@ class ImageManager:
         return param * math.sqrt(-2 * math.log(1 - num))
 
     def exponential_noise(self, param, percentage):
-        self.modified = True
+        self.modify()
         self.image.contaminate_multiplicative_noise(
             percentage, partial(ImageManager.exponential_generator, param=param))
 
     def rayleigh_noise(self, param, percentage):
-        self.modified = True
+        self.modify()
         self.image.contaminate_multiplicative_noise(
             percentage, partial(ImageManager.rayleigh_generator, param=param))
 
     def gauss_noise(self, intensity, percentage):
-        self.modified = True
+        self.modify()
         self.image.contaminate_gauss_noise(percentage, intensity)
 
     def salt_pepper_noise(self, p0, p1, percentage):
-        self.modified = True
+        self.modify()
         self.image.contaminate_salt_pepper_noise(percentage, p0, p1)
 
     def mean_filter(self, size):
-        self.modified = True
+        self.modify()
         self.image.mean_filter(size)
 
     def median_filter(self, size):
-        self.modified = True
+        self.modify()
         self.image.median_filter(size)
 
     def gauss_filter(self, size, sigma):
-        self.modified = True
+        self.modify()
         self.image.gauss_filter(size, sigma)
 
     def border_filter(self, size):
-        self.modified = True
+        self.modify()
         self.image.border_filter(size)
