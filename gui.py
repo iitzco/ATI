@@ -104,6 +104,10 @@ class GUI(tk.Frame):
         if fname:
             self.image_manager.get_image().save(fname)
 
+    def to_bw(self):
+        self.image_manager.to_bw()
+        self.studio.show_image()
+
     def get_auxiliar_img_manager(self):
         fname = askopenfilename()
         if fname:
@@ -292,8 +296,8 @@ class GUI(tk.Frame):
         self._common_filter(self.image_manager.border_filter)
 
     def gauss_filter(self):
-        size = askinteger("Gauss", "Window Size?", minvalue=0)
         sigma = askinteger("Gauss", "Sigma?", minvalue=0)
+        size = askinteger("Gauss", "Window Size? Suggested {} (2*sigma + 1)".format(2*sigma+1), minvalue=0)
         if not sigma or not size or not size % 2:
             return
         self.image_manager.gauss_filter(size, sigma)

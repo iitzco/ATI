@@ -64,6 +64,14 @@ def multiply_matrix(matrixA, matrixB, w, c, h):
 def flat_matrix(matrix):
     return [item for sublist in matrix for item in sublist]
 
+def flat_img_matrix(matrix, w, h):
+    flat_list = []
+    for j in range(h):
+        for i in range(w):
+            flat_list.append(
+                int(matrix[i][j]))
+    return flat_list
+
 # TODO manage full canvas
 
 
@@ -131,6 +139,9 @@ class BWImageAbstraction(ImageAbstraction):
         max_v, min_v = self._get_max_min()
         c = int(transform_to_std(min_v, max_v, self.img[x][y]))
         return (c, c, c)
+
+    def get_bw_img(self):
+        return self
 
     def add(self, image):
         if not self.get_size_tuple() == image.get_size_tuple():
@@ -332,6 +343,11 @@ class RGBImageAbstraction(ImageAbstraction):
 
     def get_mode(self):
         return 'RGB'
+
+    def get_bw_img(self):
+        f = lambda x: int(sum(x)/3)
+        aux_img = map_matrix(self.img, self.w, self.h, f)
+        return BWImageAbstraction(flat_img_matrix(aux_img, self.w, self.h), self.get_size_tuple())
 
     def is_bw(self):
         return False

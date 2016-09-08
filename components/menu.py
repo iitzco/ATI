@@ -9,7 +9,7 @@ class Menu(tk.Frame):
         self.add_components()
 
     def add_components(self):
-        self.label = tk.Label(self, text="Menu")
+        self.main_label = tk.Label(self, text="Menu")
         self.button_save = tk.Button(
             self, text="Save", command=self.gui.save_file, width=10)
         self.color_label = tk.Label(self)
@@ -35,7 +35,7 @@ class Menu(tk.Frame):
         self.color_slider.config(command=self.update_color)
 
     def discover(self):
-        self.label.grid(pady=5)
+        self.main_label.grid(pady=5)
         self.button_save.grid(pady=5)
         self.button_zoom.grid(pady=5)
         self.button_mirror.grid(pady=5)

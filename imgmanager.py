@@ -173,6 +173,10 @@ class ImageManager:
     def get_histogram_values(self):
         return self.image.get_image_list()
 
+    def to_bw(self):
+        self.modified = True
+        self.image = self.image.get_bw_img()
+
     def add_img(self, aux_image_manager):
         self.modified = True
         self.image.add(aux_image_manager.image)

@@ -14,6 +14,7 @@ class MenuBar(tk.Menu):
         self.add_cascade(label="Filtering", menu=FilteringMenuBar(self))
         self.add_cascade(label="Operations", menu=OperationsMenuBar(self))
         self.add_cascade(label="Stats", menu=StatsMenuBar(self))
+        self.add_cascade(label="Utils", menu=UtilsMenuBar(self))
 
 
 class LoadMenuBar(tk.Menu):
@@ -94,3 +95,11 @@ class StatsMenuBar(tk.Menu):
         self.add_command(
             label="Histogram",
             command=parent.gui.histogram)
+
+class UtilsMenuBar(tk.Menu):
+
+    def __init__(self, parent):
+        tk.Menu.__init__(self, parent)
+        self.add_command(
+            label="To B&W",
+            command=parent.gui.to_bw)
