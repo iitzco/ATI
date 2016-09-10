@@ -362,6 +362,11 @@ class BWImageAbstraction(ImageAbstraction):
     def sobel_method(self):
         self._common_border_method(self._get_sobel_matrix_x(), self._get_sobel_matrix_y())
 
+    def sobel_x_to_img(self):
+        self.img = self._get_sobel_matrix_x()
+
+    def sobel_y_to_img(self):
+        self.img = self._get_sobel_matrix_y()
 
 class RGBImageAbstraction(ImageAbstraction):
 

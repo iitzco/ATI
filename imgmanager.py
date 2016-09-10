@@ -282,3 +282,11 @@ class ImageManager:
     def sobel_method(self):
         self.modify()
         self.image.sobel_method()
+
+    def sobel_x_img(self):
+        self.modify()
+        self.image.sobel_x_to_img()
+
+    def sobel_y_img(self):
+        self.modify()
+        self.image.sobel_y_img()

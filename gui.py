@@ -319,6 +319,14 @@ class GUI(tk.Frame):
         self.image_manager.sobel_method()
         self.studio.show_image()
 
+    def sobel_x_img(self):
+        self.image_manager.sobel_x_img()
+        self.studio.show_image()
+
+    def sobel_y_img(self):
+        self.image_manager.sobel_y_img()
+        self.studio.show_image()
+
 
 if __name__ == "__main__":
     gui = GUI()

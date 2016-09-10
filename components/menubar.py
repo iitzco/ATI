@@ -104,6 +104,12 @@ class UtilsMenuBar(tk.Menu):
         self.add_command(
             label="To B&W",
             command=parent.gui.to_bw)
+        self.add_command(
+            label="Sobel X",
+            command=parent.gui.sobel_x_img)
+        self.add_command(
+            label="Sobel Y",
+            command=parent.gui.sobel_y_img)
 
 class BorderMenuBar(tk.Menu):
 
