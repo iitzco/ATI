@@ -274,3 +274,11 @@ class ImageManager:
     def border_filter(self, size):
         self.modify()
         self.image.border_filter(size)
+
+    def prewitt_method(self):
+        self.modify()
+        self.image.prewitt_method()
+
+    def sobel_method(self):
+        self.modify()
+        self.image.sobel_method()

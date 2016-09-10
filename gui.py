@@ -311,6 +311,14 @@ class GUI(tk.Frame):
         self.image_manager.gauss_filter(size, sigma)
         self.studio.show_image()
 
+    def prewitt_method(self):
+        self.image_manager.prewitt_method()
+        self.studio.show_image()
+
+    def sobel_method(self):
+        self.image_manager.sobel_method()
+        self.studio.show_image()
+
 
 if __name__ == "__main__":
     gui = GUI()

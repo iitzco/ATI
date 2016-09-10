@@ -15,6 +15,7 @@ class MenuBar(tk.Menu):
         self.add_cascade(label="Operations", menu=OperationsMenuBar(self))
         self.add_cascade(label="Stats", menu=StatsMenuBar(self))
         self.add_cascade(label="Utils", menu=UtilsMenuBar(self))
+        self.add_cascade(label="Borders", menu=BorderMenuBar(self))
 
 
 class LoadMenuBar(tk.Menu):
@@ -103,3 +104,14 @@ class UtilsMenuBar(tk.Menu):
         self.add_command(
             label="To B&W",
             command=parent.gui.to_bw)
+
+class BorderMenuBar(tk.Menu):
+
+    def __init__(self, parent):
+        tk.Menu.__init__(self, parent)
+        self.add_command(
+            label="Prewitt Method",
+            command=parent.gui.prewitt_method)
+        self.add_command(
+            label="Sobel Method",
+            command=parent.gui.sobel_method)

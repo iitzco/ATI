@@ -311,6 +311,57 @@ class BWImageAbstraction(ImageAbstraction):
             return aux
         self.img = self._common_filter(size, f)
 
+    def _get_prewitt_matrix_x(self):
+        def f(m):
+            aux = 0
+            for j in range(3):
+                aux -= m[j][0]
+            for j in range(3):
+                aux+= m[j][2]
+            return aux
+        return self._common_filter(3, f)
+
+    def _get_prewitt_matrix_y(self):
+        def f(m):
+            aux = 0
+            for j in range(3):
+                aux -= m[0][j]
+            for j in range(3):
+                aux+= m[2][j]
+            return aux
+        return self._common_filter(3, f)
+
+    def _get_sobel_matrix_x(self):
+        def f(m):
+            aux = 0
+            for j in range(3):
+                aux -= m[j][0] * ( 2 if j == 1 else 1 )
+            for j in range(3):
+                aux += m[j][2] * ( 2 if j == 1 else 1 )
+            return aux
+        return self._common_filter(3, f)
+
+    def _get_sobel_matrix_y(self):
+        def f(m):
+            aux = 0
+            for j in range(3):
+                aux -= m[0][j] * ( 2 if j == 1 else 1 )
+            for j in range(3):
+                aux += m[2][j] * ( 2 if j == 1 else 1 )
+            return aux
+        return self._common_filter(3, f)
+
+    def _common_border_method(self, matrix_x, matrix_y):
+        for i in range(self.w):
+            for j in range(self.h):
+                self.img[i][j] = math.sqrt(matrix_x[i][j]**2 + matrix_y[i][j]**2)
+
+    def prewitt_method(self):
+        self._common_border_method(self._get_prewitt_matrix_x(), self._get_prewitt_matrix_y())
+
+    def sobel_method(self):
+        self._common_border_method(self._get_sobel_matrix_x(), self._get_sobel_matrix_y())
+
 
 class RGBImageAbstraction(ImageAbstraction):
 
