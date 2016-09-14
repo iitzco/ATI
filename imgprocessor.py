@@ -142,6 +142,18 @@ class ImageAbstraction:
                 aux_matrix[i][j] = f(m)
         return aux_matrix
 
+    def equalize_band(normalized_img_list):
+        c = Counter(normalized_img_list)
+        total = len(normalized_img_list)
+        s_list = [0] * 256
+        s_list[255] = total
+        for i in range(1, 256):
+            s_list[255 - i] = s_list[256 - i] - c[256 - i]
+        s_list = [each / total for each in s_list]
+        min_value = min(s_list)
+        return list(map(lambda x: (int(
+            ((s_list[x] - min_value) / (1 - min_value)) * 255 + 0.5)), normalized_img_list))
+
     def prewitt_method(self):
         self._common_border_method(
             self._get_prewitt_matrix_x(),
@@ -243,19 +255,10 @@ class BWImageAbstraction(ImageAbstraction):
             (255) / (math.log(256))) * math.log(1 + transform_to_std(min_v, max_v, x)))
 
     def equalize(self):
-        normalized_img = self.get_image_list()
-        aux_matrix = ImageAbstraction._get_img_matrix(
-            self.w, self.h, normalized_img)
-        c = Counter(normalized_img)
-        total = self.w * self.h
-        s_list = [0] * 256
-        s_list[255] = total
-        for i in range(1, 256):
-            s_list[255 - i] = s_list[256 - i] - c[256 - i]
-        s_list = [each / total for each in s_list]
-        min_value = min(s_list)
-        self.img = map_matrix(aux_matrix, self.w, self.h, lambda x: (
-            int(((s_list[x] - min_value) / (1 - min_value)) * 255 + 0.5)))
+        normalized_img_list = self.get_image_list()
+        equalized_list = ImageAbstraction.equalize_band(normalized_img_list)
+        self.img = ImageAbstraction._get_img_matrix(
+            self.w, self.h, equalized_list)
 
     def contaminate_multiplicative_noise(self, percentage, generator):
         total = self.w * self.h
@@ -389,7 +392,7 @@ class RGBImageAbstraction(ImageAbstraction):
         flat_list = []
         max_min_bands = []
         for i in range(3):
-            max_min_bands.append(self._get_max_min_all_band(i))
+            max_min_bands.append(self._get_max_min_in_band(i))
         for j in range(self.h):
             for i in range(self.w):
                 for x in range(3):
@@ -397,7 +400,7 @@ class RGBImageAbstraction(ImageAbstraction):
                         1], max_min_bands[x][0], self.img[i][j][x])))
         return flat_list
 
-    def _get_max_min_all_band(self, band):
+    def _get_max_min_in_band(self, band):
         return (
             max_matrix_band(
                 self.img, band), min_matrix_band(
@@ -420,7 +423,15 @@ class RGBImageAbstraction(ImageAbstraction):
         raise Exception("Not implemented on RGB")
 
     def negative(self):
-        f = lambda x: tuple(255 - e for e in x)
+        max_min_bands = []
+        for i in range(3):
+            max_min_bands.append(self._get_max_min_in_band(i))
+
+        def f(t):
+            l = []
+            for i, e in enumerate(t):
+                l.append(max_min_bands[i % 3][0] - e + max_min_bands[i % 3][1])
+            return tuple(l)
         self.img = map_matrix(self.img, self.w, self.h, f)
 
     def get_mode(self):
@@ -438,6 +449,33 @@ class RGBImageAbstraction(ImageAbstraction):
 
     def is_bw(self):
         return False
+
+    def get_bands(self):
+        img_list = self.get_image_list()
+        img_r, img_g, img_b = [], [], []
+        for i, e in enumerate(img_list):
+            if (i % 3 == 0):
+                img_r.append(e)
+            elif (i % 3 == 1):
+                img_g.append(e)
+            else:
+                img_b.append(e)
+        return (img_r, img_g, img_b)
+
+    def combine_bands_list(r, g, b):
+        ret = []
+        for i in range(len(r)):
+            ret.append((r[i], g[i], b[i]))
+        return ret
+
+    def equalize(self):
+        img_list = self.get_image_list()
+        bands = self.get_bands()
+        eq_list_r, eq_list_g, eq_list_b = map(
+            ImageAbstraction.equalize_band, bands)
+        self.img = ImageAbstraction._get_img_matrix(
+            self.w, self.h, RGBImageAbstraction.combine_bands_list(
+                eq_list_r, eq_list_g, eq_list_b))
 
     def _get_prewitt_matrix_x(self):
         def f(m):

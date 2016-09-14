@@ -209,8 +209,19 @@ class GUI(tk.Frame):
         values = self.image_manager.get_histogram_values()
 
         plt.figure()
-        plt.xlim(0, 255)
-        plt.hist(values, bins=256)
+        if self.image_manager.image.is_bw():
+            plt.xlim(0, 255)
+            plt.hist(values, bins=256)
+        else:
+            plt.subplot(311)
+            plt.hist([e for i, e in enumerate(values) if i %
+                      3 == 0], bins=256, facecolor='red')
+            plt.subplot(312)
+            plt.hist([e for i, e in enumerate(values) if i %
+                      3 == 1], bins=256, facecolor='green')
+            plt.subplot(313)
+            plt.hist([e for i, e in enumerate(values) if i %
+                      3 == 2], bins=256, facecolor='blue')
         plt.show()
 
     def enhance_contrast(self):
