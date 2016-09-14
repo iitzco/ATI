@@ -117,9 +117,10 @@ class ImageWorkspace(tk.Frame):
         self.color_common_event(x, y)
 
     def color_common_event(self, x, y):
-        self.gui.menu.x_pixel = x
-        self.gui.menu.y_pixel = y
-        self.gui.menu.show_color(self.get_pixel_color(x, y))
+        if self.gui.has_img():
+            self.gui.menu.x_pixel = x
+            self.gui.menu.y_pixel = y
+            self.gui.menu.show_color(self.get_pixel_color(x, y))
 
     def zoom(self, x, y):
         pass

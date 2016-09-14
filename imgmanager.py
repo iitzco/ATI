@@ -78,6 +78,9 @@ class ImageManager:
             self.image.get_image_bytes())
         self.modified = False
 
+    def has_img(self):
+        return not self.image is None
+
     def save_image(self, fname):
         self.get_image().save(fname)
 
@@ -175,7 +178,7 @@ class ImageManager:
         return self.image.get_image_list()
 
     def modify(self):
-        self.modified=True
+        self.modified = True
         self.undo_list.append(copy.deepcopy(self.image))
 
     def to_bw(self):

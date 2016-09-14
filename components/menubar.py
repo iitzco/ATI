@@ -77,8 +77,12 @@ class OperationsMenuBar(tk.Menu):
             command=parent.gui.umbral)
         self.add_command(label="Power", command=parent.gui.power)
         self.add_command(label="Product", command=parent.gui.product)
-        self.add_command(label="Range Compression", command=parent.gui.compression)
-        self.add_command(label="Contrast Enhancement", command=parent.gui.enhance_contrast)
+        self.add_command(
+            label="Range Compression",
+            command=parent.gui.compression)
+        self.add_command(
+            label="Contrast Enhancement",
+            command=parent.gui.enhance_contrast)
         self.add_command(label="Equalize", command=parent.gui.equalize)
         self.add_separator()
         self.add_command(
@@ -87,7 +91,10 @@ class OperationsMenuBar(tk.Menu):
         self.add_command(
             label="Substract image",
             command=parent.gui.substract_img)
-        self.add_command(label="Multiply Image", command=parent.gui.multiply_img)
+        self.add_command(
+            label="Multiply Image",
+            command=parent.gui.multiply_img)
+
 
 class StatsMenuBar(tk.Menu):
 
@@ -96,6 +103,7 @@ class StatsMenuBar(tk.Menu):
         self.add_command(
             label="Histogram",
             command=parent.gui.histogram)
+
 
 class UtilsMenuBar(tk.Menu):
 
@@ -110,6 +118,7 @@ class UtilsMenuBar(tk.Menu):
         self.add_command(
             label="Sobel Y",
             command=parent.gui.sobel_y_img)
+
 
 class BorderMenuBar(tk.Menu):
 

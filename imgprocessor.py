@@ -12,6 +12,14 @@ def min_matrix(matrix):
     return min([min(each) for each in matrix])
 
 
+def max_matrix_band(matrix, band):
+    return max(max([each[band] for each in e]) for e in matrix)
+
+
+def min_matrix_band(matrix, band):
+    return min(min([each[band] for each in e]) for e in matrix)
+
+
 def generic_transformation(min_from, max_from, min_to, max_to, v):
     return ((max_to - min_to) / (max_from - min_from)) * \
         (v - max_from) + max_to
@@ -64,6 +72,7 @@ def multiply_matrix(matrixA, matrixB, w, c, h):
 def flat_matrix(matrix):
     return [item for sublist in matrix for item in sublist]
 
+
 def flat_img_matrix(matrix, w, h):
     flat_list = []
     for j in range(h):
@@ -111,6 +120,43 @@ class ImageAbstraction:
 
     def get_size_tuple(self):
         return (self.w, self.h)
+
+    def _get_sorrounding(self, x, y, size):
+        half = size // 2
+        r = range(-(half), half + 1)
+        m = [[0 for i in range(size)] for j in range(size)]
+        for delta_y in list(r):
+            for delta_x in list(r):
+                i = x + delta_x
+                j = y + delta_y
+                i = 0 if i < 0 else (self.w - 1 if i > self.w - 1 else i)
+                j = 0 if j < 0 else (self.h - 1 if j > self.h - 1 else j)
+                m[delta_x + half][delta_y + half] = self.img[i][j]
+        return m
+
+    def _common_filter(self, size, f):
+        aux_matrix = [[0 for i in range(self.h)] for j in range(self.w)]
+        for i in range(self.w):
+            for j in range(self.h):
+                m = self._get_sorrounding(i, j, size)
+                aux_matrix[i][j] = f(m)
+        return aux_matrix
+
+    def prewitt_method(self):
+        self._common_border_method(
+            self._get_prewitt_matrix_x(),
+            self._get_prewitt_matrix_y())
+
+    def sobel_method(self):
+        self._common_border_method(
+            self._get_sobel_matrix_x(),
+            self._get_sobel_matrix_y())
+
+    def sobel_x_to_img(self):
+        self.img = self._get_sobel_matrix_x()
+
+    def sobel_y_to_img(self):
+        self.img = self._get_sobel_matrix_y()
 
 
 class BWImageAbstraction(ImageAbstraction):
@@ -255,27 +301,6 @@ class BWImageAbstraction(ImageAbstraction):
             elif ran > p1:
                 self.img[x][y] = max_v
 
-    def _get_sorrounding(self, x, y, size):
-        half = size // 2
-        r = range(-(half), half + 1)
-        m = [[0 for i in range(size)] for j in range(size)]
-        for delta_y in list(r):
-            for delta_x in list(r):
-                i = x + delta_x
-                j = y + delta_y
-                i = 0 if i < 0 else (self.w - 1 if i > self.w - 1 else i)
-                j = 0 if j < 0 else (self.h - 1 if j > self.h - 1 else j)
-                m[delta_x + half][delta_y + half] = self.img[i][j]
-        return m
-
-    def _common_filter(self, size, f):
-        aux_matrix = [[0 for i in range(self.h)] for j in range(self.w)]
-        for i in range(self.w):
-            for j in range(self.h):
-                m = self._get_sorrounding(i, j, size)
-                aux_matrix[i][j] = f(m)
-        return aux_matrix
-
     def mean_filter(self, size):
         def f(m):
             l = flat_matrix(m)
@@ -317,7 +342,7 @@ class BWImageAbstraction(ImageAbstraction):
             for j in range(3):
                 aux -= m[j][0]
             for j in range(3):
-                aux+= m[j][2]
+                aux += m[j][2]
             return aux
         return self._common_filter(3, f)
 
@@ -327,7 +352,7 @@ class BWImageAbstraction(ImageAbstraction):
             for j in range(3):
                 aux -= m[0][j]
             for j in range(3):
-                aux+= m[2][j]
+                aux += m[2][j]
             return aux
         return self._common_filter(3, f)
 
@@ -335,9 +360,9 @@ class BWImageAbstraction(ImageAbstraction):
         def f(m):
             aux = 0
             for j in range(3):
-                aux -= m[j][0] * ( 2 if j == 1 else 1 )
+                aux -= m[j][0] * (2 if j == 1 else 1)
             for j in range(3):
-                aux += m[j][2] * ( 2 if j == 1 else 1 )
+                aux += m[j][2] * (2 if j == 1 else 1)
             return aux
         return self._common_filter(3, f)
 
@@ -345,37 +370,38 @@ class BWImageAbstraction(ImageAbstraction):
         def f(m):
             aux = 0
             for j in range(3):
-                aux -= m[0][j] * ( 2 if j == 1 else 1 )
+                aux -= m[0][j] * (2 if j == 1 else 1)
             for j in range(3):
-                aux += m[2][j] * ( 2 if j == 1 else 1 )
+                aux += m[2][j] * (2 if j == 1 else 1)
             return aux
         return self._common_filter(3, f)
 
     def _common_border_method(self, matrix_x, matrix_y):
         for i in range(self.w):
             for j in range(self.h):
-                self.img[i][j] = math.sqrt(matrix_x[i][j]**2 + matrix_y[i][j]**2)
+                self.img[i][j] = math.sqrt(
+                    matrix_x[i][j]**2 + matrix_y[i][j]**2)
 
-    def prewitt_method(self):
-        self._common_border_method(self._get_prewitt_matrix_x(), self._get_prewitt_matrix_y())
-
-    def sobel_method(self):
-        self._common_border_method(self._get_sobel_matrix_x(), self._get_sobel_matrix_y())
-
-    def sobel_x_to_img(self):
-        self.img = self._get_sobel_matrix_x()
-
-    def sobel_y_to_img(self):
-        self.img = self._get_sobel_matrix_y()
 
 class RGBImageAbstraction(ImageAbstraction):
 
     def get_image_list(self):
         flat_list = []
+        max_min_bands = []
+        for i in range(3):
+            max_min_bands.append(self._get_max_min_all_band(i))
         for j in range(self.h):
             for i in range(self.w):
-                flat_list.extend(list(self.img[i][j]))
+                for x in range(3):
+                    flat_list.append(int(transform_to_std(max_min_bands[x][
+                        1], max_min_bands[x][0], self.img[i][j][x])))
         return flat_list
+
+    def _get_max_min_all_band(self, band):
+        return (
+            max_matrix_band(
+                self.img, band), min_matrix_band(
+                self.img, band))
 
     def update_pixel(self, x, y, color):
         raise Exception("Not implemented on RGB")
@@ -401,9 +427,67 @@ class RGBImageAbstraction(ImageAbstraction):
         return 'RGB'
 
     def get_bw_img(self):
-        f = lambda x: int(sum(x)/3)
+        f = lambda x: int(sum(x) / 3)
         aux_img = map_matrix(self.img, self.w, self.h, f)
-        return BWImageAbstraction(flat_img_matrix(aux_img, self.w, self.h), self.get_size_tuple())
+        return BWImageAbstraction(
+            flat_img_matrix(
+                aux_img,
+                self.w,
+                self.h),
+            self.get_size_tuple())
 
     def is_bw(self):
         return False
+
+    def _get_prewitt_matrix_x(self):
+        def f(m):
+            aux = (0, 0, 0)
+            for j in range(3):
+                aux = tuple(x - y for x, y in zip(aux, m[j][0]))
+            for j in range(3):
+                aux = tuple(x + y for x, y in zip(aux, m[j][2]))
+            return aux
+        return self._common_filter(3, f)
+
+    def _get_prewitt_matrix_y(self):
+        def f(m):
+            aux = (0, 0, 0)
+            for j in range(3):
+                tuple(x - y for x, y in zip(aux, m[0][j]))
+            for j in range(3):
+                tuple(x + y for x, y in zip(aux, m[2][j]))
+            return aux
+        return self._common_filter(3, f)
+
+    def _get_sobel_matrix_x(self):
+        def f(m):
+            aux = (0, 0, 0)
+            for j in range(3):
+                aux = tuple(x - y * (2 if j == 1 else 1)
+                            for x, y in zip(aux, m[j][0]))
+            for j in range(3):
+                aux = tuple(x + y * (2 if j == 1 else 1)
+                            for x, y in zip(aux, m[j][2]))
+            return aux
+        return self._common_filter(3, f)
+
+    def _get_sobel_matrix_y(self):
+        def f(m):
+            aux = (0, 0, 0)
+            for j in range(3):
+                tuple(x - y * (2 if j == 1 else 1)
+                      for x, y in zip(aux, m[0][j]))
+            for j in range(3):
+                tuple(x + y * (2 if j == 1 else 1)
+                      for x, y in zip(aux, m[2][j]))
+            return aux
+        return self._common_filter(3, f)
+
+    def _common_border_method(self, matrix_x, matrix_y):
+        for i in range(self.w):
+            for j in range(self.h):
+                aux = [0] * 3
+                for each in range(3):
+                    aux[each] = math.sqrt(
+                        matrix_x[i][j][each]**2 + matrix_y[i][j][each]**2)
+                self.img[i][j] = tuple(map(int, aux))

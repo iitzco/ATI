@@ -60,6 +60,9 @@ class GUI(tk.Frame):
         self.original.discover()
         self.studio.discover()
 
+    def has_img(self):
+        return self.image_manager.has_img()
+
     def load_rectangle(self):
         self._load_figure(self.image_manager.load_rectangle)
 
@@ -108,8 +111,8 @@ class GUI(tk.Frame):
         try:
             self.image_manager.undo()
         except Exception:
-                tkinter.messagebox.showinfo(
-                    'Alert', 'Already at latest change')
+            tkinter.messagebox.showinfo(
+                'Alert', 'Already at latest change')
         self.studio.show_image()
 
     def to_bw(self):
@@ -305,7 +308,8 @@ class GUI(tk.Frame):
 
     def gauss_filter(self):
         sigma = askinteger("Gauss", "Sigma?", minvalue=0)
-        size = askinteger("Gauss", "Window Size? Suggested {} (2*sigma + 1)".format(2*sigma+1), minvalue=0)
+        size = askinteger(
+            "Gauss", "Window Size? Suggested {} (2*sigma + 1)".format(2 * sigma + 1), minvalue=0)
         if not sigma or not size or not size % 2:
             return
         self.image_manager.gauss_filter(size, sigma)
