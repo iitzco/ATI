@@ -78,8 +78,18 @@ class ImageManager:
             self.image.get_image_bytes())
         self.modified = False
 
+    def get_image_width(self):
+        if self.has_img():
+            return self.image.get_size_tuple()[0]
+        raise Exception()
+
+    def get_image_height(self):
+        if self.has_img():
+            return self.image.get_size_tuple()[1]
+        raise Exception()
+
     def has_img(self):
-        return not self.image is None
+        return hasattr(self, 'image')
 
     def save_image(self, fname):
         self.get_image().save(fname)
@@ -292,4 +302,4 @@ class ImageManager:
 
     def sobel_y_img(self):
         self.modify()
-        self.image.sobel_y_img()
+        self.image.sobel_y_to_img()

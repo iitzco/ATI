@@ -120,6 +120,8 @@ class ImageWorkspace(tk.Frame):
         if self.gui.has_img():
             self.gui.menu.x_pixel = x
             self.gui.menu.y_pixel = y
+            if x > self.gui.image_manager.get_image_width() or y > self.gui.image_manager.get_image_height():
+                return
             self.gui.menu.show_color(self.get_pixel_color(x, y))
 
     def zoom(self, x, y):
