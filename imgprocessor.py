@@ -231,6 +231,30 @@ class BWImageAbstraction(ImageAbstraction):
             self.h,
             lambda x: max_v if x > v else min_v)
 
+    def get_global_umbral(self):
+        normalized_img_list = self.get_image_list()
+        u = 128
+        it = 0
+        record = []
+        while True:
+            count = [0,0]
+            sum_p = [0,0]
+            for p in normalized_img_list:
+                i = 0 if p<u else 1
+                count[i]+=1
+                sum_p[i]+=p
+            m1 = sum_p[0]/count[0]
+            m2 = sum_p[1]/count[1]
+            new_u = int((m1 + m2) / 2)
+            it+=1
+            if abs(new_u-u)<=1:
+                return (new_u, it)
+            elif new_u in record:
+                return (sum(record)//len(record), it)
+            else:
+                u = new_u
+                record.append(new_u)
+
     def enhance_contrast(self, r1, r2):
         max_v, min_v = self._get_max_min()
         v1 = transform_from_std(min_v, max_v, r1)

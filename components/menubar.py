@@ -75,6 +75,9 @@ class OperationsMenuBar(tk.Menu):
         self.add_command(
             label="Umbralize",
             command=parent.gui.umbral)
+        self.add_command(
+            label="Global Umbralization",
+            command=parent.gui.global_umbral)
         self.add_command(label="Power", command=parent.gui.power)
         self.add_command(label="Product", command=parent.gui.product)
         self.add_command(

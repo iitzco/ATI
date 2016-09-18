@@ -222,6 +222,9 @@ class ImageManager:
         self.modify()
         self.common_operators_on_bw(self.image.umbral, value)
 
+    def get_global_umbral(self):
+        return self.image.get_global_umbral()
+
     def power(self, value):
         self.modify()
         self.common_operators_on_bw(self.image.power, value)

@@ -183,6 +183,15 @@ class GUI(tk.Frame):
             tkinter.messagebox.showinfo(
                 'Alert', 'Unsupported operation')
 
+    def global_umbral(self):
+        v, it = self.image_manager.get_global_umbral()
+        ret = tkinter.messagebox.askyesno(
+            "Global umbralization",
+            "Best umbral value is {}, founded in {} iterations. Wish to umbralize?".format(v, it))
+        if ret:
+            self.image_manager.umbral(int(v))
+            self.studio.show_image()
+
     def power(self):
         value = askfloat("Power", "Power Value?", minvalue=0, maxvalue=2.5)
         try:
