@@ -291,6 +291,14 @@ class ImageManager:
         self.modify()
         self.image.border_filter(size)
 
+    def lorentziano_anisotropic_diffusion(self, sigma, times):
+        self.modify()
+        self.image.lorentziano_anisotropic_diffusion(sigma, times)
+
+    def leclerc_anisotropic_diffusion(self, sigma, times):
+        self.modify()
+        self.image.leclerc_anisotropic_diffusion(sigma, times)
+
     def prewitt_method(self):
         self.modify()
         self.image.prewitt_method()

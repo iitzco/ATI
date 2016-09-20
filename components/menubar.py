@@ -63,6 +63,12 @@ class FilteringMenuBar(tk.Menu):
         self.add_command(
             label="Border Filter",
             command=parent.gui.border_filter)
+        self.add_command(
+            label="Leclerc Anisotropic Diffusion",
+            command=parent.gui.leclerc_anisotropic_diffusion)
+        self.add_command(
+            label="Lorentziano Anisotropic Diffusion",
+            command=parent.gui.lorentziano_anisotropic_diffusion)
 
 
 class OperationsMenuBar(tk.Menu):

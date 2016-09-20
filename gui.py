@@ -327,13 +327,27 @@ class GUI(tk.Frame):
         self._common_filter(self.image_manager.border_filter)
 
     def gauss_filter(self):
-        sigma = askinteger("Gauss", "Sigma?", minvalue=0)
+        sigma = askfloat("Gauss", "Sigma?", minvalue=0)
         size = askinteger(
             "Gauss", "Window Size? Suggested {} (2*sigma + 1)".format(2 * sigma + 1), minvalue=0)
         if not sigma or not size or not size % 2:
             return
         self.image_manager.gauss_filter(size, sigma)
         self.studio.show_image()
+
+    def anisotropic_diffusion(self, f):
+        sigma = askfloat("Parameters", "Sigma?", minvalue=0)
+        times = askinteger("Parameters", "Iterations?", minvalue=0)
+        if not sigma or not times:
+            return
+        f(sigma, times)
+        self.studio.show_image()
+
+    def leclerc_anisotropic_diffusion(self):
+        self.anisotropic_diffusion(self.image_manager.leclerc_anisotropic_diffusion)
+
+    def lorentziano_anisotropic_diffusion(self):
+        self.anisotropic_diffusion(self.image_manager.lorentziano_anisotropic_diffusion)
 
     def prewitt_method(self):
         self.image_manager.prewitt_method()

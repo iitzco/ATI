@@ -363,6 +363,36 @@ class BWImageAbstraction(ImageAbstraction):
             return aux
         self.img = self._common_filter(size, f)
 
+    def _get_4_neighbors(img, i, j, w, h):
+        ret = []
+        ret.append(img[i-1][j] if i>0 else img[0][j])
+        ret.append(img[i+1][j] if i<w-1 else img[w-1][j])
+        ret.append(img[i][j-1] if j>0 else img[i][0])
+        ret.append(img[i][j+1] if j<h-1 else img[i][h-1])
+        return ret
+
+    def _common_anisotropic_diffusion(self, f, times):
+        normalized_img = self.get_image_list()
+        aux_matrix = ImageAbstraction._get_img_matrix(
+            self.w, self.h, normalized_img)
+        empty_matrix = [[0 for i in range(self.h)] for j in range(self.w)]
+        for t in range(times):
+            for i in range(self.w):
+                for j in range(self.h):
+                    curr_sum=0
+                    for neigh in BWImageAbstraction._get_4_neighbors(aux_matrix, i, j, self.w, self.h):
+                        d = neigh - aux_matrix[i][j]
+                        curr_sum += d*f(d)
+                    empty_matrix[i][j] = aux_matrix[i][j] + 0.25*curr_sum
+            aux_matrix = empty_matrix
+        return aux_matrix
+
+    def leclerc_anisotropic_diffusion(self, sigma, times):
+        self.img = self._common_anisotropic_diffusion(lambda x : 1/((x**2/sigma**2)+1), times)
+
+    def lorentziano_anisotropic_diffusion(self, sigma, times):
+        self.img = self._common_anisotropic_diffusion(lambda x : math.e**(-(x**2)/sigma**2), times)
+
     def _get_prewitt_matrix_x(self):
         def f(m):
             aux = 0
