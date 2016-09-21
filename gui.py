@@ -192,6 +192,15 @@ class GUI(tk.Frame):
             self.image_manager.umbral(int(v))
             self.studio.show_image()
 
+    def otsu_umbral(self):
+        v = self.image_manager.get_otsu_umbral()
+        ret = tkinter.messagebox.askyesno(
+            "Otsu umbralization",
+            "Best umbral value is {}. Wish to umbralize?".format(v))
+        if ret:
+            self.image_manager.umbral(int(v))
+            self.studio.show_image()
+
     def power(self):
         value = askfloat("Power", "Power Value?", minvalue=0, maxvalue=2.5)
         try:

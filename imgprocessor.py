@@ -309,6 +309,28 @@ class BWImageAbstraction(ImageAbstraction):
                 u = new_u
                 record.append(new_u)
 
+    def get_otsu_umbral(self):
+        normalized_img_list = self.get_image_list()
+        total = len(normalized_img_list)
+        bucket_p = [0]*256
+        for each in normalized_img_list:
+            bucket_p[each]+=1/total
+        bucket_p1 = [0]*256
+        bucket_m = [0]*256
+        for i, v in enumerate(bucket_p):
+            bucket_p1[i] = v + (bucket_p1[i-1] if i>0 else 0)
+            bucket_m[i] = i*v + (bucket_m[i-1] if i>0 else 0)
+        import pdb; pdb.set_trace()
+        m_g = bucket_m[-1]
+        max_variance = -1
+        index = -1
+        for i in range(256):
+            if bucket_p1[i]>0 and bucket_p1[i]<1:
+                curr_variance = ((m_g*bucket_p1[i]-bucket_m[i])**2)/(bucket_p1[i]*(1-bucket_p1[i]))
+                if curr_variance > max_variance:
+                    max_variance, index = curr_variance, i
+        return index
+
     def enhance_contrast(self, r1, r2):
         max_v, min_v = self._get_max_min()
         v1 = transform_from_std(min_v, max_v, r1)

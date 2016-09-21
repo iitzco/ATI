@@ -225,6 +225,9 @@ class ImageManager:
     def get_global_umbral(self):
         return self.image.get_global_umbral()
 
+    def get_otsu_umbral(self):
+        return self.image.get_otsu_umbral()
+
     def power(self, value):
         self.modify()
         self.common_operators_on_bw(self.image.power, value)
