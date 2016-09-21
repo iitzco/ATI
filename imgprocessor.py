@@ -33,6 +33,10 @@ def transform_from_std(min_v, max_v, v):
     return generic_transformation(0, 255, min_v, max_v, v)
 
 
+def sign(x):
+    return 1 if x>=0 else -1
+
+
 def map_matrix(matrix, w, h, f):
     ret = []
     for i in range(w):
@@ -536,6 +540,39 @@ class BWImageAbstraction(ImageAbstraction):
 
     def alternative_directional_method(self):
         self.img = self._common_directional_method(3, get_alternative_directional_matrix())
+
+    def _get_laplacian_img_mask(self):
+        def f(m):
+            mask = [[0,-1,0],[-1,4,-1],[0,-1,0]]
+            return put_mask(m, mask, 3)
+        return self._common_filter(3, f)
+
+    def laplacian_mask(self):
+        import pdb; pdb.set_trace()
+        self.img = self._get_laplacian_img_mask()
+
+    def laplacian_method(self):
+        aux = self._get_laplacian_img_mask()
+        for i in range(self.w):
+            for j in range(self.h):
+                right_pixel = aux[i+1][j] if i<self.w-1 else aux[i][j]
+                down_pixel = aux[i][j+1] if j<self.h-1 else aux[i][j]
+                curr_pixel = aux[i][j]
+                self.img[i][j] = 0 if sign(curr_pixel)!=sign(right_pixel) or sign(curr_pixel)!=sign(down_pixel) else 255
+
+    def laplacian_pending_method(self, umbral):
+        aux = self._get_laplacian_img_mask()
+        max_v, min_v = (max_matrix(aux), min_matrix(aux))
+        u = transform_from_std(min_v, max_v, umbral)
+        for i in range(self.w):
+            for j in range(self.h):
+                right_pixel = aux[i+1][j] if i<self.w-1 else aux[i][j]
+                down_pixel = aux[i][j+1] if j<self.h-1 else aux[i][j]
+                curr_pixel = aux[i][j]
+                self.img[i][j] = 0 if (sign(curr_pixel)!=sign(right_pixel) and 
+                        abs(curr_pixel)+abs(right_pixel)>u ) or (sign(curr_pixel)!=sign(down_pixel)
+                                and abs(curr_pixel)+abs(down_pixel) > u) else 255
+
 
 class RGBImageAbstraction(ImageAbstraction):
 

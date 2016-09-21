@@ -314,6 +314,18 @@ class ImageManager:
         self.modify()
         self.image.sobel_method()
 
+    def laplacian_mask(self):
+        self.modify()
+        self.image.laplacian_mask()
+
+    def laplacian_method(self):
+        self.modify()
+        self.image.laplacian_method()
+
+    def laplacian_pending_method(self, umbral):
+        self.modify()
+        self.image.laplacian_pending_method(umbral)
+
     def kirsh_directional_method(self):
         self.modify()
         self.image.kirsh_directional_method()

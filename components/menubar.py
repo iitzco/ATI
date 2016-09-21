@@ -133,6 +133,9 @@ class UtilsMenuBar(tk.Menu):
         self.add_command(
             label="Sobel Y",
             command=parent.gui.sobel_y_img)
+        self.add_command(
+            label="Laplacian Mask",
+            command=parent.gui.laplacian_mask)
 
 
 class BorderMenuBar(tk.Menu):
@@ -145,6 +148,13 @@ class BorderMenuBar(tk.Menu):
         self.add_command(
             label="Sobel Method",
             command=parent.gui.sobel_method)
+        self.add_command(
+            label="Laplacian Method",
+            command=parent.gui.laplacian_method)
+        self.add_command(
+            label="Laplacian Pending Method",
+            command=parent.gui.laplacian_pending_method)
+        self.add_separator()
         self.add_command(
             label="Kirsh Directional Method",
             command=parent.gui.kirsh_directional_method)

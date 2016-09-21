@@ -373,6 +373,21 @@ class GUI(tk.Frame):
         self.image_manager.sobel_method()
         self.studio.show_image()
 
+    def laplacian_mask(self):
+        self.image_manager.laplacian_mask()
+        self.studio.show_image()
+
+    def laplacian_method(self):
+        self.image_manager.laplacian_method()
+        self.studio.show_image()
+
+    def laplacian_pending_method(self):
+        umbral = askinteger("Parameters", "Umbral?", minvalue=0, maxvalue=255)
+        if not umbral:
+            return
+        self.image_manager.laplacian_pending_method(umbral)
+        self.studio.show_image()
+
     def kirsh_directional_method(self):
         self.image_manager.kirsh_directional_method()
         self.studio.show_image()
