@@ -364,6 +364,22 @@ class GUI(tk.Frame):
         self.image_manager.sobel_method()
         self.studio.show_image()
 
+    def kirsh_directional_method(self):
+        self.image_manager.kirsh_directional_method()
+        self.studio.show_image()
+
+    def prewitt_directional_method(self):
+        self.image_manager.prewitt_directional_method()
+        self.studio.show_image()
+
+    def sobel_directional_method(self):
+        self.image_manager.sobel_directional_method()
+        self.studio.show_image()
+
+    def alternative_directional_method(self):
+        self.image_manager.alternative_directional_method()
+        self.studio.show_image()
+
     def sobel_x_img(self):
         self.image_manager.sobel_x_img()
         self.studio.show_image()

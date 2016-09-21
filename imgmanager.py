@@ -311,6 +311,22 @@ class ImageManager:
         self.modify()
         self.image.sobel_method()
 
+    def kirsh_directional_method(self):
+        self.modify()
+        self.image.kirsh_directional_method()
+
+    def prewitt_directional_method(self):
+        self.modify()
+        self.image.prewitt_directional_method()
+
+    def sobel_directional_method(self):
+        self.modify()
+        self.image.sobel_directional_method()
+
+    def alternative_directional_method(self):
+        self.modify()
+        self.image.alternative_directional_method()
+
     def sobel_x_img(self):
         self.modify()
         self.image.sobel_x_to_img()

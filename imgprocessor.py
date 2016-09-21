@@ -81,6 +81,60 @@ def flat_img_matrix(matrix, w, h):
                 int(matrix[i][j]))
     return flat_list
 
+
+def put_mask(original, mask, size):
+    ret = 0
+    for i in range(size):
+        for j in range(size):
+            ret += original[i][j]*mask[i][j]
+    return ret
+
+
+def get_kirsh_directional_matrix():
+    # 5  5  5    5  5 -3  -3 -3 -3   5 -3 -3   
+    # -3 0 -3    5  0 -3   5  0 -3   5  0 -3   
+    # -3 -3 -3  -3 -3 -3   5  5 -3   5 -3 -3  
+    ret = []
+    ret.append([[5, -3, -3], [5, 0, -3], [5, -3, -3]]) 
+    ret.append([[5,5,-3], [5,0,-3], [-3, -3, -3]])
+    ret.append([[-3,5,5], [-3, 0, 5], [-3,-3,-3]])
+    ret.append([[5,5,5], [-3, 0, -3], [-3, -3, -3]])
+    return ret
+
+def get_prewitt_directional_matrix():
+    # 1  1  1    1  1  0    0 -1 -1    1  0 -1
+    # 0  0  0    1  0 -1    1  0  1    1  0 -1
+    # -1 -1 -1   0 -1 -1    1  1  0    1  0 -1
+    ret = []
+    ret.append([[1,0,-1], [1, 0, -1], [1,0,-1]])
+    ret.append([[1,1,0],[1,0,-1],[0,-1,-1]])
+    ret.append([[0,1,1], [-1,0,1], [-1,-1,0]])
+    ret.append([[1,1,1], [0,0,0], [-1,-1,-1]])
+    return ret
+
+def get_sobel_directional_matrix():
+    # 1  2  1    2  1  0    0 -1 -2    1  0 -1
+    # 0  0  0    1  0 -1    1  0  1    2  0 -2
+    # -1 -2 -1   0 -1 -2    2  1  0    1  0 -1
+    ret = []
+    ret.append([[1,0,-1], [2, 0, -2], [1,0,-1]])
+    ret.append([[2,1,0],[1,0,-1],[0,-1,-2]])
+    ret.append([[0,1,2], [-1,0,1], [-2,-1,0]])
+    ret.append([[1,2,1], [0,0,0], [-1,-2,-1]])
+    return ret
+
+def get_alternative_directional_matrix():
+    # 1  1  1    1  1  1    1 -1 -1   1  1 -1    
+    # 1 -2  1    1 -2 -1    1 -2 -1   1 -2 -1    
+    # -1 -1 -1   1 -1 -1    1  1  1   1  1 -1    
+    ret = []
+    ret.append([[1,1, -1],[1,-2,-1],[1,-1,-1]])
+    ret.append([[1,1,1],[1,-2,-1],[1,-1,-1]])
+    ret.append([[1,1,1],[-1,-2,1],[-1,-1,1]])
+    ret.append([[1,1,1], [1,-2,1],[-1,-1,-1]])
+    return ret
+
+
 # TODO manage full canvas
 
 
@@ -442,6 +496,24 @@ class BWImageAbstraction(ImageAbstraction):
                 self.img[i][j] = math.sqrt(
                     matrix_x[i][j]**2 + matrix_y[i][j]**2)
 
+    def _common_directional_method(self, size, matrix_list):
+        def f(m):
+            candidates = [put_mask(m, each, size) for each in matrix_list]
+            max_with_index = max([(abs(v),i) for i,v in enumerate(candidates)], key=lambda x:x[0])
+            return candidates[max_with_index[1]]
+        return self._common_filter(size, f)
+
+    def kirsh_directional_method(self):
+        self.img = self._common_directional_method(3, get_kirsh_directional_matrix())
+        
+    def prewitt_directional_method(self):
+        self.img = self._common_directional_method(3, get_prewitt_directional_matrix())
+
+    def sobel_directional_method(self):
+        self.img = self._common_directional_method(3, get_sobel_directional_matrix())
+
+    def alternative_directional_method(self):
+        self.img = self._common_directional_method(3, get_alternative_directional_matrix())
 
 class RGBImageAbstraction(ImageAbstraction):
 

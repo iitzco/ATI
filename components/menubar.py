@@ -142,3 +142,16 @@ class BorderMenuBar(tk.Menu):
         self.add_command(
             label="Sobel Method",
             command=parent.gui.sobel_method)
+        self.add_command(
+            label="Kirsh Directional Method",
+            command=parent.gui.kirsh_directional_method)
+        self.add_command(
+            label="Prewitt Directional Method",
+            command=parent.gui.prewitt_directional_method)
+        self.add_command(
+            label="Sobel Directional Method",
+            command=parent.gui.sobel_directional_method)
+        self.add_command(
+            label="Alternative Directional Method",
+            command=parent.gui.alternative_directional_method)
+
