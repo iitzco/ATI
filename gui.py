@@ -343,6 +343,13 @@ class GUI(tk.Frame):
         f(sigma, times)
         self.studio.show_image()
 
+    def isotropic_diffusion(self):
+        times = askinteger("Parameters", "Iterations?", minvalue=0)
+        if not times:
+            return
+        self.image_manager.isotropic_diffusion(times)
+        self.studio.show_image()
+
     def leclerc_anisotropic_diffusion(self):
         self.anisotropic_diffusion(self.image_manager.leclerc_anisotropic_diffusion)
 

@@ -69,6 +69,9 @@ class FilteringMenuBar(tk.Menu):
         self.add_command(
             label="Lorentziano Anisotropic Diffusion",
             command=parent.gui.lorentziano_anisotropic_diffusion)
+        self.add_command(
+            label="Isotropic Diffusion",
+            command=parent.gui.isotropic_diffusion)
 
 
 class OperationsMenuBar(tk.Menu):

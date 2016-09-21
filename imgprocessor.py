@@ -393,6 +393,9 @@ class BWImageAbstraction(ImageAbstraction):
     def lorentziano_anisotropic_diffusion(self, sigma, times):
         self.img = self._common_anisotropic_diffusion(lambda x : math.e**(-(x**2)/sigma**2), times)
 
+    def isotropic_diffusion(self, times):
+        self.img = self._common_anisotropic_diffusion(lambda x : 1, times)
+
     def _get_prewitt_matrix_x(self):
         def f(m):
             aux = 0

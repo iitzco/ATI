@@ -299,6 +299,10 @@ class ImageManager:
         self.modify()
         self.image.leclerc_anisotropic_diffusion(sigma, times)
 
+    def isotropic_diffusion(self, times):
+        self.modify()
+        self.image.isotropic_diffusion(times)
+
     def prewitt_method(self):
         self.modify()
         self.image.prewitt_method()
