@@ -157,6 +157,9 @@ class BorderMenuBar(tk.Menu):
         self.add_command(
             label="Laplacian Pending Method",
             command=parent.gui.laplacian_pending_method)
+        self.add_command(
+            label="LoG Method",
+            command=parent.gui.LoG_method)
         self.add_separator()
         self.add_command(
             label="Kirsh Directional Method",

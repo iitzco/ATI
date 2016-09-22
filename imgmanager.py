@@ -330,6 +330,10 @@ class ImageManager:
         self.modify()
         self.image.laplacian_pending_method(umbral)
 
+    def LoG_method(self, size, sigma, umbral):
+        self.modify()
+        self.image.LoG_method(size, sigma, umbral)
+
     def kirsh_directional_method(self):
         self.modify()
         self.image.kirsh_directional_method()

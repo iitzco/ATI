@@ -555,7 +555,7 @@ class BWImageAbstraction(ImageAbstraction):
             r = range(-(half), (half)+1)
             for i in r:
                 for j in r:
-                    coe = -(1/(math.sqrt(2*math.pi)*sigma**3))*(2-((i**2+j**2)/(sigma**2)))*(math.pow(math.e, -(i**2+j**2)/(2*(sigma**2))))
+                    coe = -(1/(math.pi*sigma**4))*(1-((i**2+j**2)/(2*(sigma**2))))*(math.pow(math.e, -(i**2+j**2)/(2*(sigma**2))))
                     aux += coe * m[i+half][j+half]
             return aux
         return self._common_filter(size, f)
@@ -568,25 +568,34 @@ class BWImageAbstraction(ImageAbstraction):
 
     def laplacian_method(self):
         aux = self._get_laplacian_img_mask()
+        f = lambda curr, right, down: sign(curr)!=sign(right) or sign(curr)!=sign(down)
+        self._mark_borders(aux, f)
+
+    def _mark_borders(self, aux, condition):
         for i in range(self.w):
             for j in range(self.h):
                 right_pixel = aux[i+1][j] if i<self.w-1 else aux[i][j]
                 down_pixel = aux[i][j+1] if j<self.h-1 else aux[i][j]
                 curr_pixel = aux[i][j]
-                self.img[i][j] = 255 if sign(curr_pixel)!=sign(right_pixel) or sign(curr_pixel)!=sign(down_pixel) else 0
+                self.img[i][j] = 255 if condition(curr_pixel, right_pixel, down_pixel) else 0
+
+    def _mark_borders_with_umbral(self, aux_img, umbral):
+        f = lambda curr, right, down: (sign(curr)!=sign(right) and 
+                    abs(curr)+abs(right)>umbral ) or (sign(curr)!=sign(down)
+                            and abs(curr)+abs(down) > umbral)
+        self._mark_borders(aux_img, f)
 
     def laplacian_pending_method(self, umbral):
         aux = self._get_laplacian_img_mask()
-        max_v, min_v = (max_matrix(aux), min_matrix(aux))
+        # max_v, min_v = (max_matrix(aux), min_matrix(aux))
         # u = transform_from_std(min_v, max_v, umbral)
-        for i in range(self.w):
-            for j in range(self.h):
-                right_pixel = aux[i+1][j] if i<self.w-1 else aux[i][j]
-                down_pixel = aux[i][j+1] if j<self.h-1 else aux[i][j]
-                curr_pixel = aux[i][j]
-                self.img[i][j] = 255 if (sign(curr_pixel)!=sign(right_pixel) and 
-                        abs(curr_pixel)+abs(right_pixel)>umbral ) or (sign(curr_pixel)!=sign(down_pixel)
-                                and abs(curr_pixel)+abs(down_pixel) > umbral) else 0
+        self._mark_borders_with_umbral(aux, umbral)
+
+    def LoG_method(self, size, sigma, umbral):
+        aux = self._get_LoG_img_mask(size, sigma)
+        # max_v, min_v = (max_matrix(aux), min_matrix(aux))
+        # u = transform_from_std(min_v, max_v, umbral)
+        self._mark_borders_with_umbral(aux, umbral)
 
 
 class RGBImageAbstraction(ImageAbstraction):

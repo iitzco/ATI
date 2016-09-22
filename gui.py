@@ -391,10 +391,20 @@ class GUI(tk.Frame):
         self.studio.show_image()
 
     def laplacian_pending_method(self):
-        umbral = askinteger("Parameters", "Umbral?", minvalue=0, maxvalue=255)
+        umbral = askinteger("Parameters", "Umbral?", minvalue=0)
         if not umbral:
             return
         self.image_manager.laplacian_pending_method(umbral)
+        self.studio.show_image()
+
+    def LoG_method(self):
+        sigma = askfloat("Parameters", "Sigma?", minvalue=0)
+        size = askinteger(
+            "Parameters", "Window Size? Suggested {} (2*sigma + 1)".format(2 * sigma + 1), minvalue=0)
+        umbral = askinteger("Parameters", "Umbral?", minvalue=0)
+        if not sigma or not size or not size % 2 or umbral is None or umbral is 0:
+            return
+        self.image_manager.LoG_method(size, sigma, umbral)
         self.studio.show_image()
 
     def kirsh_directional_method(self):
