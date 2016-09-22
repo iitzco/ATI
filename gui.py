@@ -377,6 +377,15 @@ class GUI(tk.Frame):
         self.image_manager.laplacian_mask()
         self.studio.show_image()
 
+    def LoG_mask(self):
+        sigma = askfloat("Parameters", "Sigma?", minvalue=0)
+        size = askinteger(
+            "Parameters", "Window Size? Suggested {} (2*sigma + 1)".format(2 * sigma + 1), minvalue=0)
+        if not sigma or not size or not size % 2:
+            return
+        self.image_manager.LoG_mask(size, sigma)
+        self.studio.show_image()
+
     def laplacian_method(self):
         self.image_manager.laplacian_method()
         self.studio.show_image()

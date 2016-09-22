@@ -318,6 +318,10 @@ class ImageManager:
         self.modify()
         self.image.laplacian_mask()
 
+    def LoG_mask(self, size, sigma):
+        self.modify()
+        self.image.LoG_mask(size, sigma)
+
     def laplacian_method(self):
         self.modify()
         self.image.laplacian_method()

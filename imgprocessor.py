@@ -324,7 +324,6 @@ class BWImageAbstraction(ImageAbstraction):
         for i, v in enumerate(bucket_p):
             bucket_p1[i] = v + (bucket_p1[i-1] if i>0 else 0)
             bucket_m[i] = i*v + (bucket_m[i-1] if i>0 else 0)
-        import pdb; pdb.set_trace()
         m_g = bucket_m[-1]
         max_variance = -1
         index = -1
@@ -423,11 +422,13 @@ class BWImageAbstraction(ImageAbstraction):
     def gauss_filter(self, size, sigma):
         def f(m):
             aux = 0
-            for i in range(size):
-                for j in range(size):
+            half = size//2
+            r = range(-(half), (half)+1)
+            for i in r:
+                for j in r:
                     coe = (1 / (2 * math.pi * math.pow(sigma, 2))) * math.pow(math.e, - \
                            (math.pow(i, 2) + math.pow(j, 2)) / math.pow(sigma, 2))
-                    aux += coe * m[i][j]
+                    aux += coe * m[i+half][j+half]
             return aux
         self.img = self._common_filter(size, f)
 
@@ -547,8 +548,22 @@ class BWImageAbstraction(ImageAbstraction):
             return put_mask(m, mask, 3)
         return self._common_filter(3, f)
 
+    def _get_LoG_img_mask(self, size, sigma):
+        def f(m):
+            aux = 0
+            half = size//2
+            r = range(-(half), (half)+1)
+            for i in r:
+                for j in r:
+                    coe = -(1/(math.sqrt(2*math.pi)*sigma**3))*(2-((i**2+j**2)/(sigma**2)))*(math.pow(math.e, -(i**2+j**2)/(2*(sigma**2))))
+                    aux += coe * m[i+half][j+half]
+            return aux
+        return self._common_filter(size, f)
+
+    def LoG_mask(self, size, sigma):
+        self.img = self._get_LoG_img_mask(size, sigma)
+
     def laplacian_mask(self):
-        import pdb; pdb.set_trace()
         self.img = self._get_laplacian_img_mask()
 
     def laplacian_method(self):
@@ -558,20 +573,20 @@ class BWImageAbstraction(ImageAbstraction):
                 right_pixel = aux[i+1][j] if i<self.w-1 else aux[i][j]
                 down_pixel = aux[i][j+1] if j<self.h-1 else aux[i][j]
                 curr_pixel = aux[i][j]
-                self.img[i][j] = 0 if sign(curr_pixel)!=sign(right_pixel) or sign(curr_pixel)!=sign(down_pixel) else 255
+                self.img[i][j] = 255 if sign(curr_pixel)!=sign(right_pixel) or sign(curr_pixel)!=sign(down_pixel) else 0
 
     def laplacian_pending_method(self, umbral):
         aux = self._get_laplacian_img_mask()
         max_v, min_v = (max_matrix(aux), min_matrix(aux))
-        u = transform_from_std(min_v, max_v, umbral)
+        # u = transform_from_std(min_v, max_v, umbral)
         for i in range(self.w):
             for j in range(self.h):
                 right_pixel = aux[i+1][j] if i<self.w-1 else aux[i][j]
                 down_pixel = aux[i][j+1] if j<self.h-1 else aux[i][j]
                 curr_pixel = aux[i][j]
-                self.img[i][j] = 0 if (sign(curr_pixel)!=sign(right_pixel) and 
-                        abs(curr_pixel)+abs(right_pixel)>u ) or (sign(curr_pixel)!=sign(down_pixel)
-                                and abs(curr_pixel)+abs(down_pixel) > u) else 255
+                self.img[i][j] = 255 if (sign(curr_pixel)!=sign(right_pixel) and 
+                        abs(curr_pixel)+abs(right_pixel)>umbral ) or (sign(curr_pixel)!=sign(down_pixel)
+                                and abs(curr_pixel)+abs(down_pixel) > umbral) else 0
 
 
 class RGBImageAbstraction(ImageAbstraction):
