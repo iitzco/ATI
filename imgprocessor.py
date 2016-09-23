@@ -34,7 +34,7 @@ def transform_from_std(min_v, max_v, v):
 
 
 def sign(x):
-    return 1 if x>=0 else -1
+    return 1 if x >= 0 else -1
 
 
 def map_matrix(matrix, w, h, f):
@@ -81,8 +81,7 @@ def flat_img_matrix(matrix, w, h):
     flat_list = []
     for j in range(h):
         for i in range(w):
-            flat_list.append(
-                int(matrix[i][j]))
+            flat_list.append(int(matrix[i][j]))
     return flat_list
 
 
@@ -90,69 +89,70 @@ def put_mask(original, mask, size):
     ret = 0
     for i in range(size):
         for j in range(size):
-            ret += original[i][j]*mask[i][j]
+            ret += original[i][j] * mask[i][j]
     return ret
 
 
 def get_kirsh_directional_matrix():
-    # 5  5  5    5  5 -3  -3 -3 -3   5 -3 -3   
-    # -3 0 -3    5  0 -3   5  0 -3   5  0 -3   
-    # -3 -3 -3  -3 -3 -3   5  5 -3   5 -3 -3  
+    # 5  5  5    5  5 -3  -3 -3 -3   5 -3 -3
+    # -3 0 -3    5  0 -3   5  0 -3   5  0 -3
+    # -3 -3 -3  -3 -3 -3   5  5 -3   5 -3 -3
     ret = []
-    ret.append([[5, -3, -3], [5, 0, -3], [5, -3, -3]]) 
-    ret.append([[5,5,-3], [5,0,-3], [-3, -3, -3]])
-    ret.append([[-3,5,5], [-3, 0, 5], [-3,-3,-3]])
-    ret.append([[5,5,5], [-3, 0, -3], [-3, -3, -3]])
+    ret.append([[5, -3, -3], [5, 0, -3], [5, -3, -3]])
+    ret.append([[5, 5, -3], [5, 0, -3], [-3, -3, -3]])
+    ret.append([[-3, 5, 5], [-3, 0, 5], [-3, -3, -3]])
+    ret.append([[5, 5, 5], [-3, 0, -3], [-3, -3, -3]])
     return ret
+
 
 def get_prewitt_directional_matrix():
     # 1  1  1    1  1  0    0 -1 -1    1  0 -1
     # 0  0  0    1  0 -1    1  0  1    1  0 -1
     # -1 -1 -1   0 -1 -1    1  1  0    1  0 -1
     ret = []
-    ret.append([[1,0,-1], [1, 0, -1], [1,0,-1]])
-    ret.append([[1,1,0],[1,0,-1],[0,-1,-1]])
-    ret.append([[0,1,1], [-1,0,1], [-1,-1,0]])
-    ret.append([[1,1,1], [0,0,0], [-1,-1,-1]])
+    ret.append([[1, 0, -1], [1, 0, -1], [1, 0, -1]])
+    ret.append([[1, 1, 0], [1, 0, -1], [0, -1, -1]])
+    ret.append([[0, 1, 1], [-1, 0, 1], [-1, -1, 0]])
+    ret.append([[1, 1, 1], [0, 0, 0], [-1, -1, -1]])
     return ret
+
 
 def get_sobel_directional_matrix():
     # 1  2  1    2  1  0    0 -1 -2    1  0 -1
     # 0  0  0    1  0 -1    1  0  1    2  0 -2
     # -1 -2 -1   0 -1 -2    2  1  0    1  0 -1
     ret = []
-    ret.append([[1,0,-1], [2, 0, -2], [1,0,-1]])
-    ret.append([[2,1,0],[1,0,-1],[0,-1,-2]])
-    ret.append([[0,1,2], [-1,0,1], [-2,-1,0]])
-    ret.append([[1,2,1], [0,0,0], [-1,-2,-1]])
+    ret.append([[1, 0, -1], [2, 0, -2], [1, 0, -1]])
+    ret.append([[2, 1, 0], [1, 0, -1], [0, -1, -2]])
+    ret.append([[0, 1, 2], [-1, 0, 1], [-2, -1, 0]])
+    ret.append([[1, 2, 1], [0, 0, 0], [-1, -2, -1]])
     return ret
+
 
 def get_alternative_directional_matrix():
-    # 1  1  1    1  1  1    1 -1 -1   1  1 -1    
-    # 1 -2  1    1 -2 -1    1 -2 -1   1 -2 -1    
-    # -1 -1 -1   1 -1 -1    1  1  1   1  1 -1    
+    # 1  1  1    1  1  1    1 -1 -1   1  1 -1
+    # 1 -2  1    1 -2 -1    1 -2 -1   1 -2 -1
+    # -1 -1 -1   1 -1 -1    1  1  1   1  1 -1
     ret = []
-    ret.append([[1,1, -1],[1,-2,-1],[1,-1,-1]])
-    ret.append([[1,1,1],[1,-2,-1],[1,-1,-1]])
-    ret.append([[1,1,1],[-1,-2,1],[-1,-1,1]])
-    ret.append([[1,1,1], [1,-2,1],[-1,-1,-1]])
+    ret.append([[1, 1, -1], [1, -2, -1], [1, -1, -1]])
+    ret.append([[1, 1, 1], [1, -2, -1], [1, -1, -1]])
+    ret.append([[1, 1, 1], [-1, -2, 1], [-1, -1, 1]])
+    ret.append([[1, 1, 1], [1, -2, 1], [-1, -1, -1]])
     return ret
-
 
 # TODO manage full canvas
 
 
 class ImageAbstraction:
-
-      # (0,0)      x
-      #   | ------ - - - - - - |
-      #   |                    |
-      #   |                    |
-      # y |                    |
-      #   |                    |
-      #   |                    |
-      #   |                    |
-      #   | ------ - - - - - - |(w,h)
+    # (0,0)      x
+    #   | ------ - - - - - - |
+    #   |                    |
+    #   |                    |
+    # y |                    |
+    #   |                    |
+    #   |                    |
+    #   |                    |
+    #   | ------ - - - - - - |(w,h)
 
     def __init__(self, img_list, img_size):
         self.w = img_size[0]
@@ -209,18 +209,17 @@ class ImageAbstraction:
             s_list[255 - i] = s_list[256 - i] - c[256 - i]
         s_list = [each / total for each in s_list]
         min_value = min(s_list)
-        return list(map(lambda x: (int(
-            ((s_list[x] - min_value) / (1 - min_value)) * 255 + 0.5)), normalized_img_list))
+        return list(
+            map(lambda x: (int(((s_list[x] - min_value) / (1 - min_value)) * 255 + 0.5)),
+                normalized_img_list))
 
     def prewitt_method(self):
-        self._common_border_method(
-            self._get_prewitt_matrix_x(),
-            self._get_prewitt_matrix_y())
+        self._common_border_method(self._get_prewitt_matrix_x(),
+                                   self._get_prewitt_matrix_y())
 
     def sobel_method(self):
-        self._common_border_method(
-            self._get_sobel_matrix_x(),
-            self._get_sobel_matrix_y())
+        self._common_border_method(self._get_sobel_matrix_x(),
+                                   self._get_sobel_matrix_y())
 
     def sobel_x_to_img(self):
         self.img = self._get_sobel_matrix_x()
@@ -230,7 +229,6 @@ class ImageAbstraction:
 
 
 class BWImageAbstraction(ImageAbstraction):
-
     def get_mode(self):
         return 'L'
 
@@ -272,8 +270,8 @@ class BWImageAbstraction(ImageAbstraction):
     def multiply(self, image):
         if not self.h == image.w:
             raise Exception("Not valid for product")
-        self.img = multiply_matrix(
-            self.img, image.img, self.w, self.h, image.h)
+        self.img = multiply_matrix(self.img, image.img, self.w, self.h,
+                                   image.h)
 
     def negative(self):
         max_v, min_v = self._get_max_min()
@@ -283,11 +281,8 @@ class BWImageAbstraction(ImageAbstraction):
     def umbral(self, value):
         max_v, min_v = self._get_max_min()
         v = transform_from_std(min_v, max_v, value)
-        self.img = map_matrix(
-            self.img,
-            self.w,
-            self.h,
-            lambda x: max_v if x > v else min_v)
+        self.img = map_matrix(self.img, self.w, self.h,
+                              lambda x: max_v if x > v else min_v)
 
     def get_global_umbral(self):
         normalized_img_list = self.get_image_list()
@@ -295,20 +290,20 @@ class BWImageAbstraction(ImageAbstraction):
         it = 0
         record = []
         while True:
-            count = [0,0]
-            sum_p = [0,0]
+            count = [0, 0]
+            sum_p = [0, 0]
             for p in normalized_img_list:
-                i = 0 if p<u else 1
-                count[i]+=1
-                sum_p[i]+=p
-            m1 = sum_p[0]/count[0]
-            m2 = sum_p[1]/count[1]
+                i = 0 if p < u else 1
+                count[i] += 1
+                sum_p[i] += p
+            m1 = sum_p[0] / count[0]
+            m2 = sum_p[1] / count[1]
             new_u = int((m1 + m2) / 2)
-            it+=1
-            if abs(new_u-u)<=1:
+            it += 1
+            if abs(new_u - u) <= 1:
                 return (new_u, it)
             elif new_u in record:
-                return (sum(record)//len(record), it)
+                return (sum(record) // len(record), it)
             else:
                 u = new_u
                 record.append(new_u)
@@ -316,20 +311,21 @@ class BWImageAbstraction(ImageAbstraction):
     def get_otsu_umbral(self):
         normalized_img_list = self.get_image_list()
         total = len(normalized_img_list)
-        bucket_p = [0]*256
+        bucket_p = [0] * 256
         for each in normalized_img_list:
-            bucket_p[each]+=1/total
-        bucket_p1 = [0]*256
-        bucket_m = [0]*256
+            bucket_p[each] += 1 / total
+        bucket_p1 = [0] * 256
+        bucket_m = [0] * 256
         for i, v in enumerate(bucket_p):
-            bucket_p1[i] = v + (bucket_p1[i-1] if i>0 else 0)
-            bucket_m[i] = i*v + (bucket_m[i-1] if i>0 else 0)
+            bucket_p1[i] = v + (bucket_p1[i - 1] if i > 0 else 0)
+            bucket_m[i] = i * v + (bucket_m[i - 1] if i > 0 else 0)
         m_g = bucket_m[-1]
         max_variance = -1
         index = -1
         for i in range(256):
-            if bucket_p1[i]>0 and bucket_p1[i]<1:
-                curr_variance = ((m_g*bucket_p1[i]-bucket_m[i])**2)/(bucket_p1[i]*(1-bucket_p1[i]))
+            if bucket_p1[i] > 0 and bucket_p1[i] < 1:
+                curr_variance = ((m_g * bucket_p1[i] - bucket_m[i])**2) / (
+                    bucket_p1[i] * (1 - bucket_p1[i]))
                 if curr_variance > max_variance:
                     max_variance, index = curr_variance, i
         return index
@@ -339,29 +335,29 @@ class BWImageAbstraction(ImageAbstraction):
         v1 = transform_from_std(min_v, max_v, r1)
         v2 = transform_from_std(min_v, max_v, r2)
         self.img = map_matrix(
-            self.img,
-            self.w,
-            self.h,
+            self.img, self.w, self.h,
             lambda x: 0.5 * x if x < v1 else 2 * x if x > v2 else x)
 
     def power(self, value):
         max_v, min_v = self._get_max_min()
-        self.img = map_matrix(self.img, self.w, self.h, lambda x: (
-            255 / pow(max_v, value)) * pow(x, value))
+        self.img = map_matrix(
+            self.img, self.w, self.h,
+            lambda x: (255 / pow(max_v, value)) * pow(x, value))
 
     def product(self, value):
         self.img = map_matrix(self.img, self.w, self.h, lambda x: x * value)
 
     def compress(self):
         max_v, min_v = self._get_max_min()
-        self.img = map_matrix(self.img, self.w, self.h, lambda x: (
-            (255) / (math.log(256))) * math.log(1 + transform_to_std(min_v, max_v, x)))
+        self.img = map_matrix(
+            self.img, self.w, self.h,
+            lambda x: ((255) / (math.log(256))) * math.log(1 + transform_to_std(min_v, max_v, x)))
 
     def equalize(self):
         normalized_img_list = self.get_image_list()
         equalized_list = ImageAbstraction.equalize_band(normalized_img_list)
-        self.img = ImageAbstraction._get_img_matrix(
-            self.w, self.h, equalized_list)
+        self.img = ImageAbstraction._get_img_matrix(self.w, self.h,
+                                                    equalized_list)
 
     def contaminate_multiplicative_noise(self, percentage, generator):
         total = self.w * self.h
@@ -375,17 +371,17 @@ class BWImageAbstraction(ImageAbstraction):
 
     def contaminate_gauss_noise(self, percentage, intensity):
         normalized_img = self.get_image_list()
-        aux_matrix = ImageAbstraction._get_img_matrix(
-            self.w, self.h, normalized_img)
+        aux_matrix = ImageAbstraction._get_img_matrix(self.w, self.h,
+                                                      normalized_img)
         total = self.w * self.h
         pixels = int((total * percentage) / 100)
         noise_list = []
         for i in range((pixels + 1) // 2):
             x1, x2 = random.random(), random.random()
-            noise_list.append(math.sqrt(-2 * math.log(x1))
-                              * math.cos(2 * math.pi * x2))
-            noise_list.append(math.sqrt(-2 * math.log(x1))
-                              * math.sin(2 * math.pi * x2))
+            noise_list.append(
+                math.sqrt(-2 * math.log(x1)) * math.cos(2 * math.pi * x2))
+            noise_list.append(
+                math.sqrt(-2 * math.log(x1)) * math.sin(2 * math.pi * x2))
         candidates = random.sample(range(total), pixels)
         for each in candidates:
             x = each // self.h
@@ -411,25 +407,28 @@ class BWImageAbstraction(ImageAbstraction):
         def f(m):
             l = flat_matrix(m)
             return sum(l) / len(l)
+
         self.img = self._common_filter(size, f)
 
     def median_filter(self, size):
         def f(m):
             l = flat_matrix(m)
             return median(l)
+
         self.img = self._common_filter(size, f)
 
     def gauss_filter(self, size, sigma):
         def f(m):
             aux = 0
-            half = size//2
-            r = range(-(half), (half)+1)
+            half = size // 2
+            r = range(-(half), (half) + 1)
             for i in r:
                 for j in r:
                     coe = (1 / (2 * math.pi * math.pow(sigma, 2))) * math.pow(math.e, - \
                            (math.pow(i, 2) + math.pow(j, 2)) / math.pow(sigma, 2))
-                    aux += coe * m[i+half][j+half]
+                    aux += coe * m[i + half][j + half]
             return aux
+
         self.img = self._common_filter(size, f)
 
     def border_filter(self, size):
@@ -442,40 +441,44 @@ class BWImageAbstraction(ImageAbstraction):
                     if not i == half or not j == half:
                         aux -= coe * m[i][j]
             return aux
+
         self.img = self._common_filter(size, f)
 
     def _get_4_neighbors(img, i, j, w, h):
         ret = []
-        ret.append(img[i-1][j] if i>0 else img[0][j])
-        ret.append(img[i+1][j] if i<w-1 else img[w-1][j])
-        ret.append(img[i][j-1] if j>0 else img[i][0])
-        ret.append(img[i][j+1] if j<h-1 else img[i][h-1])
+        ret.append(img[i - 1][j] if i > 0 else img[0][j])
+        ret.append(img[i + 1][j] if i < w - 1 else img[w - 1][j])
+        ret.append(img[i][j - 1] if j > 0 else img[i][0])
+        ret.append(img[i][j + 1] if j < h - 1 else img[i][h - 1])
         return ret
 
     def _common_anisotropic_diffusion(self, f, times):
         normalized_img = self.get_image_list()
-        aux_matrix = ImageAbstraction._get_img_matrix(
-            self.w, self.h, normalized_img)
+        aux_matrix = ImageAbstraction._get_img_matrix(self.w, self.h,
+                                                      normalized_img)
         empty_matrix = [[0 for i in range(self.h)] for j in range(self.w)]
         for t in range(times):
             for i in range(self.w):
                 for j in range(self.h):
-                    curr_sum=0
-                    for neigh in BWImageAbstraction._get_4_neighbors(aux_matrix, i, j, self.w, self.h):
+                    curr_sum = 0
+                    for neigh in BWImageAbstraction._get_4_neighbors(
+                            aux_matrix, i, j, self.w, self.h):
                         d = neigh - aux_matrix[i][j]
-                        curr_sum += d*f(d)
-                    empty_matrix[i][j] = aux_matrix[i][j] + 0.25*curr_sum
+                        curr_sum += d * f(d)
+                    empty_matrix[i][j] = aux_matrix[i][j] + 0.25 * curr_sum
             aux_matrix = empty_matrix
         return aux_matrix
 
     def leclerc_anisotropic_diffusion(self, sigma, times):
-        self.img = self._common_anisotropic_diffusion(lambda x : 1/((x**2/sigma**2)+1), times)
+        self.img = self._common_anisotropic_diffusion(
+            lambda x: 1 / ((x**2 / sigma**2) + 1), times)
 
     def lorentziano_anisotropic_diffusion(self, sigma, times):
-        self.img = self._common_anisotropic_diffusion(lambda x : math.e**(-(x**2)/sigma**2), times)
+        self.img = self._common_anisotropic_diffusion(
+            lambda x: math.e**(-(x**2) / sigma**2), times)
 
     def isotropic_diffusion(self, times):
-        self.img = self._common_anisotropic_diffusion(lambda x : 1, times)
+        self.img = self._common_anisotropic_diffusion(lambda x: 1, times)
 
     def _get_prewitt_matrix_x(self):
         def f(m):
@@ -485,6 +488,7 @@ class BWImageAbstraction(ImageAbstraction):
             for j in range(3):
                 aux += m[j][2]
             return aux
+
         return self._common_filter(3, f)
 
     def _get_prewitt_matrix_y(self):
@@ -495,6 +499,7 @@ class BWImageAbstraction(ImageAbstraction):
             for j in range(3):
                 aux += m[2][j]
             return aux
+
         return self._common_filter(3, f)
 
     def _get_sobel_matrix_x(self):
@@ -505,6 +510,7 @@ class BWImageAbstraction(ImageAbstraction):
             for j in range(3):
                 aux += m[j][2] * (2 if j == 1 else 1)
             return aux
+
         return self._common_filter(3, f)
 
     def _get_sobel_matrix_y(self):
@@ -515,49 +521,62 @@ class BWImageAbstraction(ImageAbstraction):
             for j in range(3):
                 aux += m[2][j] * (2 if j == 1 else 1)
             return aux
+
         return self._common_filter(3, f)
 
     def _common_border_method(self, matrix_x, matrix_y):
         for i in range(self.w):
             for j in range(self.h):
-                self.img[i][j] = math.sqrt(
-                    matrix_x[i][j]**2 + matrix_y[i][j]**2)
+                self.img[i][j] = math.sqrt(matrix_x[i][j]**2 + matrix_y[i][j]**
+                                           2)
 
     def _common_directional_method(self, size, matrix_list):
         def f(m):
             candidates = [put_mask(m, each, size) for each in matrix_list]
-            max_with_index = max([(abs(v),i) for i,v in enumerate(candidates)], key=lambda x:x[0])
+            max_with_index = max(
+                [(abs(v), i) for i, v in enumerate(candidates)],
+                key=lambda x: x[0])
             return candidates[max_with_index[1]]
+
         return self._common_filter(size, f)
 
     def kirsh_directional_method(self):
-        self.img = self._common_directional_method(3, get_kirsh_directional_matrix())
-        
+        self.img = self._common_directional_method(
+            3, get_kirsh_directional_matrix())
+
     def prewitt_directional_method(self):
-        self.img = self._common_directional_method(3, get_prewitt_directional_matrix())
+        self.img = self._common_directional_method(
+            3, get_prewitt_directional_matrix())
 
     def sobel_directional_method(self):
-        self.img = self._common_directional_method(3, get_sobel_directional_matrix())
+        self.img = self._common_directional_method(
+            3, get_sobel_directional_matrix())
 
     def alternative_directional_method(self):
-        self.img = self._common_directional_method(3, get_alternative_directional_matrix())
+        self.img = self._common_directional_method(
+            3, get_alternative_directional_matrix())
 
     def _get_laplacian_img_mask(self):
         def f(m):
-            mask = [[0,-1,0],[-1,4,-1],[0,-1,0]]
+            mask = [[0, -1, 0], [-1, 4, -1], [0, -1, 0]]
             return put_mask(m, mask, 3)
+
         return self._common_filter(3, f)
 
     def _get_LoG_img_mask(self, size, sigma):
         def f(m):
             aux = 0
-            half = size//2
-            r = range(-(half), (half)+1)
+            half = size // 2
+            r = range(-(half), (half) + 1)
             for i in r:
                 for j in r:
-                    coe = -(1/(math.pi*sigma**4))*(1-((i**2+j**2)/(2*(sigma**2))))*(math.pow(math.e, -(i**2+j**2)/(2*(sigma**2))))
-                    aux += coe * m[i+half][j+half]
+                    coe = -(1 / (math.pi * sigma**4)) * (1 - (
+                        (i**2 + j**2) /
+                        (2 * (sigma**2)))) * (math.pow(math.e, -(i**2 + j**2) /
+                                                       (2 * (sigma**2))))
+                    aux += coe * m[i + half][j + half]
             return aux
+
         return self._common_filter(size, f)
 
     def LoG_mask(self, size, sigma):
@@ -568,21 +587,20 @@ class BWImageAbstraction(ImageAbstraction):
 
     def laplacian_method(self):
         aux = self._get_laplacian_img_mask()
-        f = lambda curr, right, down: sign(curr)!=sign(right) or sign(curr)!=sign(down)
+        f = lambda curr, right, down: sign(curr) != sign(right) or sign(curr) != sign(down)
         self._mark_borders(aux, f)
 
     def _mark_borders(self, aux, condition):
         for i in range(self.w):
             for j in range(self.h):
-                right_pixel = aux[i+1][j] if i<self.w-1 else aux[i][j]
-                down_pixel = aux[i][j+1] if j<self.h-1 else aux[i][j]
+                right_pixel = aux[i + 1][j] if i < self.w - 1 else aux[i][j]
+                down_pixel = aux[i][j + 1] if j < self.h - 1 else aux[i][j]
                 curr_pixel = aux[i][j]
-                self.img[i][j] = 255 if condition(curr_pixel, right_pixel, down_pixel) else 0
+                self.img[i][j] = 255 if condition(curr_pixel, right_pixel,
+                                                  down_pixel) else 0
 
     def _mark_borders_with_umbral(self, aux_img, umbral):
-        f = lambda curr, right, down: (sign(curr)!=sign(right) and 
-                    abs(curr)+abs(right)>umbral ) or (sign(curr)!=sign(down)
-                            and abs(curr)+abs(down) > umbral)
+        f = lambda curr, right, down: (sign(curr) != sign(right) and abs(curr) + abs(right) > umbral) or (sign(curr) != sign(down) and abs(curr) + abs(down) > umbral)
         self._mark_borders(aux_img, f)
 
     def laplacian_pending_method(self, umbral):
@@ -599,7 +617,6 @@ class BWImageAbstraction(ImageAbstraction):
 
 
 class RGBImageAbstraction(ImageAbstraction):
-
     def get_image_list(self):
         flat_list = []
         max_min_bands = []
@@ -608,15 +625,15 @@ class RGBImageAbstraction(ImageAbstraction):
         for j in range(self.h):
             for i in range(self.w):
                 for x in range(3):
-                    flat_list.append(int(transform_to_std(max_min_bands[x][
-                        1], max_min_bands[x][0], self.img[i][j][x])))
+                    flat_list.append(
+                        int(
+                            transform_to_std(max_min_bands[x][
+                                1], max_min_bands[x][0], self.img[i][j][x])))
         return flat_list
 
     def _get_max_min_in_band(self, band):
-        return (
-            max_matrix_band(
-                self.img, band), min_matrix_band(
-                self.img, band))
+        return (max_matrix_band(self.img, band), min_matrix_band(self.img,
+                                                                 band))
 
     def update_pixel(self, x, y, color):
         raise Exception("Not implemented on RGB")
@@ -644,6 +661,7 @@ class RGBImageAbstraction(ImageAbstraction):
             for i, e in enumerate(t):
                 l.append(max_min_bands[i % 3][0] - e + max_min_bands[i % 3][1])
             return tuple(l)
+
         self.img = map_matrix(self.img, self.w, self.h, f)
 
     def get_mode(self):
@@ -653,11 +671,7 @@ class RGBImageAbstraction(ImageAbstraction):
         f = lambda x: int(sum(x) / 3)
         aux_img = map_matrix(self.img, self.w, self.h, f)
         return BWImageAbstraction(
-            flat_img_matrix(
-                aux_img,
-                self.w,
-                self.h),
-            self.get_size_tuple())
+            flat_img_matrix(aux_img, self.w, self.h), self.get_size_tuple())
 
     def is_bw(self):
         return False
@@ -683,8 +697,8 @@ class RGBImageAbstraction(ImageAbstraction):
     def equalize(self):
         img_list = self.get_image_list()
         bands = self.get_bands()
-        eq_list_r, eq_list_g, eq_list_b = map(
-            ImageAbstraction.equalize_band, bands)
+        eq_list_r, eq_list_g, eq_list_b = map(ImageAbstraction.equalize_band,
+                                              bands)
         self.img = ImageAbstraction._get_img_matrix(
             self.w, self.h, RGBImageAbstraction.combine_bands_list(
                 eq_list_r, eq_list_g, eq_list_b))
@@ -697,6 +711,7 @@ class RGBImageAbstraction(ImageAbstraction):
             for j in range(3):
                 aux = tuple(x + y for x, y in zip(aux, m[j][2]))
             return aux
+
         return self._common_filter(3, f)
 
     def _get_prewitt_matrix_y(self):
@@ -707,6 +722,7 @@ class RGBImageAbstraction(ImageAbstraction):
             for j in range(3):
                 tuple(x + y for x, y in zip(aux, m[2][j]))
             return aux
+
         return self._common_filter(3, f)
 
     def _get_sobel_matrix_x(self):
@@ -719,6 +735,7 @@ class RGBImageAbstraction(ImageAbstraction):
                 aux = tuple(x + y * (2 if j == 1 else 1)
                             for x, y in zip(aux, m[j][2]))
             return aux
+
         return self._common_filter(3, f)
 
     def _get_sobel_matrix_y(self):
@@ -731,6 +748,7 @@ class RGBImageAbstraction(ImageAbstraction):
                 tuple(x + y * (2 if j == 1 else 1)
                       for x, y in zip(aux, m[2][j]))
             return aux
+
         return self._common_filter(3, f)
 
     def _common_border_method(self, matrix_x, matrix_y):
@@ -738,6 +756,6 @@ class RGBImageAbstraction(ImageAbstraction):
             for j in range(self.h):
                 aux = [0] * 3
                 for each in range(3):
-                    aux[each] = math.sqrt(
-                        matrix_x[i][j][each]**2 + matrix_y[i][j][each]**2)
+                    aux[each] = math.sqrt(matrix_x[i][j][each]**2 + matrix_y[i]
+                                          [j][each]**2)
                 self.img[i][j] = tuple(map(int, aux))

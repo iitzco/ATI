@@ -4,7 +4,6 @@ from PIL import ImageTk, Image
 
 
 class ImageWorkspace(tk.Frame):
-
     def __init__(self, gui, title):
         tk.Frame.__init__(self, gui)
         self.gui = gui
@@ -28,8 +27,7 @@ class ImageWorkspace(tk.Frame):
         self.xscroll.config(command=self.canvas_main.xview)
         self.yscroll.config(command=self.canvas_main.yview)
         self.canvas_main.config(
-            xscrollcommand=self.xscroll.set,
-            yscrollcommand=self.yscroll.set)
+            xscrollcommand=self.xscroll.set, yscrollcommand=self.yscroll.set)
         self.canvas_main.pack(fill=tk.BOTH, expand=tk.YES)
         self.map_bindings()
 
@@ -74,15 +72,16 @@ class ImageWorkspace(tk.Frame):
         else:
             x = canvas.canvasx(event.x)
             y = canvas.canvasy(event.y)
-            img = self.get_selection_img(
-                self.x_selection, self.y_selection, x, y, in_zoom)
+            img = self.get_selection_img(self.x_selection, self.y_selection, x,
+                                         y, in_zoom)
             self.rectangle_selection_id = canvas.create_rectangle(
                 self.x_selection, self.y_selection, x, y, outline='blue')
             ret = tkinter.messagebox.askyesno("Selection", "Want statistics?")
             if ret:
                 t = self.gui.image_manager.get_statistics(img)
                 tkinter.messagebox.showinfo(
-                    "Statistics", "# of Pixel: {} --- Mean: {}".format(t[0], t[1]))
+                    "Statistics",
+                    "# of Pixel: {} --- Mean: {}".format(t[0], t[1]))
             ret = tkinter.messagebox.askyesno(
                 "Confirm selection",
                 "Want to create new image with that selection? ATTENTION: unsaved studio image will be lost.")
@@ -96,7 +95,8 @@ class ImageWorkspace(tk.Frame):
         x = self.canvas_zoom.canvasx(event.x)
         y = self.canvas_zoom.canvasy(event.y)
         (x, y) = self.gui.image_manager.get_outbound_pixel(
-            self.x_zoom, self.y_zoom, x, y, self.winfo_width(), self.winfo_width())
+            self.x_zoom, self.y_zoom, x, y, self.winfo_width(),
+            self.winfo_width())
         self.color_common_event(x, y)
 
     def zoom_event(self, event):
@@ -120,7 +120,8 @@ class ImageWorkspace(tk.Frame):
         if self.gui.has_img():
             self.gui.menu.x_pixel = x
             self.gui.menu.y_pixel = y
-            if x > self.gui.image_manager.get_image_width() or y > self.gui.image_manager.get_image_height():
+            if x > self.gui.image_manager.get_image_width(
+            ) or y > self.gui.image_manager.get_image_height():
                 return
             self.gui.menu.show_color(self.get_pixel_color(x, y))
 
@@ -132,15 +133,14 @@ class ImageWorkspace(tk.Frame):
 
 
 class OriginalImageWorkspace(ImageWorkspace):
-
     def zoom(self, x, y):
         zoomed_img = self.gui.image_manager.get_zoomed_original(
             x, y, self.winfo_width(), self.winfo_width())
         self.show_zoomed_image(zoomed_img)
 
     def show_image(self):
-        self.imageTk = ImageTk.PhotoImage(
-            self.gui.image_manager.get_original())
+        self.imageTk = ImageTk.PhotoImage(self.gui.image_manager.get_original(
+        ))
         self.canvas_main.create_image(0, 0, anchor='nw', image=self.imageTk)
         self.canvas_main.config(scrollregion=self.canvas_main.bbox(tk.ALL))
 
@@ -149,19 +149,15 @@ class OriginalImageWorkspace(ImageWorkspace):
 
     def get_selection_img(self, x_o, y_o, x_f, y_f, in_zoom):
         if in_zoom:
-            t = (
-                self.x_zoom,
-                self.y_zoom,
-                self.winfo_width(),
-                self.winfo_width())
+            t = (self.x_zoom, self.y_zoom, self.winfo_width(),
+                 self.winfo_width())
         else:
             t = None
-        return self.gui.image_manager.get_original_selection(
-            x_o, y_o, x_f, y_f, in_zoom, t)
+        return self.gui.image_manager.get_original_selection(x_o, y_o, x_f,
+                                                             y_f, in_zoom, t)
 
 
 class StudioImageWorkspace(ImageWorkspace):
-
     def zoom(self, x, y):
         zoomed_img = self.gui.image_manager.get_zoomed_img(
             x, y, self.winfo_width(), self.winfo_width())
@@ -177,12 +173,9 @@ class StudioImageWorkspace(ImageWorkspace):
 
     def get_selection_img(self, x_o, y_o, x_f, y_f, in_zoom):
         if in_zoom:
-            t = (
-                self.x_zoom,
-                self.y_zoom,
-                self.winfo_width(),
-                self.winfo_width())
+            t = (self.x_zoom, self.y_zoom, self.winfo_width(),
+                 self.winfo_width())
         else:
             t = None
-        return self.gui.image_manager.get_studio_selection(
-            x_o, y_o, x_f, y_f, in_zoom, t)
+        return self.gui.image_manager.get_studio_selection(x_o, y_o, x_f, y_f,
+                                                           in_zoom, t)

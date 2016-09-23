@@ -2,7 +2,6 @@ import tkinter as tk
 
 
 class MenuBar(tk.Menu):
-
     def __init__(self, gui):
         tk.Menu.__init__(self, gui)
         self.gui = gui
@@ -19,50 +18,38 @@ class MenuBar(tk.Menu):
 
 
 class LoadMenuBar(tk.Menu):
-
     def __init__(self, parent):
         tk.Menu.__init__(self, parent)
         self.add_command(label="Load Image", command=parent.gui.load_file)
         self.add_command(
-            label="Load Rectangle",
-            command=parent.gui.load_rectangle)
+            label="Load Rectangle", command=parent.gui.load_rectangle)
         self.add_command(label="Load Circle", command=parent.gui.load_circle)
         self.add_command(
-            label="Load (almost) Black Canvas",
-            command=parent.gui.load_black)
+            label="Load (almost) Black Canvas", command=parent.gui.load_black)
         self.add_command(
-            label="Load (almost) White Canvas",
-            command=parent.gui.load_white)
+            label="Load (almost) White Canvas", command=parent.gui.load_white)
 
 
 class NoiseMenuBar(tk.Menu):
-
     def __init__(self, parent):
         tk.Menu.__init__(self, parent)
         self.add_command(
-            label="Exponential",
-            command=parent.gui.exponential_noise)
+            label="Exponential", command=parent.gui.exponential_noise)
         self.add_command(label="Rayleigh", command=parent.gui.rayleigh_noise)
         self.add_command(label="Gauss", command=parent.gui.gauss_noise)
         self.add_command(
-            label="Salt and Pepper",
-            command=parent.gui.salt_pepper_noise)
+            label="Salt and Pepper", command=parent.gui.salt_pepper_noise)
 
 
 class FilteringMenuBar(tk.Menu):
-
     def __init__(self, parent):
         tk.Menu.__init__(self, parent)
+        self.add_command(label="Mean Filter", command=parent.gui.mean_filter)
         self.add_command(
-            label="Mean Filter",
-            command=parent.gui.mean_filter)
-        self.add_command(
-            label="Median Filter",
-            command=parent.gui.median_filter)
+            label="Median Filter", command=parent.gui.median_filter)
         self.add_command(label="Gauss Filter", command=parent.gui.gauss_filter)
         self.add_command(
-            label="Border Filter",
-            command=parent.gui.border_filter)
+            label="Border Filter", command=parent.gui.border_filter)
         self.add_command(
             label="Leclerc Anisotropic Diffusion",
             command=parent.gui.leclerc_anisotropic_diffusion)
@@ -75,91 +62,58 @@ class FilteringMenuBar(tk.Menu):
 
 
 class OperationsMenuBar(tk.Menu):
-
     def __init__(self, parent):
         tk.Menu.__init__(self, parent)
+        self.add_command(label="Negative", command=parent.gui.negative)
+        self.add_command(label="Umbralize", command=parent.gui.umbral)
         self.add_command(
-            label="Negative",
-            command=parent.gui.negative)
+            label="Global Umbralization", command=parent.gui.global_umbral)
         self.add_command(
-            label="Umbralize",
-            command=parent.gui.umbral)
-        self.add_command(
-            label="Global Umbralization",
-            command=parent.gui.global_umbral)
-        self.add_command(
-            label="Otsu Umbralization",
-            command=parent.gui.otsu_umbral)
+            label="Otsu Umbralization", command=parent.gui.otsu_umbral)
         self.add_command(label="Power", command=parent.gui.power)
         self.add_command(label="Product", command=parent.gui.product)
         self.add_command(
-            label="Range Compression",
-            command=parent.gui.compression)
+            label="Range Compression", command=parent.gui.compression)
         self.add_command(
-            label="Contrast Enhancement",
-            command=parent.gui.enhance_contrast)
+            label="Contrast Enhancement", command=parent.gui.enhance_contrast)
         self.add_command(label="Equalize", command=parent.gui.equalize)
         self.add_separator()
+        self.add_command(label="Add Image", command=parent.gui.add_img)
         self.add_command(
-            label="Add Image",
-            command=parent.gui.add_img)
+            label="Substract image", command=parent.gui.substract_img)
         self.add_command(
-            label="Substract image",
-            command=parent.gui.substract_img)
-        self.add_command(
-            label="Multiply Image",
-            command=parent.gui.multiply_img)
+            label="Multiply Image", command=parent.gui.multiply_img)
 
 
 class StatsMenuBar(tk.Menu):
-
     def __init__(self, parent):
         tk.Menu.__init__(self, parent)
-        self.add_command(
-            label="Histogram",
-            command=parent.gui.histogram)
+        self.add_command(label="Histogram", command=parent.gui.histogram)
 
 
 class UtilsMenuBar(tk.Menu):
-
     def __init__(self, parent):
         tk.Menu.__init__(self, parent)
+        self.add_command(label="To B&W", command=parent.gui.to_bw)
+        self.add_command(label="Sobel X", command=parent.gui.sobel_x_img)
+        self.add_command(label="Sobel Y", command=parent.gui.sobel_y_img)
         self.add_command(
-            label="To B&W",
-            command=parent.gui.to_bw)
-        self.add_command(
-            label="Sobel X",
-            command=parent.gui.sobel_x_img)
-        self.add_command(
-            label="Sobel Y",
-            command=parent.gui.sobel_y_img)
-        self.add_command(
-            label="Laplacian Mask",
-            command=parent.gui.laplacian_mask)
-        self.add_command(
-            label="LoG Mask",
-            command=parent.gui.LoG_mask)
+            label="Laplacian Mask", command=parent.gui.laplacian_mask)
+        self.add_command(label="LoG Mask", command=parent.gui.LoG_mask)
 
 
 class BorderMenuBar(tk.Menu):
-
     def __init__(self, parent):
         tk.Menu.__init__(self, parent)
         self.add_command(
-            label="Prewitt Method",
-            command=parent.gui.prewitt_method)
+            label="Prewitt Method", command=parent.gui.prewitt_method)
+        self.add_command(label="Sobel Method", command=parent.gui.sobel_method)
         self.add_command(
-            label="Sobel Method",
-            command=parent.gui.sobel_method)
-        self.add_command(
-            label="Laplacian Method",
-            command=parent.gui.laplacian_method)
+            label="Laplacian Method", command=parent.gui.laplacian_method)
         self.add_command(
             label="Laplacian Pending Method",
             command=parent.gui.laplacian_pending_method)
-        self.add_command(
-            label="LoG Method",
-            command=parent.gui.LoG_method)
+        self.add_command(label="LoG Method", command=parent.gui.LoG_method)
         self.add_separator()
         self.add_command(
             label="Kirsh Directional Method",
@@ -173,4 +127,3 @@ class BorderMenuBar(tk.Menu):
         self.add_command(
             label="Alternative Directional Method",
             command=parent.gui.alternative_directional_method)
-

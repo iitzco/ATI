@@ -2,7 +2,6 @@ import tkinter as tk
 
 
 class Menu(tk.Frame):
-
     def __init__(self, gui):
         tk.Frame.__init__(self, gui)
         self.gui = gui
@@ -18,8 +17,11 @@ class Menu(tk.Frame):
         self.color_canvas = tk.Label(self, bg='#000000', width=3)
         self.color_slider = tk.Scale(
             self, from_=0, to=255, orient=tk.HORIZONTAL)
-        self.button_zoom = tk.Button(self, text="Turn Zoom Mode ON", width=20,
-                                     command=self.zoom_mode_trigger)
+        self.button_zoom = tk.Button(
+            self,
+            text="Turn Zoom Mode ON",
+            width=20,
+            command=self.zoom_mode_trigger)
         self.button_mirror = tk.Button(
             self,
             text="Turn Mirror Mode ON",
@@ -49,14 +51,12 @@ class Menu(tk.Frame):
     def zoom_mode_trigger(self):
         self.gui.zoom_mode_trigger()
         self.button_zoom.config(
-            text="Turn Zoom Mode {}".format(
-                "OFF" if self.gui.zoom else "ON"))
+            text="Turn Zoom Mode {}".format("OFF" if self.gui.zoom else "ON"))
 
     def mirror_mode_trigger(self):
         self.gui.mirror_mode_trigger()
-        self.button_mirror.config(
-            text="Turn Mirror Mode {}".format(
-                "OFF" if self.gui.mirror else "ON"))
+        self.button_mirror.config(text="Turn Mirror Mode {}".format(
+            "OFF" if self.gui.mirror else "ON"))
 
     def show_color(self, color, from_slider=False, from_original=False):
         c_in_hex = [hex(e)[-2:] for e in [x + 256 for x in color]]
@@ -80,6 +80,5 @@ class Menu(tk.Frame):
         self.show_color((c, c, c), from_slider=True)
         self.gui.studio.show_image()
         if self.gui.zoom:
-            self.gui.studio.zoom(
-                self.gui.studio.x_zoom,
-                self.gui.studio.y_zoom)
+            self.gui.studio.zoom(self.gui.studio.x_zoom,
+                                 self.gui.studio.y_zoom)

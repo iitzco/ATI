@@ -16,7 +16,6 @@ ZOOM_INTENSITY = 40
 
 
 class GUI(tk.Frame):
-
     def __init__(self):
         tk.Frame.__init__(self)
 
@@ -40,8 +39,7 @@ class GUI(tk.Frame):
 
         # Full Windows Size
         self.master.geometry("{0}x{1}+0+0".format(
-            self.master.winfo_screenwidth(),
-            self.master.winfo_screenheight()))
+            self.master.winfo_screenwidth(), self.master.winfo_screenheight()))
         self.pack(fill=tk.BOTH, expand=tk.YES)
 
     def create_subframes(self):
@@ -94,8 +92,8 @@ class GUI(tk.Frame):
             try:
                 self.image_manager.load_image(img)
             except Exception:
-                tkinter.messagebox.showinfo(
-                    'Alert', 'Unsupported image format')
+                tkinter.messagebox.showinfo('Alert',
+                                            'Unsupported image format')
             self.load_images()
 
     def load_images(self):
@@ -111,8 +109,7 @@ class GUI(tk.Frame):
         try:
             self.image_manager.undo()
         except Exception:
-            tkinter.messagebox.showinfo(
-                'Alert', 'Already at latest change')
+            tkinter.messagebox.showinfo('Alert', 'Already at latest change')
         self.studio.show_image()
 
     def to_bw(self):
@@ -127,8 +124,8 @@ class GUI(tk.Frame):
             try:
                 aux_image_manager.load_image(img)
             except Exception:
-                tkinter.messagebox.showinfo(
-                    'Alert', 'Unsupported image format')
+                tkinter.messagebox.showinfo('Alert',
+                                            'Unsupported image format')
         return aux_image_manager
 
     def add_img(self):
@@ -180,14 +177,14 @@ class GUI(tk.Frame):
             self.image_manager.umbral(value)
             self.studio.show_image()
         except Exception:
-            tkinter.messagebox.showinfo(
-                'Alert', 'Unsupported operation')
+            tkinter.messagebox.showinfo('Alert', 'Unsupported operation')
 
     def global_umbral(self):
         v, it = self.image_manager.get_global_umbral()
         ret = tkinter.messagebox.askyesno(
             "Global umbralization",
-            "Best umbral value is {}, founded in {} iterations. Wish to umbralize?".format(v, it))
+            "Best umbral value is {}, founded in {} iterations. Wish to umbralize?".
+            format(v, it))
         if ret:
             self.image_manager.umbral(int(v))
             self.studio.show_image()
@@ -207,8 +204,7 @@ class GUI(tk.Frame):
             self.image_manager.power(value)
             self.studio.show_image()
         except Exception:
-            tkinter.messagebox.showinfo(
-                'Alert', 'Unsupported operation')
+            tkinter.messagebox.showinfo('Alert', 'Unsupported operation')
 
     def product(self):
         value = askfloat("Product", "Product Value?", minvalue=0)
@@ -216,8 +212,7 @@ class GUI(tk.Frame):
             self.image_manager.product(value)
             self.studio.show_image()
         except Exception:
-            tkinter.messagebox.showinfo(
-                'Alert', 'Unsupported operation')
+            tkinter.messagebox.showinfo('Alert', 'Unsupported operation')
 
     def compression(self):
         self.image_manager.compression()
@@ -232,27 +227,27 @@ class GUI(tk.Frame):
             plt.hist(values, bins=256)
         else:
             plt.subplot(311)
-            plt.hist([e for i, e in enumerate(values) if i %
-                      3 == 0], bins=256, facecolor='red')
+            plt.hist(
+                [e for i, e in enumerate(values) if i % 3 == 0],
+                bins=256,
+                facecolor='red')
             plt.subplot(312)
-            plt.hist([e for i, e in enumerate(values) if i %
-                      3 == 1], bins=256, facecolor='green')
+            plt.hist(
+                [e for i, e in enumerate(values) if i % 3 == 1],
+                bins=256,
+                facecolor='green')
             plt.subplot(313)
-            plt.hist([e for i, e in enumerate(values) if i %
-                      3 == 2], bins=256, facecolor='blue')
+            plt.hist(
+                [e for i, e in enumerate(values) if i % 3 == 2],
+                bins=256,
+                facecolor='blue')
         plt.show()
 
     def enhance_contrast(self):
         value1 = askinteger(
-            "Contrast Enhancement",
-            "r1 value?",
-            minvalue=0,
-            maxvalue=255)
+            "Contrast Enhancement", "r1 value?", minvalue=0, maxvalue=255)
         value2 = askinteger(
-            "Contrast Enhancement",
-            "r2 value?",
-            minvalue=0,
-            maxvalue=255)
+            "Contrast Enhancement", "r2 value?", minvalue=0, maxvalue=255)
 
         if not value1 or not value2:
             return
@@ -270,10 +265,7 @@ class GUI(tk.Frame):
     def input_multiplicative_noise(self, t):
         param = askfloat("{} Noise".format(t), "Parameter?")
         percentage = askfloat(
-            "{} Noise".format(t),
-            "Percentage?",
-            minvalue=0,
-            maxvalue=100)
+            "{} Noise".format(t), "Percentage?", minvalue=0, maxvalue=100)
         return (param, percentage)
 
     def exponential_noise(self):
@@ -293,10 +285,7 @@ class GUI(tk.Frame):
     def gauss_noise(self):
         intensity = askfloat("Gauss Noise", "Intensity?")
         percentage = askfloat(
-            "Gauss Noise",
-            "Percentage?",
-            minvalue=0,
-            maxvalue=100)
+            "Gauss Noise", "Percentage?", minvalue=0, maxvalue=100)
         if any([x is None for x in [intensity, percentage]]):
             return
         self.image_manager.gauss_noise(intensity, percentage)
@@ -306,10 +295,7 @@ class GUI(tk.Frame):
         p0 = askfloat("S&P Noise", "P0?", minvalue=0, maxvalue=255)
         p1 = askfloat("S&P Noise", "P1?", minvalue=0, maxvalue=255)
         percentage = askfloat(
-            "Gauss Noise",
-            "Percentage?",
-            minvalue=0,
-            maxvalue=100)
+            "Gauss Noise", "Percentage?", minvalue=0, maxvalue=100)
         if any([x is None for x in [p0, p1, percentage]]):
             return
         if p1 < p0:
@@ -338,7 +324,9 @@ class GUI(tk.Frame):
     def gauss_filter(self):
         sigma = askfloat("Gauss", "Sigma?", minvalue=0)
         size = askinteger(
-            "Gauss", "Window Size? Suggested {} (2*sigma + 1)".format(2 * sigma + 1), minvalue=0)
+            "Gauss",
+            "Window Size? Suggested {} (2*sigma + 1)".format(2 * sigma + 1),
+            minvalue=0)
         if not sigma or not size or not size % 2:
             return
         self.image_manager.gauss_filter(size, sigma)
@@ -360,10 +348,12 @@ class GUI(tk.Frame):
         self.studio.show_image()
 
     def leclerc_anisotropic_diffusion(self):
-        self.anisotropic_diffusion(self.image_manager.leclerc_anisotropic_diffusion)
+        self.anisotropic_diffusion(
+            self.image_manager.leclerc_anisotropic_diffusion)
 
     def lorentziano_anisotropic_diffusion(self):
-        self.anisotropic_diffusion(self.image_manager.lorentziano_anisotropic_diffusion)
+        self.anisotropic_diffusion(
+            self.image_manager.lorentziano_anisotropic_diffusion)
 
     def prewitt_method(self):
         self.image_manager.prewitt_method()
@@ -380,7 +370,9 @@ class GUI(tk.Frame):
     def LoG_mask(self):
         sigma = askfloat("Parameters", "Sigma?", minvalue=0)
         size = askinteger(
-            "Parameters", "Window Size? Suggested {} (2*sigma + 1)".format(2 * sigma + 1), minvalue=0)
+            "Parameters",
+            "Window Size? Suggested {} (2*sigma + 1)".format(2 * sigma + 1),
+            minvalue=0)
         if not sigma or not size or not size % 2:
             return
         self.image_manager.LoG_mask(size, sigma)
@@ -400,7 +392,9 @@ class GUI(tk.Frame):
     def LoG_method(self):
         sigma = askfloat("Parameters", "Sigma?", minvalue=0)
         size = askinteger(
-            "Parameters", "Window Size? Suggested {} (2*sigma + 1)".format(2 * sigma + 1), minvalue=0)
+            "Parameters",
+            "Window Size? Suggested {} (2*sigma + 1)".format(2 * sigma + 1),
+            minvalue=0)
         umbral = askinteger("Parameters", "Umbral?", minvalue=0)
         if not sigma or not size or not size % 2 or umbral is None or umbral is 0:
             return

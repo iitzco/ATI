@@ -11,7 +11,6 @@ ZOOM_INTENSITY = 50
 
 
 class ImageManager:
-
     def __init__(self):
         pass
 
@@ -68,14 +67,12 @@ class ImageManager:
         self.backup = copy.deepcopy(self.image)
         self.undo_list = []
 
-        self.cached_backup = Image.frombytes(
-            self.backup.get_mode(),
-            self.backup.get_size_tuple(),
-            self.backup.get_image_bytes())
-        self.cached_image = Image.frombytes(
-            self.image.get_mode(),
-            self.image.get_size_tuple(),
-            self.image.get_image_bytes())
+        self.cached_backup = Image.frombytes(self.backup.get_mode(),
+                                             self.backup.get_size_tuple(),
+                                             self.backup.get_image_bytes())
+        self.cached_image = Image.frombytes(self.image.get_mode(),
+                                            self.image.get_size_tuple(),
+                                            self.image.get_image_bytes())
         self.modified = False
 
     def get_image_width(self):
@@ -99,10 +96,9 @@ class ImageManager:
 
     def get_image(self):
         if self.modified:
-            self.cached_image = Image.frombytes(
-                self.image.get_mode(),
-                self.image.get_size_tuple(),
-                self.image.get_image_bytes())
+            self.cached_image = Image.frombytes(self.image.get_mode(),
+                                                self.image.get_size_tuple(),
+                                                self.image.get_image_bytes())
             self.modified = False
         return self.cached_image
 
@@ -113,11 +109,9 @@ class ImageManager:
         return ImageManager._get_zoomed_img(self.get_image(), x, y, w, h)
 
     def _get_zoomed_img(img, x, y, w, h):
-        return img.crop(
-            (x - ZOOM_INTENSITY,
-             y - ZOOM_INTENSITY,
-             x + ZOOM_INTENSITY,
-             y + ZOOM_INTENSITY)).resize((w, h))
+        return img.crop((x - ZOOM_INTENSITY, y - ZOOM_INTENSITY,
+                         x + ZOOM_INTENSITY, y + ZOOM_INTENSITY)).resize(
+                             (w, h))
 
     def get_img_pixel_color(self, x, y):
         return ImageManager._get_pixel_color(self.image, x, y)
@@ -172,17 +166,8 @@ class ImageManager:
                 elif idx % 3 == 2:
                     b.append(elem)
             l = int(len(array) / 3)
-            return (
-                l,
-                (round(
-                    sum(r) / l,
-                    2),
-                    round(
-                    sum(g) / l,
-                    2),
-                    round(
-                    sum(b) / l),
-                    2))
+            return (l, (round(sum(r) / l, 2), round(sum(g) / l, 2), round(
+                sum(b) / l), 2))
 
     def get_histogram_values(self):
         return self.image.get_image_list()
@@ -263,12 +248,15 @@ class ImageManager:
     def exponential_noise(self, param, percentage):
         self.modify()
         self.image.contaminate_multiplicative_noise(
-            percentage, partial(ImageManager.exponential_generator, param=param))
+            percentage,
+            partial(
+                ImageManager.exponential_generator, param=param))
 
     def rayleigh_noise(self, param, percentage):
         self.modify()
         self.image.contaminate_multiplicative_noise(
-            percentage, partial(ImageManager.rayleigh_generator, param=param))
+            percentage, partial(
+                ImageManager.rayleigh_generator, param=param))
 
     def gauss_noise(self, intensity, percentage):
         self.modify()
