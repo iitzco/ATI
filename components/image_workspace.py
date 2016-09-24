@@ -167,6 +167,8 @@ class StudioImageWorkspace(ImageWorkspace):
         self.imageTk = ImageTk.PhotoImage(self.gui.image_manager.get_image())
         self.canvas_main.create_image(0, 0, anchor='nw', image=self.imageTk)
         self.canvas_main.config(scrollregion=self.canvas_main.bbox(tk.ALL))
+        if hasattr(self, 'pixel_list') and not self.pixel_list:
+            self.unmark_pixels()
 
     def get_pixel_color(self, x, y):
         return self.gui.image_manager.get_img_pixel_color(int(x), int(y))
@@ -179,3 +181,17 @@ class StudioImageWorkspace(ImageWorkspace):
             t = None
         return self.gui.image_manager.get_studio_selection(x_o, y_o, x_f, y_f,
                                                            in_zoom, t)
+    def mark_pixels(self, pixel_list):
+        if hasattr(self, 'pixel_list') and not self.pixel_list:
+            self.unmark_pixels()
+
+        self.pixel_list = []
+        
+        for p in pixel_list:
+            self.pixel_list.append([self.canvas_main.create_oval(
+                p[0]-3, p[1]-3, p[0]+3, p[1]+3, outline='green', fill='green'), (p[0],p[1])])
+
+    def unmark_pixels(self):
+        if hasattr(self, "pixel_list"):
+            for p in self.pixel_list:
+                self.canvas_main.delete(p[0])

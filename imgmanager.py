@@ -2,7 +2,9 @@ from PIL import Image
 from bitarray import bitarray
 from functools import partial
 
-from imgprocessor import ImageAbstraction, BWImageAbstraction, RGBImageAbstraction
+from img_processor.img_abstraction import ImageAbstraction
+from img_processor.bw_img_abstraction import BWImageAbstraction
+from img_processor.rgb_img_abstraction import RGBImageAbstraction
 
 import math
 import copy
@@ -345,3 +347,6 @@ class ImageManager:
     def sobel_y_img(self):
         self.modify()
         self.image.sobel_y_to_img()
+
+    def harris_method(self, umbral):
+        return self.image.harris_method(umbral)

@@ -27,6 +27,11 @@ class Menu(tk.Frame):
             text="Turn Mirror Mode ON",
             width=20,
             command=self.mirror_mode_trigger)
+        self.button_unmark = tk.Button(
+            self,
+            text="Unmark",
+            width=20,
+            command=self.gui.unmark)
         self.button_sync = tk.Checkbutton(
             self,
             text="Sync zoom",
@@ -44,6 +49,7 @@ class Menu(tk.Frame):
         self.button_undo.grid(pady=5)
         self.button_zoom.grid(pady=5)
         self.button_mirror.grid(pady=5)
+        self.button_unmark.grid(pady=5)
         self.color_label.grid(pady=5)
         self.color_canvas.grid(pady=3)
         self.color_slider.grid(pady=5)

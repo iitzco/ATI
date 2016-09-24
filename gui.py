@@ -425,6 +425,15 @@ class GUI(tk.Frame):
         self.image_manager.sobel_y_img()
         self.studio.show_image()
 
+    def unmark(self):
+        self.studio.unmark_pixels()
+
+    def harris_method(self):
+        umbral = askfloat("Parameters", "Percentage?", minvalue=0, maxvalue=1)
+        if umbral is None:
+            return
+        p = self.image_manager.harris_method(umbral)
+        self.studio.mark_pixels(p)
 
 if __name__ == "__main__":
     gui = GUI()

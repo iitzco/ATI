@@ -15,6 +15,7 @@ class MenuBar(tk.Menu):
         self.add_cascade(label="Stats", menu=StatsMenuBar(self))
         self.add_cascade(label="Utils", menu=UtilsMenuBar(self))
         self.add_cascade(label="Borders", menu=BorderMenuBar(self))
+        self.add_cascade(label="Characteristics", menu=CharacteristicsMenuBar(self))
 
 
 class LoadMenuBar(tk.Menu):
@@ -127,3 +128,8 @@ class BorderMenuBar(tk.Menu):
         self.add_command(
             label="Alternative Directional Method",
             command=parent.gui.alternative_directional_method)
+
+class CharacteristicsMenuBar(tk.Menu):
+    def __init__(self, parent):
+        tk.Menu.__init__(self, parent)
+        self.add_command(label="Harris Method", command=parent.gui.harris_method)
