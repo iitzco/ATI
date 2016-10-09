@@ -350,3 +350,6 @@ class ImageManager:
 
     def harris_method(self, umbral):
         return self.image.harris_method(umbral)
+
+    def susan_method(self, umbral):
+        return self.image.susan_method(umbral)

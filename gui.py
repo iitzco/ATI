@@ -427,6 +427,7 @@ class GUI(tk.Frame):
 
     def unmark(self):
         self.studio.unmark_pixels()
+        self.menu.remove_unmark_button()
 
     def harris_method(self):
         umbral = askfloat("Parameters", "Percentage?", minvalue=0, maxvalue=1)
@@ -434,6 +435,16 @@ class GUI(tk.Frame):
             return
         p = self.image_manager.harris_method(umbral)
         self.studio.mark_pixels(p)
+        self.menu.show_unmark_button()
+
+    def susan_method(self):
+        umbral = askfloat("Parameters", "Percentage?", minvalue=0)
+        if umbral is None:
+            return
+        p = self.image_manager.susan_method(umbral)
+        self.studio.mark_pixels(p)
+        self.menu.show_unmark_button()
+
 
 if __name__ == "__main__":
     gui = GUI()

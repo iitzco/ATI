@@ -1,5 +1,18 @@
 
-# Created by https://www.gitignore.io/api/python,vim
+# Created by https://www.gitignore.io/api/vim,python
+
+### Vim ###
+# swap
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+# session
+Session.vim
+# temporary
+.netrwhist
+*~
+# auto-generated tag files
+tags
+
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
@@ -83,6 +96,7 @@ celerybeat-schedule
 .env
 
 # virtualenv
+.venv/
 venv/
 ENV/
 
@@ -91,16 +105,3 @@ ENV/
 
 # Rope project settings
 .ropeproject
-
-
-### Vim ###
-# swap
-[._]*.s[a-w][a-z]
-[._]s[a-w][a-z]
-# session
-Session.vim
-# temporary
-.netrwhist
-*~
-# auto-generated tag files
-tags
