@@ -137,3 +137,5 @@ class CharacteristicsMenuBar(tk.Menu):
         self.add_command(
             label="Harris Method", command=parent.gui.harris_method)
         self.add_command(label="Susan Method", command=parent.gui.susan_method)
+        self.add_command(label="SIFT Method", command=parent.gui.sift_method)
+        self.add_command(label="SIFT Matcher Method", command=parent.gui.match_sift_method)

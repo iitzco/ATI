@@ -1,4 +1,5 @@
 import tkinter as tk
+import cv2
 import matplotlib.pyplot as plt
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 from tkinter.simpledialog import askinteger, askfloat
@@ -445,6 +446,26 @@ class GUI(tk.Frame):
         self.studio.mark_pixels(p)
         self.menu.show_unmark_button()
 
+    def sift_method(self):
+        fname = askopenfilename()
+        if fname:
+            img = cv2.imread(fname)
+            sift_img = self.image_manager.sift_method(img)
+            fname = asksaveasfilename()
+            if fname:
+                cv2.imwrite(fname, sift_img)
+
+    def match_sift_method(self):
+        fname1 = askopenfilename()
+        fname2 = askopenfilename()
+        if fname1 and fname2:
+            img1 = cv2.imread(fname1,0)          # queryImage
+            img2 = cv2.imread(fname2,0) # trainImage
+
+            sift_img = self.image_manager.match_sift_method(img1, img2)
+            fname = asksaveasfilename()
+            if fname:
+                cv2.imwrite(fname, sift_img)
 
 if __name__ == "__main__":
     gui = GUI()

@@ -1,6 +1,8 @@
 from PIL import Image
 from bitarray import bitarray
 from functools import partial
+import numpy as np
+import cv2
 
 from img_processor.img_abstraction import ImageAbstraction
 from img_processor.bw_img_abstraction import BWImageAbstraction
@@ -353,3 +355,25 @@ class ImageManager:
 
     def susan_method(self, umbral):
         return self.image.susan_method(umbral)
+
+    def sift_method(self, img):
+        gray= cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+        sift = cv2.xfeatures2d.SIFT_create()
+        kp = sift.detect(gray,None)
+        return cv2.drawKeypoints(gray,kp,None)
+
+    def match_sift_method(self, img1, img2):
+        sift = cv2.xfeatures2d.SIFT_create()
+
+        kp1, des1 = sift.detectAndCompute(img1,None)
+        kp2, des2 = sift.detectAndCompute(img2,None)
+
+        bf = cv2.BFMatcher()
+        matches = bf.knnMatch(des1,des2, k=2)
+
+        good = []
+        for m,n in matches:
+            if m.distance < 0.75*n.distance:
+                good.append([m])
+
+        return cv2.drawMatchesKnn(img1,kp1,img2,kp2,good,flags=2,outImg=None)
