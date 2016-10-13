@@ -314,6 +314,10 @@ class ImageManager:
         self.modify()
         self.image.LoG_mask(size, sigma)
 
+    def rotate(self, angle):
+        img = self.get_image().rotate(angle)
+        self.load_image(img)
+
     def laplacian_method(self):
         self.modify()
         self.image.laplacian_method()

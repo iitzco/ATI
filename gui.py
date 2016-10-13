@@ -379,6 +379,13 @@ class GUI(tk.Frame):
         self.image_manager.LoG_mask(size, sigma)
         self.studio.show_image()
 
+    def rotate(self):
+        angle = askfloat("Parameters", "Angle?", minvalue=-360, maxvalue=360)
+        if not angle:
+            return
+        self.image_manager.rotate(angle)
+        self.load_images()
+
     def laplacian_method(self):
         self.image_manager.laplacian_method()
         self.studio.show_image()
@@ -439,7 +446,7 @@ class GUI(tk.Frame):
         self.menu.show_unmark_button()
 
     def susan_method(self):
-        umbral = askfloat("Parameters", "Percentage?", minvalue=0)
+        umbral = askfloat("Parameters", "Umral?", minvalue=0)
         if umbral is None:
             return
         p = self.image_manager.susan_method(umbral)

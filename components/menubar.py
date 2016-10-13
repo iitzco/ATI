@@ -102,6 +102,7 @@ class UtilsMenuBar(tk.Menu):
         self.add_command(
             label="Laplacian Mask", command=parent.gui.laplacian_mask)
         self.add_command(label="LoG Mask", command=parent.gui.LoG_mask)
+        self.add_command(label="Rotate", command=parent.gui.rotate)
 
 
 class BorderMenuBar(tk.Menu):
