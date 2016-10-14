@@ -446,10 +446,15 @@ class GUI(tk.Frame):
         self.menu.show_unmark_button()
 
     def susan_method(self):
-        umbral = askfloat("Parameters", "Umral?", minvalue=0)
-        if umbral is None:
+        umbral = askfloat("Parameters", "Umral (t)?", minvalue=0)
+        reference = askfloat(
+            "Parameters",
+            "Reference? (~0.4 for border detection, ~0.5 for corner detection)",
+            minvalue=0,
+            maxvalue=1)
+        if umbral is None or reference is None:
             return
-        p = self.image_manager.susan_method(umbral)
+        p = self.image_manager.susan_method(umbral, reference)
         self.studio.mark_pixels(p)
         self.menu.show_unmark_button()
 
@@ -466,13 +471,14 @@ class GUI(tk.Frame):
         fname1 = askopenfilename()
         fname2 = askopenfilename()
         if fname1 and fname2:
-            img1 = cv2.imread(fname1,0)          # queryImage
-            img2 = cv2.imread(fname2,0) # trainImage
+            img1 = cv2.imread(fname1, 0)  # queryImage
+            img2 = cv2.imread(fname2, 0)  # trainImage
 
             sift_img = self.image_manager.match_sift_method(img1, img2)
             fname = asksaveasfilename()
             if fname:
                 cv2.imwrite(fname, sift_img)
+
 
 if __name__ == "__main__":
     gui = GUI()

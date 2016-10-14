@@ -427,7 +427,7 @@ class BWImageAbstraction(ImageAbstraction):
 
         return pixel_list
 
-    def susan_method(self, umbral):
+    def susan_method(self, umbral, reference):
         def f(m):
             aux = 0
             for j in range(3):
@@ -447,7 +447,7 @@ class BWImageAbstraction(ImageAbstraction):
         pixel_list = []
         for i in range(self.w):
             for j in range(self.h):
-                if (1-img_aux[i][j]/37) > 0.4:
+                if (1-img_aux[i][j]/37) > reference:
                     pixel_list.append([i,j])
 
         return pixel_list
