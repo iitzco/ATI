@@ -416,9 +416,13 @@ class BWImageAbstraction(ImageAbstraction):
                 empty_matrix[i][j] = (I_xx[i][j]*I_yy[i][j] - (I_xy[i][j]**2)) - k*((I_xx[i][j]+I_yy[i][j])**2)
 
         max_energy = utils.max_matrix(empty_matrix)
+        min_energy = utils.min_matrix(empty_matrix)
+
+        diff = max_energy-min_energy
+
         for i in range(self.w):
             for j in range(self.h):
-                if empty_matrix[i][j] > umbral*max_energy:
+                if empty_matrix[i][j] > umbral*diff+min_energy:
                     pixel_list.append([i,j])
 
         return pixel_list
@@ -443,7 +447,7 @@ class BWImageAbstraction(ImageAbstraction):
         pixel_list = []
         for i in range(self.w):
             for j in range(self.h):
-                if (1-img_aux[i][j]/37) > 0.5:
+                if (1-img_aux[i][j]/37) > 0.4:
                     pixel_list.append([i,j])
 
         return pixel_list
