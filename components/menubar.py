@@ -130,6 +130,11 @@ class BorderMenuBar(tk.Menu):
         self.add_command(
             label="Alternative Directional Method",
             command=parent.gui.alternative_directional_method)
+        self.add_separator()
+        self.add_command(label="Canny Method", command=parent.gui.canny_method)
+        self.add_command(
+            label="Canny Method with hysteresis",
+            command=parent.gui.canny_hysteresis_method)
 
 
 class CharacteristicsMenuBar(tk.Menu):

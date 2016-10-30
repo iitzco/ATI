@@ -336,6 +336,45 @@ class BWImageAbstraction(ImageAbstraction):
         self.img = self._common_directional_method(
             3, utils.get_alternative_directional_matrix())
 
+    def canny_method(self):
+        img_x = self._get_sobel_matrix_x()
+        img_y = self._get_sobel_matrix_y()
+        img_g = [[0 for i in range(self.h)] for j in range(self.w)]
+        angles = [[0 for i in range(self.h)] for j in range(self.w)]
+
+        for i in range(self.w):
+            for j in range(self.h):
+                img_g[i][j] = math.sqrt(img_x[i][j]**2 + img_y[i][j]**2)
+                angles[i][j] = utils.get_angle(math.degrees(math.atan2(img_x[i][j], img_y[i][j])))
+
+        for i in range(self.w):
+            for j in range(self.h):
+                self.img[i][j] = img_g[i][j]
+                if img_g[i][j] > 0:
+                    surr = self._get_sorrounding(img_g, i, j, 3)
+                    alligned_pixels = utils.get_alligned_pixels(surr, angles[i][j])
+                    if alligned_pixels[0] > img_g[i][j] or alligned_pixels[1] > img_g[i][j]:
+                        self.img[i][j] = 0
+
+    def canny_hysteresis_method(self, t1, t2):
+        self.canny_method()
+        
+        aux = [[0 for i in range(self.h)] for j in range(self.w)]
+        for i in range(self.w):
+            for j in range(self.h):
+                aux[i][j] = self.img[i][j]
+
+        for i in range(self.w):
+            for j in range(self.h):
+                if self.img[i][j] <= t1:
+                    aux[i][j] = 0
+
+                elif self.img[i][j] <= t2:
+                    surr = self._get_sorrounding(self.img, i, j, 3)
+                    if not (surr[1][0] > 0 or surr[0][1] > 0 or surr[2][1] > 0 or surr[1][2] > 0):
+                        aux[i][j] = 0
+        self.img = aux
+
     def _get_laplacian_img_mask(self):
         def f(m):
             mask = [[0, -1, 0], [-1, 4, -1], [0, -1, 0]]

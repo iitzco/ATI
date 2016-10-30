@@ -346,6 +346,14 @@ class ImageManager:
         self.modify()
         self.image.alternative_directional_method()
 
+    def canny_method(self):
+        self.modify()
+        self.image.canny_method()
+
+    def canny_hysteresis_method(self, t1, t2):
+        self.modify()
+        self.image.canny_hysteresis_method(t1, t2)
+
     def sobel_x_img(self):
         self.modify()
         self.image.sobel_x_to_img()

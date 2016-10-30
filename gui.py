@@ -425,6 +425,18 @@ class GUI(tk.Frame):
         self.image_manager.alternative_directional_method()
         self.studio.show_image()
 
+    def canny_method(self):
+        self.image_manager.canny_method()
+        self.studio.show_image()
+
+    def canny_hysteresis_method(self):
+        t1 = askfloat("Parameters", "t1?")
+        t2 = askfloat("Parameters", "t2?")
+        if t1 is None or t2 is None:
+            return
+        self.image_manager.canny_hysteresis_method(t1, t2)
+        self.studio.show_image()
+
     def sobel_x_img(self):
         self.image_manager.sobel_x_img()
         self.studio.show_image()

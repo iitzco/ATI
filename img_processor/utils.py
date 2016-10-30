@@ -96,6 +96,29 @@ def put_mask(original, mask, size):
     return ret
 
 
+def get_angle(angle):
+    angle = angle + 180 if angle < 0 else angle
+
+    if (angle >= 0 and angle < 22.5) or (angle >= 157.5 and angle <= 180):
+        return 0
+    if angle >= 22.5 and angle < 67.5:
+        return 45
+    if angle >= 67.5 and angle < 112.5:
+        return 90
+    if angle >= 112.5 and angle < 157.5:
+        return 135
+
+def get_alligned_pixels(m, angle):
+    if angle == 0:
+        return (m[0][1], m[2][1])
+    if angle == 45:
+        return (m[2][0], m[0][2])
+    if angle == 90:
+        return (m[1][0], m[1][2])
+    if angle == 135:
+        return (m[0][0], m[2][2])
+
+
 def get_kirsh_directional_matrix():
     # 5  5  5    5  5 -3  -3 -3 -3   5 -3 -3
     # -3 0 -3    5  0 -3   5  0 -3   5  0 -3
