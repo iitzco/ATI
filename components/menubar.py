@@ -17,6 +17,7 @@ class MenuBar(tk.Menu):
         self.add_cascade(label="Borders", menu=BorderMenuBar(self))
         self.add_cascade(
             label="Characteristics", menu=CharacteristicsMenuBar(self))
+        self.add_cascade(label="Shapes", menu=ShapesMenuBar(self))
 
 
 class LoadMenuBar(tk.Menu):
@@ -146,3 +147,10 @@ class CharacteristicsMenuBar(tk.Menu):
         self.add_command(label="SIFT Method", command=parent.gui.sift_method)
         self.add_command(
             label="SIFT Matcher Method", command=parent.gui.match_sift_method)
+
+
+class ShapesMenuBar(tk.Menu):
+    def __init__(self, parent):
+        tk.Menu.__init__(self, parent)
+        self.add_command(
+            label="Hough Method for lines", command=parent.gui.hough_for_lines)

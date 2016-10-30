@@ -119,6 +119,13 @@ def get_alligned_pixels(m, angle):
         return (m[0][0], m[2][2])
 
 
+def drange(start, stop, step):
+    r = start
+    while r < stop:
+        yield r
+        r += step
+
+
 def get_kirsh_directional_matrix():
     # 5  5  5    5  5 -3  -3 -3 -3   5 -3 -3
     # -3 0 -3    5  0 -3   5  0 -3   5  0 -3

@@ -447,6 +447,7 @@ class GUI(tk.Frame):
 
     def unmark(self):
         self.studio.unmark_pixels()
+        self.studio.unmark_lines()
         self.menu.remove_unmark_button()
 
     def harris_method(self):
@@ -490,6 +491,16 @@ class GUI(tk.Frame):
             fname = asksaveasfilename()
             if fname:
                 cv2.imwrite(fname, sift_img)
+
+    def hough_for_lines(self):
+        o_step = askfloat("Parameters", "Phi step? (from 0 to 360)")
+        p_step = askfloat("Parameters", "Phi step? (from 0 to sqrt(2)*D)")
+        epsilon = askfloat("Parameters", "Epsilon?")
+        if o_step is None or p_step is None or epsilon is None:
+            return
+        l = self.image_manager.hugh_for_lines(o_step, p_step, epsilon)
+        self.studio.mark_lines(l)
+        self.menu.show_unmark_button()
 
 
 if __name__ == "__main__":

@@ -490,3 +490,39 @@ class BWImageAbstraction(ImageAbstraction):
                     pixel_list.append([i,j])
 
         return pixel_list
+
+    def hugh_for_lines(self, o_step, p_step, epsilon):
+        ret = []
+        votes = {}
+        d = max(self.w, self.h)
+        for i in utils.drange(0, math.sqrt(2)*d, p_step):
+            votes[i] = {}
+            for j in utils.drange(0, 360, o_step):
+                votes[i][j] = 0
+
+        max_v, min_v = self._get_max_min()
+        for i in range(self.w):
+            for j in range(self.h):
+                x = i
+                y = self.h - 1 - j
+                if self.img[x][y] == max_v:
+                    for p in votes.keys():
+                        for o in votes[p].keys():
+                            if abs(x*math.cos(math.radians(o)) + y*math.sin(math.radians(o)) - p) < epsilon:
+                                votes[p][o] = votes[p][o]+1
+        max_votes = -1
+        best_line = None
+        for p in votes.keys():
+            for o in votes[p].keys():
+                if votes[p][o] > max_votes:
+                    max_votes = votes[p][o]
+                    best_line = (p,o)
+
+        for p in votes.keys():
+            for o in votes[p].keys():
+                if votes[p][o] > 0.8*max_votes:
+                    ret.append((p,o))
+
+        return ret
+
+

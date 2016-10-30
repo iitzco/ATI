@@ -390,3 +390,6 @@ class ImageManager:
 
         return cv2.drawMatchesKnn(
             img1, kp1, img2, kp2, good, flags=2, outImg=None)
+
+    def hugh_for_lines(self, o_step, p_step, epsilon):
+        return self.image.hugh_for_lines(o_step, p_step, epsilon)

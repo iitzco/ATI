@@ -2,6 +2,8 @@ import tkinter as tk
 import tkinter.messagebox
 from PIL import ImageTk, Image
 
+import math
+
 
 class ImageWorkspace(tk.Frame):
     def __init__(self, gui, title):
@@ -197,7 +199,24 @@ class StudioImageWorkspace(ImageWorkspace):
                 outline='green',
                 fill='green'), (p[0], p[1])])
 
+    def mark_lines(self, lines_list):
+        if hasattr(self, 'lines_list') and not self.lines_list:
+            self.unmark_lines()
+
+        self.lines_list = []
+
+        for each in lines_list:
+            get_y = lambda x: (each[0] - x*math.cos(math.radians(each[1])))/math.sin(math.radians(each[1])) if math.sin(math.radians(each[1]))!=0 else 0
+            self.lines_list.append(
+                self.canvas_main.create_line(
+                    -1000, get_y(-1000), 1000, get_y(1000), fill='green'))
+
     def unmark_pixels(self):
         if hasattr(self, "pixel_list"):
             for p in self.pixel_list:
                 self.canvas_main.delete(p[0])
+
+    def unmark_lines(self):
+        if hasattr(self, "lines_list"):
+            for p in self.lines_list:
+                self.canvas_main.delete(p)
