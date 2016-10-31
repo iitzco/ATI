@@ -33,6 +33,12 @@ class Menu(tk.Frame):
             variable=self.gui.sync,
             onvalue=True,
             offvalue=False)
+        self.button_contour = tk.Checkbutton(
+            self,
+            text="Contour Detection",
+            variable=self.gui.contour_detection,
+            onvalue=True,
+            offvalue=False)
 
         self.first = True
         self.interaction = False
@@ -47,6 +53,7 @@ class Menu(tk.Frame):
         self.color_label.grid(pady=5)
         self.color_canvas.grid(pady=3)
         self.color_slider.grid(pady=5)
+        self.button_contour.grid(pady=5)
 
     def zoom_mode_trigger(self):
         self.gui.zoom_mode_trigger()

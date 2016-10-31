@@ -25,6 +25,9 @@ class GUI(tk.Frame):
         self.sync = tk.BooleanVar()
         self.sync.set(False)
 
+        self.contour_detection = tk.BooleanVar()
+        self.contour_detection.set(False)
+
         self.image_manager = ImageManager()
 
         self.init_main_frame()
@@ -513,9 +516,15 @@ class GUI(tk.Frame):
         self.studio.mark_circles(c)
         self.menu.show_unmark_button()
 
+    def contour_detection_method(self, lin, lout):
+        p = self.image_manager.contour_detection_method(lin, lout)
+        self.studio.mark_pixels(p)
+        self.menu.show_unmark_button()
+
 
 if __name__ == "__main__":
     gui = GUI()
     if (len(sys.argv) > 1 and sys.argv[1]):
         gui.load_file(sys.argv[1])
+        sys.setrecursionlimit(50000)
     gui.mainloop()

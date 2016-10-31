@@ -67,6 +67,25 @@ class ImageWorkspace(tk.Frame):
     def selection_event_in_zoom(self, event):
         self.common_selection_event(event, self.canvas_zoom, True)
 
+    def get_selection_pixel_list(self, box):
+        x1, y1, x2, y2 = (int(t) for t in box)
+        if x1 > x2:
+            x1, x2 = x2, x1
+        if y1 > y2:
+            y1, y2 = y2, y1
+        lin, lout = set(), set()
+        for x in range(x1, x2 + 1):
+            lin.add((x, y1))
+            lout.add((x, y1 - 1))
+            lin.add((x, y2))
+            lout.add((x, y2 + 1))
+        for y in range(y1, y2 + 1):
+            lin.add((x1, y))
+            lout.add((x1 - 1, y))
+            lin.add((x2, y))
+            lout.add((x2 + 1, y))
+        return lin, lout
+
     def common_selection_event(self, event, canvas, in_zoom):
         if not self.x_selection or not self.y_selection:
             self.x_selection = canvas.canvasx(event.x)
@@ -74,22 +93,32 @@ class ImageWorkspace(tk.Frame):
         else:
             x = canvas.canvasx(event.x)
             y = canvas.canvasy(event.y)
-            img = self.get_selection_img(self.x_selection, self.y_selection, x,
-                                         y, in_zoom)
             self.rectangle_selection_id = canvas.create_rectangle(
                 self.x_selection, self.y_selection, x, y, outline='blue')
-            ret = tkinter.messagebox.askyesno("Selection", "Want statistics?")
-            if ret:
-                t = self.gui.image_manager.get_statistics(img)
-                tkinter.messagebox.showinfo(
-                    "Statistics",
-                    "# of Pixel: {} --- Mean: {}".format(t[0], t[1]))
-            ret = tkinter.messagebox.askyesno(
-                "Confirm selection",
-                "Want to create new image with that selection? ATTENTION: unsaved studio image will be lost.")
-            if ret:
-                self.gui.image_manager.load_image(img)
-                self.gui.load_images()
+            if self.gui.contour_detection.get():
+                ret = tkinter.messagebox.askyesno(
+                    "Selection",
+                    "Confirm selection to run contour detection? (Selection should be inside object)")
+                if ret:
+                    lin, lout = self.get_selection_pixel_list(
+                        (self.x_selection, self.y_selection, x, y))
+                    self.gui.contour_detection_method(lin, lout)
+            else:
+                img = self.get_selection_img(self.x_selection,
+                                             self.y_selection, x, y, in_zoom)
+                ret = tkinter.messagebox.askyesno("Selection",
+                                                  "Want statistics?")
+                if ret:
+                    t = self.gui.image_manager.get_statistics(img)
+                    tkinter.messagebox.showinfo(
+                        "Statistics",
+                        "# of Pixel: {} --- Mean: {}".format(t[0], t[1]))
+                ret = tkinter.messagebox.askyesno(
+                    "Confirm selection",
+                    "Want to create new image with that selection? ATTENTION: unsaved studio image will be lost.")
+                if ret:
+                    self.gui.image_manager.load_image(img)
+                    self.gui.load_images()
             canvas.delete(self.rectangle_selection_id)
             self.x_selection, self.y_selection = (None, None)
 

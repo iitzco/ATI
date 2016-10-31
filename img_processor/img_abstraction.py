@@ -93,3 +93,55 @@ class ImageAbstraction:
 
     def sobel_y_to_img(self):
         self.img = self._get_sobel_matrix_y()
+
+    def init_phi_matrix(self, lin, lout):
+        ret = [[0 for i in range(self.h)] for j in range(self.w)]
+
+        for each in lin:
+            ret[each[0]][each[1]] = -1
+
+        for each in lout:
+            ret[each[0]][each[1]] = 1
+
+        inner_pixel = self.find_empty(ret, lin, lout)
+        if inner_pixel:
+            self.fill_pixels(ret, inner_pixel, -3)
+
+        # Outer pixels remain only.
+        for i in range(self.w):
+            for j in range(self.h):
+                if ret[i][j] == 0:
+                    ret[i][j] = 3
+
+        return ret
+
+    def find_empty(self, phi, border, other):
+        for each in border:
+            x, y = each
+            if x-1 >=0 and phi[x-1][y] == 0:
+                return (x-1, y)
+            if x+1 < self.w and phi[x+1][y] == 0:
+                return (x+1, y)
+            if y-1 >=0 and phi[x][y-1] == 0:
+                return (x, y-1)
+            if y+1 < self.h and phi[x][y+1] == 0:
+                return (x, y+1)
+
+    def fill_pixels(self, phi, origin, elem):
+        x, y = origin
+
+        phi[x][y] = elem
+
+        if x-1 >= 0 and phi[x-1][y] == 0:
+            self.fill_pixels(phi, (x-1, y), elem)
+        if x+1 < self.w and phi[x+1][y] == 0:
+            self.fill_pixels(phi, (x+1, y), elem)
+        if y-1 >= 0 and phi[x][y-1] == 0:
+            self.fill_pixels(phi, (x, y-1), elem)
+        if y+1 < self.h and phi[x][y+1] == 0:
+            self.fill_pixels(phi, (x, y+1), elem)
+
+    def contour_detection_method(self, lin, lout):
+        phi = self.init_phi_matrix(lin, lout)
+
+
