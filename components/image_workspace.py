@@ -211,6 +211,21 @@ class StudioImageWorkspace(ImageWorkspace):
                 self.canvas_main.create_line(
                     -1000, get_y(-1000), 1000, get_y(1000), fill='green'))
 
+    def mark_circles(self, circles_list):
+        if hasattr(self, 'circles_list') and not self.circles_list:
+            self.unmark_circles()
+
+        self.circles_list = []
+
+        for each in circles_list:
+            self.circles_list.append(
+                self.canvas_main.create_oval(
+                    each[0] - each[2],
+                    each[1] - each[2],
+                    each[0] + each[2],
+                    each[1] + each[2],
+                    outline='green'))
+
     def unmark_pixels(self):
         if hasattr(self, "pixel_list"):
             for p in self.pixel_list:
@@ -219,4 +234,9 @@ class StudioImageWorkspace(ImageWorkspace):
     def unmark_lines(self):
         if hasattr(self, "lines_list"):
             for p in self.lines_list:
+                self.canvas_main.delete(p)
+
+    def unmark_circles(self):
+        if hasattr(self, "circles_list"):
+            for p in self.circles_list:
                 self.canvas_main.delete(p)

@@ -154,3 +154,6 @@ class ShapesMenuBar(tk.Menu):
         tk.Menu.__init__(self, parent)
         self.add_command(
             label="Hough Method for lines", command=parent.gui.hough_for_lines)
+        self.add_command(
+            label="Hough Method for circles",
+            command=parent.gui.hough_for_circles)

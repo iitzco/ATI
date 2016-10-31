@@ -448,6 +448,7 @@ class GUI(tk.Frame):
     def unmark(self):
         self.studio.unmark_pixels()
         self.studio.unmark_lines()
+        self.studio.unmark_circles()
         self.menu.remove_unmark_button()
 
     def harris_method(self):
@@ -500,6 +501,16 @@ class GUI(tk.Frame):
             return
         l = self.image_manager.hugh_for_lines(o_step, p_step, epsilon)
         self.studio.mark_lines(l)
+        self.menu.show_unmark_button()
+
+    def hough_for_circles(self):
+        p_step = askfloat("Parameters", "a and b step?")
+        r_step = askfloat("Parameters", "r step?")
+        epsilon = askfloat("Parameters", "Epsilon?")
+        if r_step is None or p_step is None or epsilon is None:
+            return
+        c = self.image_manager.hugh_for_circles(p_step, r_step, epsilon)
+        self.studio.mark_circles(c)
         self.menu.show_unmark_button()
 
 

@@ -393,3 +393,6 @@ class ImageManager:
 
     def hugh_for_lines(self, o_step, p_step, epsilon):
         return self.image.hugh_for_lines(o_step, p_step, epsilon)
+
+    def hugh_for_circles(self, p_step, r_step, epsilon):
+        return self.image.hugh_for_circles(p_step, r_step, epsilon)

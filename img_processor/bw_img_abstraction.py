@@ -525,4 +525,42 @@ class BWImageAbstraction(ImageAbstraction):
 
         return ret
 
+    def hugh_for_circles(self, p_step, r_step, epsilon):
+        ret = []
+        votes = {}
+        for a in utils.drange(0, self.w, p_step):
+            votes[a] = {}
+            for b in utils.drange(0, self.h, p_step):
+                votes[a][b] = {}
+                for r in utils.drange(0, max(self.w, self.h)/2, r_step):
+                    votes[a][b][r] = 0
+
+        max_v, min_v = self._get_max_min()
+
+        for i in range(self.w):
+            for j in range(self.h):
+                x = i
+                y = self.h - 1 - j
+                if self.img[x][y] == max_v:
+                    for a in votes.keys():
+                        for b in votes[a].keys():
+                            for r in votes[a][b].keys():
+                                if abs((x-a)**2 + (y-b)**2 - r**2) < epsilon:
+                                    votes[a][b][r] = votes[a][b][r]+1
+        max_votes = -1
+        best_line = None
+        for a in votes.keys():
+            for b in votes[a].keys():
+                for r in votes[a][b].keys():
+                    if votes[a][b][r] > max_votes:
+                        max_votes = votes[a][b][r]
+                        best_line = (a,b,r)
+
+        for a in votes.keys():
+            for b in votes[a].keys():
+                for r in votes[a][b].keys():
+                    if votes[a][b][r] > 0.8*max_votes:
+                        ret.append((a,b,r))
+
+        return ret
 
