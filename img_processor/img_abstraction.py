@@ -194,30 +194,24 @@ class ImageAbstraction:
                         if phi[x-1][y] == 3:
                             lout.add((x-1, y))
                             phi[x-1][y] = 1
-                        elif phi[x-1][y] == -1 and not self.is_lin((x-1,y), phi):
-                            lin.remove((x-1, y))
-                            phi[x-1][y] = -3
                     if x+1 < self.w:
                         if phi[x+1][y] == 3:
                             lout.add((x+1, y))
                             phi[x+1][y] = 1
-                        elif phi[x+1][y] == -1 and not self.is_lin((x+1,y), phi):
-                            lin.remove((x+1, y))
-                            phi[x+1][y] = -3
                     if y-1 >= 0:
                         if phi[x][y-1] == 3:
                             lout.add((x, y-1))
                             phi[x][y-1] = 1
-                        elif phi[x][y-1] == -1 and not self.is_lin((x,y-1), phi):
-                            lin.remove((x, y-1))
-                            phi[x][y-1] = -3
                     if y+1 < self.h:
                         if phi[x][y+1] == 3:
                             lout.add((x, y+1))
                             phi[x][y+1] = 1
-                        elif phi[x][y+1] == -1 and not self.is_lin((x,y+1), phi):
-                            lin.remove((x, y+1))
-                            phi[x][y+1] = -3
+
+            for each in list(lin):
+                if not self.is_lin(each, phi):
+                    lin.remove(each)
+                    x, y = each
+                    phi[x][y] = -3
 
             for each in list(lin):
                 f = self.get_f(each, mean)
@@ -231,30 +225,24 @@ class ImageAbstraction:
                         if phi[x-1][y] == -3:
                             lin.add((x-1, y))
                             phi[x-1][y] = -1
-                        elif phi[x-1][y] == 1 and not self.is_lout((x-1,y), phi):
-                            lout.remove((x-1, y))
-                            phi[x-1][y] = 3
                     if x+1 < self.w:
                         if phi[x+1][y] == -3:
                             lin.add((x+1, y))
                             phi[x+1][y] = -1
-                        elif phi[x+1][y] == 1 and not self.is_lout((x+1,y), phi):
-                            lout.remove((x+1, y))
-                            phi[x+1][y] = 3
                     if y-1 >= 0:
                         if phi[x][y-1] == -3:
                             lin.add((x, y-1))
                             phi[x][y-1] = -1
-                        elif phi[x][y-1] == 1 and not self.is_lout((x,y-1), phi):
-                            lout.remove((x, y-1))
-                            phi[x][y-1] = 3
                     if y+1 < self.h:
                         if phi[x][y+1] == -3:
                             lin.add((x, y+1))
                             phi[x][y+1] = -1
-                        elif phi[x][y+1] == 1 and not self.is_lout((x,y+1), phi):
-                            lout.remove((x, y+1))
-                            phi[x][y+1] = 3
+
+            for each in list(lout):
+                if not self.is_lout(each, phi):
+                    lout.remove(each)
+                    x, y = each
+                    phi[x][y] = 3
 
             done = True 
             for each in lin:
