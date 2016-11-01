@@ -459,7 +459,7 @@ class GUI(tk.Frame):
         if umbral is None:
             return
         p = self.image_manager.harris_method(umbral)
-        self.studio.mark_pixels(p)
+        self.studio.mark_pixels(p, 3)
         self.menu.show_unmark_button()
 
     def susan_method(self):
@@ -472,7 +472,7 @@ class GUI(tk.Frame):
         if umbral is None or reference is None:
             return
         p = self.image_manager.susan_method(umbral, reference)
-        self.studio.mark_pixels(p)
+        self.studio.mark_pixels(p, 3)
         self.menu.show_unmark_button()
 
     def sift_method(self):
@@ -517,8 +517,11 @@ class GUI(tk.Frame):
         self.menu.show_unmark_button()
 
     def contour_detection_method(self, lin, lout):
-        p = self.image_manager.contour_detection_method(lin, lout)
-        self.studio.mark_pixels(p)
+        nmax = askinteger("Parameters", "Max iterations?")
+        if not nmax:
+            return
+        p = self.image_manager.contour_detection_method(lin, lout, nmax)
+        self.studio.mark_pixels(p, 1)
         self.menu.show_unmark_button()
 
 

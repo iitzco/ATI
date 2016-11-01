@@ -1,5 +1,6 @@
 import math
 import random
+import copy
 from . import utils
 from collections import Counter
 from statistics import median
@@ -129,19 +130,126 @@ class ImageAbstraction:
 
     def fill_pixels(self, phi, origin, elem):
         x, y = origin
+        queue = [(x,y)]
 
-        phi[x][y] = elem
+        while queue:
+            x,y = queue.pop()
+            phi[x][y] = elem
 
-        if x-1 >= 0 and phi[x-1][y] == 0:
-            self.fill_pixels(phi, (x-1, y), elem)
-        if x+1 < self.w and phi[x+1][y] == 0:
-            self.fill_pixels(phi, (x+1, y), elem)
-        if y-1 >= 0 and phi[x][y-1] == 0:
-            self.fill_pixels(phi, (x, y-1), elem)
-        if y+1 < self.h and phi[x][y+1] == 0:
-            self.fill_pixels(phi, (x, y+1), elem)
+            if x-1 >= 0 and phi[x-1][y] == 0:
+                queue.append((x-1,y))
+            if x+1 < self.w and phi[x+1][y] == 0:
+                queue.append((x+1,y))
+            if y-1 >= 0 and phi[x][y-1] == 0:
+                queue.append((x,y-1))
+            if y+1 < self.h and phi[x][y+1] == 0:
+                queue.append((x,y+1))
 
-    def contour_detection_method(self, lin, lout):
+
+    def is_lin(self, pixel, phi):
+        x, y = pixel
+
+        if x-1 >= 0 and phi[x-1][y] > 0:
+            return True
+        if x+1 < self.w and phi[x+1][y] > 0:
+            return True
+        if y-1 >= 0 and phi[x][y-1] > 0:
+            return True
+        if y+1 < self.h and phi[x][y+1] > 0:
+            return True
+        return False
+
+    def is_lout(self, pixel, phi):
+        x, y = pixel
+
+        if x-1 >= 0 and phi[x-1][y] < 0:
+            return True
+        if x+1 < self.w and phi[x+1][y] < 0:
+            return True
+        if y-1 >= 0 and phi[x][y-1] < 0:
+            return True
+        if y+1 < self.h and phi[x][y+1] < 0:
+            return True
+        return False
+
+    def contour_detection_method(self, lin, lout, nmax):
         phi = self.init_phi_matrix(lin, lout)
+        lin = list(lin)
+        lout = list(lout)
+        
+        done = False
+        iterations = 0
+        mean = self.get_mean(phi)
 
+        while not done and iterations < nmax:
+            for each in lout[:]:
+                f = self.get_f(each, mean)
+                if f > 0:
+                    lout.remove(each)
+                    lin.append(each)
+                    x,y = each
+                    phi[x][y] = -1
 
+                    if x-1 >= 0 and phi[x-1][y] == 3:
+                        lout.append((x-1, y))
+                        phi[x-1][y] = 1
+                    if x+1 < self.w and phi[x+1][y] == 3:
+                        lout.append((x+1, y))
+                        phi[x+1][y] = 1
+                    if y-1 >= 0 and phi[x][y-1] == 3:
+                        lout.append((x, y-1))
+                        phi[x][y-1] = 1
+                    if y+1 < self.h and phi[x][y+1] == 3:
+                        lout.append((x, y+1))
+                        phi[x][y+1] = 1
+            for each in lin[:]:
+                if not self.is_lin(each, phi):
+                    lin.remove(each)
+                    x, y = each
+                    phi[x][y] = -3
+
+            for each in lin[:]:
+                f = self.get_f(each, mean)
+                if f < 0:
+                    lin.remove(each)
+                    lout.append(each)
+                    x, y = each
+                    phi[x][y] = -1
+
+                    if x-1 >= 0 and phi[x-1][y] == -3:
+                        lin.append((x-1, y))
+                        phi[x-1][y] = -1
+                    if x+1 < self.w and phi[x+1][y] == -3:
+                        lin.append((x+1, y))
+                        phi[x+1][y] = -1
+                    if y-1 >= 0 and phi[x][y-1] == -3:
+                        lin.append((x, y-1))
+                        phi[x][y-1] = -1
+                    if y+1 < self.h and phi[x][y+1] == -3:
+                        lin.append((x, y+1))
+                        phi[x][y+1] = -1
+            for each in lout[:]:
+                if not self.is_lout(each, phi):
+                    lout.remove(each)
+                    x, y = each
+                    phi[x][y] = 3
+
+            flag_lin, flag_lout = True, True 
+            for each in lin:
+                f = self.get_f(each, mean)
+                if f < 0:
+                    flag_lin = False
+                    break
+            if flag_lin:
+                for each in lout:
+                    f = self.get_f(each, mean)
+                    if f > 0:
+                        flag_lout = False
+                        break
+                    
+            if flag_lin and flag_lout:
+                done = True
+
+            iterations+=1
+
+        return lin

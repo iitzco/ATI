@@ -213,7 +213,7 @@ class StudioImageWorkspace(ImageWorkspace):
         return self.gui.image_manager.get_studio_selection(x_o, y_o, x_f, y_f,
                                                            in_zoom, t)
 
-    def mark_pixels(self, pixel_list):
+    def mark_pixels(self, pixel_list, width):
         if hasattr(self, 'pixel_list') and not self.pixel_list:
             self.unmark_pixels()
 
@@ -221,10 +221,10 @@ class StudioImageWorkspace(ImageWorkspace):
 
         for p in pixel_list:
             self.pixel_list.append([self.canvas_main.create_oval(
-                p[0] - 3,
-                p[1] - 3,
-                p[0] + 3,
-                p[1] + 3,
+                p[0] - width,
+                p[1] - width,
+                p[0] + width,
+                p[1] + width,
                 outline='green',
                 fill='green'), (p[0], p[1])])
 

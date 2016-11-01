@@ -397,5 +397,5 @@ class ImageManager:
     def hugh_for_circles(self, p_step, r_step, epsilon):
         return self.image.hugh_for_circles(p_step, r_step, epsilon)
 
-    def contour_detection_method(self, lin, lout):
-        return self.image.contour_detection_method(lin, lout)
+    def contour_detection_method(self, lin, lout, nmax):
+        return self.image.contour_detection_method(lin, lout, nmax)
