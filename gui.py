@@ -542,7 +542,8 @@ class GUI(tk.Frame):
         if not nmax:
             return
         stats = self.image_manager.contour_detection_video_method(
-            lin, lout, nmax, self.file_map, self.destiny_dir)
+            lin, lout, nmax, self.file_map, self.destiny_dir,
+            self.starting_number)
         avg = sum(stats) / len(stats)
         fps = int(1 / avg)
         tkinter.messagebox.showinfo(
@@ -556,13 +557,19 @@ class GUI(tk.Frame):
         regex = re.compile('[a-zA-Z|0]+(?P<number>\d+)\.[a-zA-Z]+')
         if not dname:
             return
+        self.starting_number = askinteger(
+            "Parameters",
+            "Starting number? (first appearance of object)",
+            minvalue=1)
+        if not self.starting_number:
+            self.starting_number = 1
         for subdir, dirs, files in os.walk(dname):
             for file_name in files:
                 full_path = os.path.join(subdir, file_name)
                 number = int(regex.match(file_name).groupdict()['number'])
                 self.file_map[number] = (full_path, file_name)
 
-        img = Image.open(self.file_map[1][0])
+        img = Image.open(self.file_map[self.starting_number][0])
         try:
             self.image_manager.load_image(img)
         except Exception:
@@ -570,7 +577,7 @@ class GUI(tk.Frame):
         self.load_images()
         tkinter.messagebox.showinfo(
             'Info',
-            'This is the first image of the video. Choose a destiny directory and then select object region.')
+            'This is the first image of the video where the object is present. Choose a destiny directory and then select object region.')
         self.destiny_dir = askdirectory()
         self.selection_for_video = True
 

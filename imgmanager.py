@@ -415,10 +415,15 @@ class ImageManager:
         return self.image.contour_detection_method(lin, lout, nmax)[0]
 
     def contour_detection_video_method(self, lin, lout, nmax, file_map,
-                                       destiny_dir):
+                                       destiny_dir, starting_number):
         phi = None
         time_list = []
-        for i in range(1, len(file_map) + 1):
+
+        for i in range(1, starting_number):
+            self.load_temporal_image(Image.open(file_map[i][0]))
+            self.get_image().save(destiny_dir + '/' + file_map[i][1])
+
+        for i in range(starting_number, len(file_map) + 1):
             self.load_temporal_image(Image.open(file_map[i][0]))
             t = time.time()
             lin, lout, phi = self.image.contour_detection_method(lin, lout,
