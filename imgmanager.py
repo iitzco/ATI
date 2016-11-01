@@ -70,7 +70,11 @@ class ImageManager:
             self.image = BWImageAbstraction(img_list, img_size)
         elif mode == 'RGB':
             self.image = RGBImageAbstraction(img_list, img_size)
-        self.modified = True
+
+        self.cached_backup = img
+        self.cached_image = img
+
+        self.modified = False
 
     def create_images(self, img_list, mode, img_size):
         if mode == 'L':
