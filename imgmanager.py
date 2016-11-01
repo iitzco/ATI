@@ -10,6 +10,7 @@ from img_processor.rgb_img_abstraction import RGBImageAbstraction
 
 import math
 import copy
+import time
 
 ZOOM_INTENSITY = 50
 
@@ -44,25 +45,34 @@ class ImageManager:
         img_list[0] = 254
         self.create_images(img_list, 'L', (w, h), True)
 
-    def load_image(self, img):
+    def get_image_info(self, img):
         img_list = list(img.getdata())
         if img.mode == 'RGB':
             if all([e[0] == e[1] == e[2] for e in img_list]):
                 img_list = [e[0] for e in img_list]
-                bw = True
                 mode = 'L'
             else:
-                bw = False
                 mode = 'RGB'
         elif img.mode == 'L' or img.mode == '1':
-            bw = True
             mode = 'L'
         else:
             raise Exception('Unsupported Format')
 
-        self.create_images(img_list, mode, img.size, bw)
+        return (img_list, mode, img.size)
 
-    def create_images(self, img_list, mode, img_size, bw):
+    def load_image(self, img):
+        img_list, mode, img_size = self.get_image_info(img)
+        self.create_images(img_list, mode, img_size)
+
+    def load_temporal_image(self, img):
+        img_list, mode, img_size = self.get_image_info(img)
+        if mode == 'L':
+            self.image = BWImageAbstraction(img_list, img_size)
+        elif mode == 'RGB':
+            self.image = RGBImageAbstraction(img_list, img_size)
+        self.modified = True
+
+    def create_images(self, img_list, mode, img_size):
         if mode == 'L':
             self.image = BWImageAbstraction(img_list, img_size)
         elif mode == 'RGB':
@@ -398,4 +408,42 @@ class ImageManager:
         return self.image.hugh_for_circles(p_step, r_step, epsilon)
 
     def contour_detection_method(self, lin, lout, nmax):
-        return self.image.contour_detection_method(lin, lout, nmax)
+        return self.image.contour_detection_method(lin, lout, nmax)[0]
+
+    def contour_detection_video_method(self, lin, lout, nmax, file_map,
+                                       destiny_dir):
+        phi = None
+        time_list = []
+        for i in range(1, len(file_map) + 1):
+            self.load_temporal_image(Image.open(file_map[i][0]))
+            t = time.time()
+            lin, lout, phi = self.image.contour_detection_method(lin, lout,
+                                                                 nmax, phi)
+            time_list.append(time.time() - t)
+            img = self.get_image_with_marks(self.get_image(), lin)
+            img.save(destiny_dir + '/' + file_map[i][1])
+
+        return time_list[1:]
+
+    def get_image_with_marks(self, img, marks):
+        if img.mode != 'RGB':
+            img = img.convert('RGB')
+
+        img_list, mode, img_size = self.get_image_info(img)
+        image = RGBImageAbstraction(img_list, img_size)
+
+        for each in marks:
+            x, y = each
+            c = (55, 255, 255)
+            image.img[x][y] = c
+            if x - 1 >= 0:
+                image.img[x - 1][y] = c
+            if x + 1 < image.w:
+                image.img[x + 1][y] = c
+            if y - 1 >= 0:
+                image.img[x][y - 1] = c
+            if y + 1 < image.h:
+                image.img[x][y + 1] = c
+
+        return Image.frombytes(image.get_mode(), image.get_size_tuple(),
+                               image.get_image_bytes())

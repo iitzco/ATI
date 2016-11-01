@@ -103,6 +103,14 @@ class ImageWorkspace(tk.Frame):
                     lin, lout = self.get_selection_pixel_list(
                         (self.x_selection, self.y_selection, x, y))
                     self.gui.contour_detection_method(lin, lout)
+            elif self.gui.selection_for_video:
+                ret = tkinter.messagebox.askyesno(
+                    "Selection",
+                    "Confirm selection to run video tracking? (Selection should be inside object)")
+                if ret:
+                    lin, lout = self.get_selection_pixel_list(
+                        (self.x_selection, self.y_selection, x, y))
+                    self.gui.contour_detection_video_method(lin, lout)
             else:
                 img = self.get_selection_img(self.x_selection,
                                              self.y_selection, x, y, in_zoom)

@@ -18,6 +18,7 @@ class MenuBar(tk.Menu):
         self.add_cascade(
             label="Characteristics", menu=CharacteristicsMenuBar(self))
         self.add_cascade(label="Shapes", menu=ShapesMenuBar(self))
+        self.add_cascade(label="Contours", menu=ContourMenuBar(self))
 
 
 class LoadMenuBar(tk.Menu):
@@ -157,3 +158,10 @@ class ShapesMenuBar(tk.Menu):
         self.add_command(
             label="Hough Method for circles",
             command=parent.gui.hough_for_circles)
+
+
+class ContourMenuBar(tk.Menu):
+    def __init__(self, parent):
+        tk.Menu.__init__(self, parent)
+        self.add_command(
+            label="Video Tracking", command=parent.gui.video_tracking)

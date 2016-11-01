@@ -1,10 +1,12 @@
+import re
+import os
 import tkinter as tk
 import cv2
 import matplotlib.pyplot as plt
-from tkinter.filedialog import askopenfilename, asksaveasfilename
+from tkinter.filedialog import askopenfilename, asksaveasfilename, askdirectory
 from tkinter.simpledialog import askinteger, askfloat
 import tkinter.messagebox
-from PIL import ImageTk, Image, ImageDraw
+from PIL import ImageTk, Image
 
 from components.menubar import MenuBar
 from components.menu import Menu
@@ -27,6 +29,8 @@ class GUI(tk.Frame):
 
         self.contour_detection = tk.BooleanVar()
         self.contour_detection.set(False)
+
+        self.selection_for_video = False
 
         self.image_manager = ImageManager()
 
@@ -110,12 +114,12 @@ class GUI(tk.Frame):
             img = self.image_manager.get_image().save(fname)
 
     def save_file_with_marks(self):
-        # fname = asksaveasfilename()
-        # if fname:
-        #     img = self.image_manager.get_image()
-        #     if img.mode != 'RGB':
-        #         img = img.convert('RGB')
-        pass
+        fname = asksaveasfilename()
+        if fname:
+            curr_img = self.image_manager.get_image()
+            pixel_list = [each[1] for each in self.studio.pixel_list]
+            img = self.image_manager.get_image_with_marks(curr_img, pixel_list)
+            img.save(fname)
 
     def undo(self):
         try:
@@ -531,6 +535,44 @@ class GUI(tk.Frame):
         p = self.image_manager.contour_detection_method(lin, lout, nmax)
         self.studio.mark_pixels(p, 1)
         self.menu.show_unmark_button()
+
+    def contour_detection_video_method(self, lin, lout):
+        self.selection_for_video = False
+        nmax = askinteger("Parameters", "Max iterations?")
+        if not nmax:
+            return
+        stats = self.image_manager.contour_detection_video_method(
+            lin, lout, nmax, self.file_map, self.destiny_dir)
+        avg = sum(stats) / len(stats)
+        fps = int(1 / avg)
+        tkinter.messagebox.showinfo(
+            'Info',
+            'Average processing time for each frame: {}.\nFPS: {}'.format(avg,
+                                                                          fps))
+
+    def video_tracking(self):
+        dname = askdirectory()
+        self.file_map = {}
+        regex = re.compile('[a-zA-Z|0]+(?P<number>\d+)\.[a-zA-Z]+')
+        if not dname:
+            return
+        for subdir, dirs, files in os.walk(dname):
+            for file_name in files:
+                full_path = os.path.join(subdir, file_name)
+                number = int(regex.match(file_name).groupdict()['number'])
+                self.file_map[number] = (full_path, file_name)
+
+        img = Image.open(self.file_map[1][0])
+        try:
+            self.image_manager.load_image(img)
+        except Exception:
+            tkinter.messagebox.showinfo('Alert', 'Unsupported image format')
+        self.load_images()
+        tkinter.messagebox.showinfo(
+            'Info',
+            'This is the first image of the video. Choose a destiny directory and then select object region.')
+        self.destiny_dir = askdirectory()
+        self.selection_for_video = True
 
 
 if __name__ == "__main__":
