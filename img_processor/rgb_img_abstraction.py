@@ -150,3 +150,22 @@ class RGBImageAbstraction(ImageAbstraction):
                     aux[each] = math.sqrt(matrix_x[i][j][each]**2 + matrix_y[i]
                                           [j][each]**2)
                 self.img[i][j] = tuple(map(int, aux))
+
+    def get_mean(self, phi):
+        ret = [0, 0, 0]
+        count = 0
+        for i in range(self.w):
+            for j in range(self.h):
+                if phi[i][j] == -3:
+                    ret[0] += self.img[i][j][0]
+                    ret[1] += self.img[i][j][1]
+                    ret[2] += self.img[i][j][2]
+                    count += 1
+
+        return (ret[0]/count, ret[1]/count, ret[2]/count) if count > 0 else (0,0,0)
+
+    def get_f(self, pixel, mean):
+        x, y = pixel
+        norm = math.sqrt((self.img[x][y][0] - mean[0])**2 + (self.img[x][y][1] - mean[1])**2 +(self.img[x][y][2] - mean[2])**2)
+        p = 1 - (norm/math.sqrt(3*(255**2)))
+        return -1 if p < 0.5 else 1

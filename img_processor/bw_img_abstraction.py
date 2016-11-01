@@ -576,9 +576,6 @@ class BWImageAbstraction(ImageAbstraction):
         return ret/count if count > 0 else 0
 
     def get_f(self, pixel, mean):
-        max_v, min_v = self._get_max_min()
-        p = 1 - (abs(self.img[pixel[0]][pixel[1]] - mean)/(max_v-min_v))
+        p = 1 - (abs(self.img[pixel[0]][pixel[1]] - mean)/(255))
         return -1 if p < 0.5 else 1
-
-#         return math.log10(p/(1-p)) if p < 1 and p > 0 else (-1 if p == 0 else 1)
 

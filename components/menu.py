@@ -11,6 +11,11 @@ class Menu(tk.Frame):
         self.main_label = tk.Label(self, text="Menu")
         self.button_save = tk.Button(
             self, text="Save", command=self.gui.save_file, width=10)
+        self.button_save_with_marks = tk.Button(
+            self,
+            text="Save with content",
+            command=self.gui.save_file_with_marks,
+            width=10)
         self.button_undo = tk.Button(
             self, text="Undo", command=self.gui.undo, width=10)
         self.color_label = tk.Label(self)
@@ -47,6 +52,7 @@ class Menu(tk.Frame):
     def discover(self):
         self.main_label.grid(pady=5)
         self.button_save.grid(pady=5)
+        self.button_save_with_marks.grid(pady=5)
         self.button_undo.grid(pady=5)
         self.button_zoom.grid(pady=5)
         self.button_mirror.grid(pady=5)

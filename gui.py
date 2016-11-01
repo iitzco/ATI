@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 from tkinter.simpledialog import askinteger, askfloat
 import tkinter.messagebox
-from PIL import ImageTk, Image
+from PIL import ImageTk, Image, ImageDraw
 
 from components.menubar import MenuBar
 from components.menu import Menu
@@ -107,7 +107,15 @@ class GUI(tk.Frame):
     def save_file(self):
         fname = asksaveasfilename()
         if fname:
-            self.image_manager.get_image().save(fname)
+            img = self.image_manager.get_image().save(fname)
+
+    def save_file_with_marks(self):
+        # fname = asksaveasfilename()
+        # if fname:
+        #     img = self.image_manager.get_image()
+        #     if img.mode != 'RGB':
+        #         img = img.convert('RGB')
+        pass
 
     def undo(self):
         try:
@@ -529,5 +537,4 @@ if __name__ == "__main__":
     gui = GUI()
     if (len(sys.argv) > 1 and sys.argv[1]):
         gui.load_file(sys.argv[1])
-        sys.setrecursionlimit(50000)
     gui.mainloop()

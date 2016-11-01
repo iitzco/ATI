@@ -174,82 +174,100 @@ class ImageAbstraction:
 
     def contour_detection_method(self, lin, lout, nmax):
         phi = self.init_phi_matrix(lin, lout)
-        lin = list(lin)
-        lout = list(lout)
         
         done = False
         iterations = 0
         mean = self.get_mean(phi)
 
         while not done and iterations < nmax:
-            for each in lout[:]:
+            list_lout = list(lout)
+            for each in list_lout:
                 f = self.get_f(each, mean)
                 if f > 0:
                     lout.remove(each)
-                    lin.append(each)
+                    lin.add(each)
                     x,y = each
                     phi[x][y] = -1
 
-                    if x-1 >= 0 and phi[x-1][y] == 3:
-                        lout.append((x-1, y))
-                        phi[x-1][y] = 1
-                    if x+1 < self.w and phi[x+1][y] == 3:
-                        lout.append((x+1, y))
-                        phi[x+1][y] = 1
-                    if y-1 >= 0 and phi[x][y-1] == 3:
-                        lout.append((x, y-1))
-                        phi[x][y-1] = 1
-                    if y+1 < self.h and phi[x][y+1] == 3:
-                        lout.append((x, y+1))
-                        phi[x][y+1] = 1
-            for each in lin[:]:
-                if not self.is_lin(each, phi):
-                    lin.remove(each)
-                    x, y = each
-                    phi[x][y] = -3
+                    if x-1 >= 0:
+                        if phi[x-1][y] == 3:
+                            lout.add((x-1, y))
+                            phi[x-1][y] = 1
+                        elif phi[x-1][y] == -1 and not self.is_lin((x-1,y), phi):
+                            lin.remove((x-1, y))
+                            phi[x-1][y] = -3
+                    if x+1 < self.w:
+                        if phi[x+1][y] == 3:
+                            lout.add((x+1, y))
+                            phi[x+1][y] = 1
+                        elif phi[x+1][y] == -1 and not self.is_lin((x+1,y), phi):
+                            lin.remove((x+1, y))
+                            phi[x+1][y] = -3
+                    if y-1 >= 0:
+                        if phi[x][y-1] == 3:
+                            lout.add((x, y-1))
+                            phi[x][y-1] = 1
+                        elif phi[x][y-1] == -1 and not self.is_lin((x,y-1), phi):
+                            lin.remove((x, y-1))
+                            phi[x][y-1] = -3
+                    if y+1 < self.h:
+                        if phi[x][y+1] == 3:
+                            lout.add((x, y+1))
+                            phi[x][y+1] = 1
+                        elif phi[x][y+1] == -1 and not self.is_lin((x,y+1), phi):
+                            lin.remove((x, y+1))
+                            phi[x][y+1] = -3
 
-            for each in lin[:]:
+            for each in list(lin):
                 f = self.get_f(each, mean)
                 if f < 0:
                     lin.remove(each)
-                    lout.append(each)
+                    lout.add(each)
                     x, y = each
-                    phi[x][y] = -1
+                    phi[x][y] = 1
 
-                    if x-1 >= 0 and phi[x-1][y] == -3:
-                        lin.append((x-1, y))
-                        phi[x-1][y] = -1
-                    if x+1 < self.w and phi[x+1][y] == -3:
-                        lin.append((x+1, y))
-                        phi[x+1][y] = -1
-                    if y-1 >= 0 and phi[x][y-1] == -3:
-                        lin.append((x, y-1))
-                        phi[x][y-1] = -1
-                    if y+1 < self.h and phi[x][y+1] == -3:
-                        lin.append((x, y+1))
-                        phi[x][y+1] = -1
-            for each in lout[:]:
-                if not self.is_lout(each, phi):
-                    lout.remove(each)
-                    x, y = each
-                    phi[x][y] = 3
+                    if x-1 >= 0:
+                        if phi[x-1][y] == -3:
+                            lin.add((x-1, y))
+                            phi[x-1][y] = -1
+                        elif phi[x-1][y] == 1 and not self.is_lout((x-1,y), phi):
+                            lout.remove((x-1, y))
+                            phi[x-1][y] = 3
+                    if x+1 < self.w:
+                        if phi[x+1][y] == -3:
+                            lin.add((x+1, y))
+                            phi[x+1][y] = -1
+                        elif phi[x+1][y] == 1 and not self.is_lout((x+1,y), phi):
+                            lout.remove((x+1, y))
+                            phi[x+1][y] = 3
+                    if y-1 >= 0:
+                        if phi[x][y-1] == -3:
+                            lin.add((x, y-1))
+                            phi[x][y-1] = -1
+                        elif phi[x][y-1] == 1 and not self.is_lout((x,y-1), phi):
+                            lout.remove((x, y-1))
+                            phi[x][y-1] = 3
+                    if y+1 < self.h:
+                        if phi[x][y+1] == -3:
+                            lin.add((x, y+1))
+                            phi[x][y+1] = -1
+                        elif phi[x][y+1] == 1 and not self.is_lout((x,y+1), phi):
+                            lout.remove((x, y+1))
+                            phi[x][y+1] = 3
 
-            flag_lin, flag_lout = True, True 
+            done = True 
             for each in lin:
                 f = self.get_f(each, mean)
                 if f < 0:
-                    flag_lin = False
+                    done = False
                     break
-            if flag_lin:
+            if done:
                 for each in lout:
                     f = self.get_f(each, mean)
                     if f > 0:
-                        flag_lout = False
+                        done = False
                         break
-                    
-            if flag_lin and flag_lout:
-                done = True
 
             iterations+=1
-
+        
         return lin
