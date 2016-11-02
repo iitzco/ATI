@@ -172,6 +172,82 @@ class ImageAbstraction:
             return True
         return False
 
+    def filter_lin(self, lin, phi):
+        for each in list(lin):
+            if not self.is_lin(each, phi):
+                lin.remove(each)
+                x, y = each
+                phi[x][y] = -3
+
+    def filter_lout(self, lout, phi):
+        for each in list(lout):
+            if not self.is_lout(each, phi):
+                lout.remove(each)
+                x, y = each
+                phi[x][y] = 3
+    
+    def first_cycle(self, lin, lout, phi, mean):
+        for each in list(lout):
+            f = self.get_f(each, mean)
+            if f > 0:
+                lout.remove(each)
+                lin.add(each)
+                x,y = each
+                phi[x][y] = -1
+
+                if x-1 >= 0 and phi[x-1][y] == 3:
+                    lout.add((x-1, y))
+                    phi[x-1][y] = 1
+                if x+1 < self.w and phi[x+1][y] == 3:
+                    lout.add((x+1, y))
+                    phi[x+1][y] = 1
+                if y-1 >= 0 and phi[x][y-1] == 3:
+                    lout.add((x, y-1))
+                    phi[x][y-1] = 1
+                if y+1 < self.h and phi[x][y+1] == 3:
+                    lout.add((x, y+1))
+                    phi[x][y+1] = 1
+
+        self.filter_lin(lin, phi)
+
+        for each in list(lin):
+            f = self.get_f(each, mean)
+            if f < 0:
+                lin.remove(each)
+                lout.add(each)
+                x, y = each
+                phi[x][y] = 1
+
+                if x-1 >= 0 and phi[x-1][y] == -3:
+                    lin.add((x-1, y))
+                    phi[x-1][y] = -1
+                if x+1 < self.w and phi[x+1][y] == -3:
+                    lin.add((x+1, y))
+                    phi[x+1][y] = -1
+                if y-1 >= 0 and phi[x][y-1] == -3:
+                    lin.add((x, y-1))
+                    phi[x][y-1] = -1
+                if y+1 < self.h and phi[x][y+1] == -3:
+                    lin.add((x, y+1))
+                    phi[x][y+1] = -1
+
+        self.filter_lout(lout, phi)
+
+
+    def second_cycle(self, lin, lout, phi):
+        pass
+
+    def check_end(self, lin, lout, mean):
+        for each in lin:
+            f = self.get_f(each, mean)
+            if f < 0:
+                return False
+        for each in lout:
+            f = self.get_f(each, mean)
+            if f > 0:
+                return False
+        return True
+
     def contour_detection_method(self, lin, lout, nmax, phi=None):
         if not phi:
             phi = self.init_phi_matrix(lin, lout)
@@ -181,81 +257,10 @@ class ImageAbstraction:
         mean = self.get_mean(phi)
 
         while not done and iterations < nmax:
-            list_lout = list(lout)
-            for each in list_lout:
-                f = self.get_f(each, mean)
-                if f > 0:
-                    lout.remove(each)
-                    lin.add(each)
-                    x,y = each
-                    phi[x][y] = -1
 
-                    if x-1 >= 0:
-                        if phi[x-1][y] == 3:
-                            lout.add((x-1, y))
-                            phi[x-1][y] = 1
-                    if x+1 < self.w:
-                        if phi[x+1][y] == 3:
-                            lout.add((x+1, y))
-                            phi[x+1][y] = 1
-                    if y-1 >= 0:
-                        if phi[x][y-1] == 3:
-                            lout.add((x, y-1))
-                            phi[x][y-1] = 1
-                    if y+1 < self.h:
-                        if phi[x][y+1] == 3:
-                            lout.add((x, y+1))
-                            phi[x][y+1] = 1
+            self.first_cycle(lin, lout, phi, mean)
 
-            for each in list(lin):
-                if not self.is_lin(each, phi):
-                    lin.remove(each)
-                    x, y = each
-                    phi[x][y] = -3
-
-            for each in list(lin):
-                f = self.get_f(each, mean)
-                if f < 0:
-                    lin.remove(each)
-                    lout.add(each)
-                    x, y = each
-                    phi[x][y] = 1
-
-                    if x-1 >= 0:
-                        if phi[x-1][y] == -3:
-                            lin.add((x-1, y))
-                            phi[x-1][y] = -1
-                    if x+1 < self.w:
-                        if phi[x+1][y] == -3:
-                            lin.add((x+1, y))
-                            phi[x+1][y] = -1
-                    if y-1 >= 0:
-                        if phi[x][y-1] == -3:
-                            lin.add((x, y-1))
-                            phi[x][y-1] = -1
-                    if y+1 < self.h:
-                        if phi[x][y+1] == -3:
-                            lin.add((x, y+1))
-                            phi[x][y+1] = -1
-
-            for each in list(lout):
-                if not self.is_lout(each, phi):
-                    lout.remove(each)
-                    x, y = each
-                    phi[x][y] = 3
-
-            done = True 
-            for each in lin:
-                f = self.get_f(each, mean)
-                if f < 0:
-                    done = False
-                    break
-            if done:
-                for each in lout:
-                    f = self.get_f(each, mean)
-                    if f > 0:
-                        done = False
-                        break
+            done = self.check_end(lin, lout, mean)
 
             iterations+=1
         

@@ -429,7 +429,7 @@ class ImageManager:
             lin, lout, phi = self.image.contour_detection_method(lin, lout,
                                                                  nmax, phi)
             time_list.append(time.time() - t)
-            img = self.get_image_with_marks(self.get_image(), lin)
+            img = self.get_image_with_marks(self.get_image(), lout)
             img.save(destiny_dir + '/' + file_map[i][1])
 
         return time_list[1:]
