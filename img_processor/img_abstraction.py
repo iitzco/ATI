@@ -5,8 +5,13 @@ from . import utils
 from collections import Counter
 from statistics import median
 
-# TODO manage full canvas
-
+gauss5x5 = [
+                [1/273,4/273,7/273,4/273,1/273],
+                [4/273,16/273,26/273,16/273,4/273],
+                [7/273,26/273,41/273,26/273,7/273],
+                [4/273,16/273,26/273,16/273,4/273],
+                [1/273,4/273,7/273,4/273,1/273]
+            ]
 
 class ImageAbstraction:
     # (0,0)      x
@@ -145,6 +150,10 @@ class ImageAbstraction:
             if y+1 < self.h and phi[x][y+1] == 0:
                 queue.append((x,y+1))
 
+    def get_fs(self, pixel, phi):
+        m = self._get_sorrounding(phi, pixel[0], pixel[1], 5)
+        mult = [[a*b for a,b in zip(m[i],gauss5x5[i])] for i in range(5)]
+        return sum(map(sum, mult))
 
     def is_lin(self, pixel, phi):
         x, y = pixel
@@ -185,57 +194,70 @@ class ImageAbstraction:
                 lout.remove(each)
                 x, y = each
                 phi[x][y] = 3
-    
+
+    def expand_contour(self, pixel, lin, lout, phi):
+        lout.remove(pixel)
+        lin.add(pixel)
+        x,y = pixel
+        phi[x][y] = -1
+
+        if x-1 >= 0 and phi[x-1][y] == 3:
+            lout.add((x-1, y))
+            phi[x-1][y] = 1
+        if x+1 < self.w and phi[x+1][y] == 3:
+            lout.add((x+1, y))
+            phi[x+1][y] = 1
+        if y-1 >= 0 and phi[x][y-1] == 3:
+            lout.add((x, y-1))
+            phi[x][y-1] = 1
+        if y+1 < self.h and phi[x][y+1] == 3:
+            lout.add((x, y+1))
+            phi[x][y+1] = 1
+
+    def contract_contour(self, pixel, lin, lout, phi):
+        lin.remove(pixel)
+        lout.add(pixel)
+        x, y = pixel
+        phi[x][y] = 1
+
+        if x-1 >= 0 and phi[x-1][y] == -3:
+            lin.add((x-1, y))
+            phi[x-1][y] = -1
+        if x+1 < self.w and phi[x+1][y] == -3:
+            lin.add((x+1, y))
+            phi[x+1][y] = -1
+        if y-1 >= 0 and phi[x][y-1] == -3:
+            lin.add((x, y-1))
+            phi[x][y-1] = -1
+        if y+1 < self.h and phi[x][y+1] == -3:
+            lin.add((x, y+1))
+            phi[x][y+1] = -1
+
     def first_cycle(self, lin, lout, phi, mean):
         for each in list(lout):
             f = self.get_f(each, mean)
             if f > 0:
-                lout.remove(each)
-                lin.add(each)
-                x,y = each
-                phi[x][y] = -1
-
-                if x-1 >= 0 and phi[x-1][y] == 3:
-                    lout.add((x-1, y))
-                    phi[x-1][y] = 1
-                if x+1 < self.w and phi[x+1][y] == 3:
-                    lout.add((x+1, y))
-                    phi[x+1][y] = 1
-                if y-1 >= 0 and phi[x][y-1] == 3:
-                    lout.add((x, y-1))
-                    phi[x][y-1] = 1
-                if y+1 < self.h and phi[x][y+1] == 3:
-                    lout.add((x, y+1))
-                    phi[x][y+1] = 1
-
+                self.expand_contour(each, lin, lout, phi)
         self.filter_lin(lin, phi)
 
         for each in list(lin):
             f = self.get_f(each, mean)
             if f < 0:
-                lin.remove(each)
-                lout.add(each)
-                x, y = each
-                phi[x][y] = 1
-
-                if x-1 >= 0 and phi[x-1][y] == -3:
-                    lin.add((x-1, y))
-                    phi[x-1][y] = -1
-                if x+1 < self.w and phi[x+1][y] == -3:
-                    lin.add((x+1, y))
-                    phi[x+1][y] = -1
-                if y-1 >= 0 and phi[x][y-1] == -3:
-                    lin.add((x, y-1))
-                    phi[x][y-1] = -1
-                if y+1 < self.h and phi[x][y+1] == -3:
-                    lin.add((x, y+1))
-                    phi[x][y+1] = -1
-
+                self.contract_contour(each, lin, lout, phi)
         self.filter_lout(lout, phi)
 
-
     def second_cycle(self, lin, lout, phi):
-        pass
+        for each in list(lout):
+            f = self.get_fs(each, phi)
+            if f < 0:
+                self.expand_contour(each, lin, lout, phi)
+        self.filter_lin(lin, phi)
+
+        for each in list(lin):
+            f = self.get_fs(each, phi)
+            if f > 0:
+                self.contract_contour(each, lin, lout, phi)
+        self.filter_lout(lout, phi)
 
     def check_end(self, lin, lout, mean):
         for each in lin:
@@ -252,15 +274,20 @@ class ImageAbstraction:
         if not phi:
             phi = self.init_phi_matrix(lin, lout)
         
-        done = False
         iterations = 0
         mean = self.get_mean(phi)
 
-        while not done and iterations < nmax:
+        while iterations < nmax:
 
             self.first_cycle(lin, lout, phi, mean)
 
-            done = self.check_end(lin, lout, mean)
+            if self.check_end(lin, lout, mean):
+                break
+
+            self.second_cycle(lin, lout, phi)
+
+            if self.check_end(lin, lout, mean):
+                break
 
             iterations+=1
         
