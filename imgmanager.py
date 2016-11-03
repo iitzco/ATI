@@ -405,11 +405,11 @@ class ImageManager:
         return cv2.drawMatchesKnn(
             img1, kp1, img2, kp2, good, flags=2, outImg=None)
 
-    def hugh_for_lines(self, o_step, p_step, epsilon):
-        return self.image.hugh_for_lines(o_step, p_step, epsilon)
+    def hugh_for_lines(self, o, p, epsilon):
+        return self.image.hugh_for_lines(o, p, epsilon)
 
-    def hugh_for_circles(self, p_step, r_step, epsilon):
-        return self.image.hugh_for_circles(p_step, r_step, epsilon)
+    def hugh_for_circles(self, p, r, epsilon):
+        return self.image.hugh_for_circles(p, r, epsilon)
 
     def contour_detection_method(self, lin, lout, nmax, probability):
         return self.image.contour_detection_method(lin, lout, nmax, None,

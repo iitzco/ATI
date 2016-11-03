@@ -491,13 +491,13 @@ class BWImageAbstraction(ImageAbstraction):
 
         return pixel_list
 
-    def hugh_for_lines(self, o_step, p_step, epsilon):
+    def hugh_for_lines(self, o, p, epsilon):
         ret = []
         votes = {}
         d = max(self.w, self.h)
-        for i in utils.drange(0, math.sqrt(2)*d, p_step):
+        for i in utils.drange(p[0], p[2], p[1]):
             votes[i] = {}
-            for j in utils.drange(0, 360, o_step):
+            for j in utils.drange(o[0], o[2], o[1]):
                 votes[i][j] = 0
 
         max_v, min_v = self._get_max_min()
@@ -525,15 +525,15 @@ class BWImageAbstraction(ImageAbstraction):
 
         return ret
 
-    def hugh_for_circles(self, p_step, r_step, epsilon):
+    def hugh_for_circles(self, p, r, epsilon):
         ret = []
         votes = {}
-        for a in utils.drange(0, self.w, p_step):
+        for a in utils.drange(p[0], p[2], p[1]):
             votes[a] = {}
-            for b in utils.drange(0, self.h, p_step):
+            for b in utils.drange(p[0], p[2], p[1]):
                 votes[a][b] = {}
-                for r in utils.drange(0, max(self.w, self.h)/2, r_step):
-                    votes[a][b][r] = 0
+                for rad in utils.drange(r[0], r[2], r[1]):
+                    votes[a][b][rad] = 0
 
         max_v, min_v = self._get_max_min()
 

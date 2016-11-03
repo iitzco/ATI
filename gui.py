@@ -509,22 +509,33 @@ class GUI(tk.Frame):
                 cv2.imwrite(fname, sift_img)
 
     def hough_for_lines(self):
+
+        o_from = askfloat("Parameters", "Phi from? (from 0 to 360)")
         o_step = askfloat("Parameters", "Phi step? (from 0 to 360)")
-        p_step = askfloat("Parameters", "Phi step? (from 0 to sqrt(2)*D)")
+        o_to = askfloat("Parameters", "Phi to? (from 0 to 360)")
+        p_from = askfloat("Parameters", "P from? (from 0 to sqrt(2)*D)")
+        p_step = askfloat("Parameters", "P step? (from 0 to sqrt(2)*D)")
+        p_to = askfloat("Parameters", "P to? (from 0 to sqrt(2)*D)")
         epsilon = askfloat("Parameters", "Epsilon?")
         if o_step is None or p_step is None or epsilon is None:
             return
-        l = self.image_manager.hugh_for_lines(o_step, p_step, epsilon)
+        l = self.image_manager.hugh_for_lines((o_from, o_step, o_to),
+                                              (p_from, p_step, p_to), epsilon)
         self.studio.mark_lines(l)
         self.menu.show_unmark_button()
 
     def hough_for_circles(self):
+        p_from = askfloat("Parameters", "a and b from?")
         p_step = askfloat("Parameters", "a and b step?")
+        p_to = askfloat("Parameters", "a and b to?")
+        r_from = askfloat("Parameters", "r from?")
         r_step = askfloat("Parameters", "r step?")
+        r_to = askfloat("Parameters", "r to?")
         epsilon = askfloat("Parameters", "Epsilon?")
         if r_step is None or p_step is None or epsilon is None:
             return
-        c = self.image_manager.hugh_for_circles(p_step, r_step, epsilon)
+        c = self.image_manager.hugh_for_circles(
+            (p_from, p_step, p_to), (r_from, r_step, r_to), epsilon)
         self.studio.mark_circles(c)
         self.menu.show_unmark_button()
 
