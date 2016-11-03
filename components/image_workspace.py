@@ -98,7 +98,8 @@ class ImageWorkspace(tk.Frame):
             if self.gui.contour_detection.get():
                 ret = tkinter.messagebox.askyesno(
                     "Selection",
-                    "Confirm selection to run contour detection? (Selection should be inside object)")
+                    "Confirm selection to run contour detection? (Selection should be inside object)"
+                )
                 if ret:
                     lin, lout = self.get_selection_pixel_list(
                         (self.x_selection, self.y_selection, x, y))
@@ -106,7 +107,8 @@ class ImageWorkspace(tk.Frame):
             elif self.gui.selection_for_video:
                 ret = tkinter.messagebox.askyesno(
                     "Selection",
-                    "Confirm selection to run video tracking? (Selection should be inside object)")
+                    "Confirm selection to run video tracking? (Selection should be inside object)"
+                )
                 if ret:
                     lin, lout = self.get_selection_pixel_list(
                         (self.x_selection, self.y_selection, x, y))
@@ -123,7 +125,8 @@ class ImageWorkspace(tk.Frame):
                         "# of Pixel: {} --- Mean: {}".format(t[0], t[1]))
                 ret = tkinter.messagebox.askyesno(
                     "Confirm selection",
-                    "Want to create new image with that selection? ATTENTION: unsaved studio image will be lost.")
+                    "Want to create new image with that selection? ATTENTION: unsaved studio image will be lost."
+                )
                 if ret:
                     self.gui.image_manager.load_image(img)
                     self.gui.load_images()

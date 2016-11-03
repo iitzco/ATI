@@ -579,7 +579,7 @@ class GUI(tk.Frame):
                 mat = regex.match(file_name)
                 if mat:
                     number = int(mat.groupdict()['number'])
-                self.file_map[number] = (full_path, file_name)
+                    self.file_map[number] = (full_path, file_name)
 
         img = Image.open(self.file_map[self.starting_number][0])
         try:
@@ -589,7 +589,8 @@ class GUI(tk.Frame):
         self.load_images()
         tkinter.messagebox.showinfo(
             'Info',
-            'This is the first image of the video where the object is present. Select object region.')
+            'This is the first image of the video where the object is present. Select object region.'
+        )
         self.selection_for_video = True
 
 
