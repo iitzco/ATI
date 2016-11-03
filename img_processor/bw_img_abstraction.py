@@ -508,7 +508,7 @@ class BWImageAbstraction(ImageAbstraction):
                 if self.img[x][y] == max_v:
                     for p in votes.keys():
                         for o in votes[p].keys():
-                            if abs(x*math.cos(math.radians(o)) + y*math.sin(math.radians(o)) - p) < epsilon:
+                            if abs(x*math.cos(math.radians(o)) + y*math.sin(math.radians(o)) - p) <= epsilon:
                                 votes[p][o] = votes[p][o]+1
         max_votes = -1
         best_line = None

@@ -241,12 +241,18 @@ class StudioImageWorkspace(ImageWorkspace):
             self.unmark_lines()
 
         self.lines_list = []
+        epsilon = 0.0000001
 
         for each in lines_list:
-            get_y = lambda x: (each[0] - x*math.cos(math.radians(each[1])))/math.sin(math.radians(each[1])) if math.sin(math.radians(each[1]))!=0 else 0
-            self.lines_list.append(
-                self.canvas_main.create_line(
-                    -1000, get_y(-1000), 1000, get_y(1000), fill='green'))
+            if abs(math.sin(math.radians(each[1]))) < epsilon:
+                self.lines_list.append(
+                    self.canvas_main.create_line(
+                        each[0], -1000, each[0], 1000, fill='green'))
+            else:
+                get_y = lambda x: (each[0] - x*math.cos(math.radians(each[1])))/math.sin(math.radians(each[1]))
+                self.lines_list.append(
+                    self.canvas_main.create_line(
+                        -1000, get_y(-1000), 1000, get_y(1000), fill='green'))
 
     def mark_circles(self, circles_list):
         if hasattr(self, 'circles_list') and not self.circles_list:
