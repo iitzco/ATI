@@ -411,26 +411,23 @@ class ImageManager:
     def hugh_for_circles(self, p_step, r_step, epsilon):
         return self.image.hugh_for_circles(p_step, r_step, epsilon)
 
-    def contour_detection_method(self, lin, lout, nmax):
-        return self.image.contour_detection_method(lin, lout, nmax)[0]
+    def contour_detection_method(self, lin, lout, nmax, probability):
+        return self.image.contour_detection_method(lin, lout, nmax, None,
+                                                   probability)[0]
 
     def contour_detection_video_method(self, lin, lout, nmax, file_map,
-                                       destiny_dir, starting_number):
+                                       starting_number, show_callback,
+                                       probability):
         phi = None
         time_list = []
 
-        for i in range(1, starting_number):
-            self.load_temporal_image(Image.open(file_map[i][0]))
-            self.get_image().save(destiny_dir + '/' + file_map[i][1])
-
         for i in range(starting_number, len(file_map) + 1):
-            self.load_temporal_image(Image.open(file_map[i][0]))
+            self.load_image(Image.open(file_map[i][0]))
             t = time.time()
-            lin, lout, phi = self.image.contour_detection_method(lin, lout,
-                                                                 nmax, phi)
+            lin, lout, phi = self.image.contour_detection_method(
+                lin, lout, nmax, phi, probability)
             time_list.append(time.time() - t)
-            img = self.get_image_with_marks(self.get_image(), lout)
-            img.save(destiny_dir + '/' + file_map[i][1])
+            show_callback(lin)
 
         return time_list[1:]
 

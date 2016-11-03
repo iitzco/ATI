@@ -164,8 +164,8 @@ class RGBImageAbstraction(ImageAbstraction):
 
         return (ret[0]/count, ret[1]/count, ret[2]/count) if count > 0 else (0,0,0)
 
-    def get_f(self, pixel, mean):
+    def get_f(self, pixel, mean, probability):
         x, y = pixel
         norm = math.sqrt((self.img[x][y][0] - mean[0])**2 + (self.img[x][y][1] - mean[1])**2 +(self.img[x][y][2] - mean[2])**2)
         p = 1 - (norm/math.sqrt(3*(255**2)))
-        return -1 if p < 0.5 else 1
+        return -1 if p < probability else 1

@@ -233,15 +233,15 @@ class ImageAbstraction:
             lin.add((x, y+1))
             phi[x][y+1] = -1
 
-    def first_cycle(self, lin, lout, phi, mean):
+    def first_cycle(self, lin, lout, phi, mean, probability):
         for each in list(lout):
-            f = self.get_f(each, mean)
+            f = self.get_f(each, mean, probability)
             if f > 0:
                 self.expand_contour(each, lin, lout, phi)
         self.filter_lin(lin, phi)
 
         for each in list(lin):
-            f = self.get_f(each, mean)
+            f = self.get_f(each, mean, probability)
             if f < 0:
                 self.contract_contour(each, lin, lout, phi)
         self.filter_lout(lout, phi)
@@ -259,18 +259,18 @@ class ImageAbstraction:
                 self.contract_contour(each, lin, lout, phi)
         self.filter_lout(lout, phi)
 
-    def check_end(self, lin, lout, mean):
+    def check_end(self, lin, lout, mean, probability):
         for each in lin:
-            f = self.get_f(each, mean)
+            f = self.get_f(each, mean, probability)
             if f < 0:
                 return False
         for each in lout:
-            f = self.get_f(each, mean)
+            f = self.get_f(each, mean, probability)
             if f > 0:
                 return False
         return True
 
-    def contour_detection_method(self, lin, lout, nmax, phi=None):
+    def contour_detection_method(self, lin, lout, nmax, phi, probability):
         if not phi:
             phi = self.init_phi_matrix(lin, lout)
         
@@ -279,15 +279,15 @@ class ImageAbstraction:
 
         while iterations < nmax:
 
-            self.first_cycle(lin, lout, phi, mean)
+            self.first_cycle(lin, lout, phi, mean, probability)
 
-            if self.check_end(lin, lout, mean):
+            if self.check_end(lin, lout, mean, probability):
                 break
 
-            self.second_cycle(lin, lout, phi)
+            # self.second_cycle(lin, lout, phi)
 
-            if self.check_end(lin, lout, mean):
-                break
+            # if self.check_end(lin, lout, mean):
+            #     break
 
             iterations+=1
         

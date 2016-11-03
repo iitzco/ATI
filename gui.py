@@ -530,22 +530,32 @@ class GUI(tk.Frame):
 
     def contour_detection_method(self, lin, lout):
         nmax = askinteger("Parameters", "Max iterations?")
-        if not nmax:
+        probability = askfloat("Parameters", "F Probability?")
+        if not nmax or not probability:
             return
-        p = self.image_manager.contour_detection_method(lin, lout, nmax)
+        p = self.image_manager.contour_detection_method(lin, lout, nmax,
+                                                        probability)
         self.studio.mark_pixels(p, 1)
         self.menu.show_unmark_button()
 
     def contour_detection_video_method(self, lin, lout):
+        def callback(lin):
+            gui.studio.unmark_pixels()
+            gui.studio.show_image()
+            gui.studio.mark_pixels(lin, 3)
+            gui.studio.update()
+
         self.selection_for_video = False
         nmax = askinteger("Parameters", "Max iterations?")
-        if not nmax:
+        probability = askfloat("Parameters", "F Probability?")
+        if not nmax or not probability:
             return
         stats = self.image_manager.contour_detection_video_method(
-            lin, lout, nmax, self.file_map, self.destiny_dir,
-            self.starting_number)
+            lin, lout, nmax, self.file_map, self.starting_number, callback,
+            probability)
         avg = sum(stats) / len(stats)
         fps = int(1 / avg)
+        self.menu.show_unmark_button()
         tkinter.messagebox.showinfo(
             'Info',
             'Average processing time for each frame: {}.\nFPS: {}'.format(avg,
@@ -566,7 +576,9 @@ class GUI(tk.Frame):
         for subdir, dirs, files in os.walk(dname):
             for file_name in files:
                 full_path = os.path.join(subdir, file_name)
-                number = int(regex.match(file_name).groupdict()['number'])
+                mat = regex.match(file_name)
+                if mat:
+                    number = int(mat.groupdict()['number'])
                 self.file_map[number] = (full_path, file_name)
 
         img = Image.open(self.file_map[self.starting_number][0])
@@ -577,8 +589,7 @@ class GUI(tk.Frame):
         self.load_images()
         tkinter.messagebox.showinfo(
             'Info',
-            'This is the first image of the video where the object is present. Choose a destiny directory and then select object region.')
-        self.destiny_dir = askdirectory()
+            'This is the first image of the video where the object is present. Select object region.')
         self.selection_for_video = True
 
 

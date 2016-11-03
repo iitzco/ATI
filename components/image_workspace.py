@@ -233,8 +233,8 @@ class StudioImageWorkspace(ImageWorkspace):
                 p[1] - width,
                 p[0] + width,
                 p[1] + width,
-                outline='green',
-                fill='green'), (p[0], p[1])])
+                outline='#37FFFF',
+                fill='#37FFFF'), (p[0], p[1])])
 
     def mark_lines(self, lines_list):
         if hasattr(self, 'lines_list') and not self.lines_list:
