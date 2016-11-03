@@ -85,12 +85,12 @@ class ImageManager:
         self.backup = copy.deepcopy(self.image)
         self.undo_list = []
 
-        self.cached_backup = Image.frombytes(
-            self.backup.get_mode(), self.backup.get_size_tuple(),
-            self.backup.get_image_bytes())
-        self.cached_image = Image.frombytes(
-            self.image.get_mode(), self.image.get_size_tuple(),
-            self.image.get_image_bytes())
+        self.cached_backup = Image.frombytes(self.backup.get_mode(),
+                                             self.backup.get_size_tuple(),
+                                             self.backup.get_image_bytes())
+        self.cached_image = Image.frombytes(self.image.get_mode(),
+                                            self.image.get_size_tuple(),
+                                            self.image.get_image_bytes())
         self.modified = False
 
     def get_image_width(self):
@@ -417,15 +417,15 @@ class ImageManager:
 
     def contour_detection_video_method(self, lin, lout, nmax, file_map,
                                        starting_number, show_callback,
-                                       probability):
+                                       probability, full_tracking):
         phi = None
         time_list = []
 
         for i in range(starting_number, len(file_map) + 1):
-            self.load_image(Image.open(file_map[i][0]))
+            self.load_temporal_image(Image.open(file_map[i][0]))
             t = time.time()
             lin, lout, phi = self.image.contour_detection_method(
-                lin, lout, nmax, phi, probability)
+                lin, lout, nmax, phi, probability, full_tracking)
             time_list.append(time.time() - t)
             show_callback(lin)
 

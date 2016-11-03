@@ -563,7 +563,7 @@ class GUI(tk.Frame):
             return
         stats = self.image_manager.contour_detection_video_method(
             lin, lout, nmax, self.file_map, self.starting_number, callback,
-            probability)
+            probability, self.full_tracking)
         avg = sum(stats) / len(stats)
         fps = int(1 / avg)
         self.menu.show_unmark_button()
@@ -572,7 +572,7 @@ class GUI(tk.Frame):
             'Average processing time for each frame: {}.\nFPS: {}'.format(avg,
                                                                           fps))
 
-    def video_tracking(self):
+    def _video_tracking(self):
         dname = askdirectory()
         self.file_map = {}
         regex = re.compile('[a-zA-Z|0]+(?P<number>\d+)\.[a-zA-Z]+')
@@ -600,9 +600,16 @@ class GUI(tk.Frame):
         self.load_images()
         tkinter.messagebox.showinfo(
             'Info',
-            'This is the first image of the video where the object is present. Select object region.'
-        )
+            'This is the first image of the video where the object is present. Select object region.')
         self.selection_for_video = True
+
+    def video_tracking(self):
+        self.full_tracking = False
+        self._video_tracking()
+
+    def full_video_tracking(self):
+        self.full_tracking = True
+        self._video_tracking()
 
 
 if __name__ == "__main__":

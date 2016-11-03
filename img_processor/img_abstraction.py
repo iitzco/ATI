@@ -13,6 +13,12 @@ gauss5x5 = [
                 [1/273,4/273,7/273,4/273,1/273]
             ]
 
+gauss3x3 = [
+                [0.0585, 0.0965, 0.0585],
+                [0.0965, 0.1591, 0.0965],
+                [0.0585, 0.0965, 0.0585]
+            ]
+
 class ImageAbstraction:
     # (0,0)      x
     #   | ------ - - - - - - |
@@ -151,9 +157,14 @@ class ImageAbstraction:
                 queue.append((x,y+1))
 
     def get_fs(self, pixel, phi):
-        m = self._get_sorrounding(phi, pixel[0], pixel[1], 5)
-        mult = [[a*b for a,b in zip(m[i],gauss5x5[i])] for i in range(5)]
+        m = self._get_sorrounding(phi, pixel[0], pixel[1], 3)
+        mult = [[a*b for a,b in zip(m[i],gauss3x3[i])] for i in range(3)]
         return sum(map(sum, mult))
+
+    # def get_fs(self, pixel, phi):
+    #     m = self._get_sorrounding(phi, pixel[0], pixel[1], 5)
+    #     mult = [[a*b for a,b in zip(m[i],gauss5x5[i])] for i in range(5)]
+    #     return sum(map(sum, mult))
 
     def is_lin(self, pixel, phi):
         x, y = pixel
@@ -270,7 +281,7 @@ class ImageAbstraction:
                 return False
         return True
 
-    def contour_detection_method(self, lin, lout, nmax, phi, probability):
+    def contour_detection_method(self, lin, lout, nmax, phi, probability, full_tracking):
         if not phi:
             phi = self.init_phi_matrix(lin, lout)
         
@@ -284,10 +295,12 @@ class ImageAbstraction:
             if self.check_end(lin, lout, mean, probability):
                 break
 
-            # self.second_cycle(lin, lout, phi)
+            if full_tracking:
 
-            # if self.check_end(lin, lout, mean):
-            #     break
+                self.second_cycle(lin, lout, phi)
+
+                if self.check_end(lin, lout, mean, probability):
+                    break
 
             iterations+=1
         

@@ -165,3 +165,6 @@ class ContourMenuBar(tk.Menu):
         tk.Menu.__init__(self, parent)
         self.add_command(
             label="Video Tracking", command=parent.gui.video_tracking)
+        self.add_command(
+            label="Full Video Tracking (With 2nd cycle)",
+            command=parent.gui.full_video_tracking)
