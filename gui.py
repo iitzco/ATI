@@ -542,10 +542,12 @@ class GUI(tk.Frame):
     def contour_detection_method(self, lin, lout):
         nmax = askinteger("Parameters", "Max iterations?")
         probability = askfloat("Parameters", "F Probability?")
+        full_tracking = tkinter.messagebox.askyesno("Parameters",
+                                                    "Apply second cycle?")
         if not nmax or not probability:
             return
-        p = self.image_manager.contour_detection_method(lin, lout, nmax,
-                                                        probability)
+        p = self.image_manager.contour_detection_method(
+            lin, lout, nmax, probability, full_tracking)
         self.studio.mark_pixels(p, 1)
         self.menu.show_unmark_button()
 

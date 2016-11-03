@@ -281,12 +281,9 @@ class ImageAbstraction:
                 return False
         return True
 
-    def contour_detection_method(self, lin, lout, nmax, phi, probability, full_tracking):
-        if not phi:
-            phi = self.init_phi_matrix(lin, lout)
+    def contour_detection_method(self, lin, lout, nmax, phi, mean, probability, full_tracking):
         
         iterations = 0
-        mean = self.get_mean(phi)
 
         while iterations < nmax:
 

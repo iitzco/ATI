@@ -411,21 +411,28 @@ class ImageManager:
     def hugh_for_circles(self, p, r, epsilon):
         return self.image.hugh_for_circles(p, r, epsilon)
 
-    def contour_detection_method(self, lin, lout, nmax, probability):
-        return self.image.contour_detection_method(lin, lout, nmax, None,
-                                                   probability)[0]
+    def contour_detection_method(self, lin, lout, nmax, probability,
+                                 full_tracking):
+        phi = self.image.init_phi_matrix(lin, lout)
+        mean = self.image.get_mean(phi)
+
+        return self.image.contour_detection_method(
+            lin, lout, nmax, phi, mean, probability, full_tracking)[0]
 
     def contour_detection_video_method(self, lin, lout, nmax, file_map,
                                        starting_number, show_callback,
                                        probability, full_tracking):
-        phi = None
+
         time_list = []
+
+        phi = self.image.init_phi_matrix(lin, lout)
+        mean = self.image.get_mean(phi)
 
         for i in range(starting_number, len(file_map) + 1):
             self.load_temporal_image(Image.open(file_map[i][0]))
             t = time.time()
             lin, lout, phi = self.image.contour_detection_method(
-                lin, lout, nmax, phi, probability, full_tracking)
+                lin, lout, nmax, phi, mean, probability, full_tracking)
             time_list.append(time.time() - t)
             show_callback(lin)
 
