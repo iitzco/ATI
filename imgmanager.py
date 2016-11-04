@@ -24,7 +24,7 @@ class ImageManager:
         for j in range(int(0.25 * h), int(0.75 * h)):
             for i in range(int(0.25 * w), int(0.75 * w)):
                 img_list[j * w + i] = 255
-        self.create_images(img_list, 'L', (w, h), True)
+        self.create_images(img_list, 'L', (w, h))
 
     def load_circle(self, w, h):
         r = 0.25 * min(w, h)
@@ -33,17 +33,17 @@ class ImageManager:
             for i in range(w):
                 if math.sqrt(pow(j - 0.5 * h, 2) + pow(i - 0.5 * w, 2)) < r:
                     img_list[j * w + i] = 255
-        self.create_images(img_list, 'L', (w, h), True)
+        self.create_images(img_list, 'L', (w, h))
 
     def load_black(self, w, h):
         img_list = [0] * (w * h)
         img_list[0] = 1
-        self.create_images(img_list, 'L', (w, h), True)
+        self.create_images(img_list, 'L', (w, h))
 
     def load_white(self, w, h):
         img_list = [255] * (w * h)
         img_list[0] = 254
-        self.create_images(img_list, 'L', (w, h), True)
+        self.create_images(img_list, 'L', (w, h))
 
     def get_image_info(self, img):
         img_list = list(img.getdata())

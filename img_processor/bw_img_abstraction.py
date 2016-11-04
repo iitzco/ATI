@@ -286,9 +286,9 @@ class BWImageAbstraction(ImageAbstraction):
         def f(m):
             aux = 0
             for j in range(3):
-                aux -= m[j][0] * (2 if j == 1 else 1)
+                aux -= (m[j][0] * (2 if j == 1 else 1))
             for j in range(3):
-                aux += m[j][2] * (2 if j == 1 else 1)
+                aux += (m[j][2] * (2 if j == 1 else 1))
             return aux
 
         return self._common_filter(3, f)
@@ -297,9 +297,9 @@ class BWImageAbstraction(ImageAbstraction):
         def f(m):
             aux = 0
             for j in range(3):
-                aux -= m[0][j] * (2 if j == 1 else 1)
+                aux -= (m[0][j] * (2 if j == 1 else 1))
             for j in range(3):
-                aux += m[2][j] * (2 if j == 1 else 1)
+                aux += (m[2][j] * (2 if j == 1 else 1))
             return aux
 
         return self._common_filter(3, f)
@@ -344,8 +344,8 @@ class BWImageAbstraction(ImageAbstraction):
 
         for i in range(self.w):
             for j in range(self.h):
-                img_g[i][j] = math.sqrt(img_x[i][j]**2 + img_y[i][j]**2)
                 angles[i][j] = utils.get_angle(math.degrees(math.atan2(img_x[i][j], img_y[i][j])))
+                img_g[i][j] = math.sqrt((img_x[i][j]**2) + (img_y[i][j]**2))
 
         for i in range(self.w):
             for j in range(self.h):
@@ -358,22 +358,34 @@ class BWImageAbstraction(ImageAbstraction):
 
     def canny_hysteresis_method(self, t1, t2):
         self.canny_method()
-        
-        aux = [[0 for i in range(self.h)] for j in range(self.w)]
-        for i in range(self.w):
-            for j in range(self.h):
-                aux[i][j] = self.img[i][j]
 
         for i in range(self.w):
             for j in range(self.h):
+
                 if self.img[i][j] <= t1:
-                    aux[i][j] = 0
+                    self.img[i][j] = 0
 
-                elif self.img[i][j] <= t2:
-                    surr = self._get_sorrounding(self.img, i, j, 3)
-                    if not (surr[1][0] > 0 or surr[0][1] > 0 or surr[2][1] > 0 or surr[1][2] > 0):
-                        aux[i][j] = 0
-        self.img = aux
+                elif self.img[i][j] > t2:
+                    self.img[i][j] = 255
+
+        done = False
+        while not done:
+            done = True
+            for i in range(self.w):
+                for j in range(self.h):
+                    if self.img[i][j] > t1 and self.img[i][j] <= t2:
+                        surr = self._get_sorrounding(self.img, i, j, 3)
+                        if surr[1][0] == 255 or surr[0][1] ==255 or surr[2][1] ==255 or surr[1][2] == 255:
+                            done = False
+                            self.img[i][j] = 255
+                        elif surr[1][0] == 0 and surr[0][1] == 0 and surr[2][1] == 0 and surr[1][2] == 0:
+                            done = False
+                            self.img[i][j] = 0
+
+        for i in range(self.w):
+            for j in range(self.h):
+                if self.img[i][j] > t1 and self.img[i][j] <= t2:
+                    self.img[i][j] = 0
 
     def _get_laplacian_img_mask(self):
         def f(m):
