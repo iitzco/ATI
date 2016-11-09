@@ -503,7 +503,7 @@ class BWImageAbstraction(ImageAbstraction):
 
         return pixel_list
 
-    def hugh_for_lines(self, o, p, epsilon):
+    def hugh_for_lines(self, o, p, epsilon, percentage):
         ret = []
         votes = {}
         d = max(self.w, self.h)
@@ -532,7 +532,7 @@ class BWImageAbstraction(ImageAbstraction):
 
         for p in votes.keys():
             for o in votes[p].keys():
-                if votes[p][o] > 0.8*max_votes:
+                if votes[p][o] > percentage*max_votes:
                     ret.append((p,o))
 
         return ret

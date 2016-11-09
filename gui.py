@@ -517,10 +517,11 @@ class GUI(tk.Frame):
         p_step = askfloat("Parameters", "P step? (from 0 to sqrt(2)*D)")
         p_to = askfloat("Parameters", "P to? (from 0 to sqrt(2)*D)")
         epsilon = askfloat("Parameters", "Epsilon?")
-        if o_step is None or p_step is None or epsilon is None:
+        percentage = askfloat("Parameters", "Percentage for max values?", minvalue=0, maxvalue=1)
+        if o_step is None or p_step is None or epsilon is None or percentage is None:
             return
         l = self.image_manager.hugh_for_lines((o_from, o_step, o_to),
-                                              (p_from, p_step, p_to), epsilon)
+                                              (p_from, p_step, p_to), epsilon, percentage)
         self.studio.mark_lines(l)
         self.menu.show_unmark_button()
 

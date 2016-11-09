@@ -405,8 +405,8 @@ class ImageManager:
         return cv2.drawMatchesKnn(
             img1, kp1, img2, kp2, good, flags=2, outImg=None)
 
-    def hugh_for_lines(self, o, p, epsilon):
-        return self.image.hugh_for_lines(o, p, epsilon)
+    def hugh_for_lines(self, o, p, epsilon, percentage):
+        return self.image.hugh_for_lines(o, p, epsilon, percentage)
 
     def hugh_for_circles(self, p, r, epsilon):
         return self.image.hugh_for_circles(p, r, epsilon)
