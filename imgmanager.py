@@ -419,20 +419,24 @@ class ImageManager:
         return self.image.contour_detection_method(
             lin, lout, nmax, phi, mean, probability, full_tracking)[0]
 
-    def contour_detection_video_method(self, lin, lout, nmax, file_map,
-                                       starting_number, show_callback,
-                                       probability, full_tracking):
+    def contour_detection_video_method(
+            self, lin, lout, nmax, file_map, starting_number, show_callback,
+            probability, full_tracking, hsv_tracking):
 
         time_list = []
 
         phi = self.image.init_phi_matrix(lin, lout)
-        mean = self.image.get_mean(phi)
+        if hsv_tracking:
+            mean = self.image.get_hsv_mean(phi)
+        else:
+            mean = self.image.get_mean(phi)
 
         for i in range(starting_number, len(file_map) + 1):
             self.load_temporal_image(Image.open(file_map[i][0]))
             t = time.time()
             lin, lout, phi = self.image.contour_detection_method(
-                lin, lout, nmax, phi, mean, probability, full_tracking)
+                lin, lout, nmax, phi, mean, probability, full_tracking,
+                hsv_tracking)
             time_list.append(time.time() - t)
             show_callback(lin)
 

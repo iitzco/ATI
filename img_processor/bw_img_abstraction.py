@@ -587,7 +587,10 @@ class BWImageAbstraction(ImageAbstraction):
 
         return ret/count if count > 0 else 0
 
-    def get_f(self, pixel, mean, probability):
+    def get_hsv_mean(self, phi):
+        return self.get_mean(phi)
+
+    def get_f(self, pixel, mean, probability, hsv_tracking):
         p = 1 - (abs(self.img[pixel[0]][pixel[1]] - mean)/(255))
         return -1 if p < probability else 1
 

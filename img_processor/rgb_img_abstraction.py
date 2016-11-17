@@ -1,5 +1,6 @@
 import math
 import random
+import colorsys
 from . import utils
 from collections import Counter
 from statistics import median
@@ -164,8 +165,38 @@ class RGBImageAbstraction(ImageAbstraction):
 
         return (ret[0]/count, ret[1]/count, ret[2]/count) if count > 0 else (0,0,0)
 
+    def get_hsv_mean(self, phi):
+        ret = [0, 0]
+        count = 0
+        for i in range(self.w):
+            for j in range(self.h):
+                if phi[i][j] == -3:
+                    h, s, v = colorsys.rgb_to_hsv(*self.img[i][j])
+                    ret[0] += h
+                    ret[1] += s
+                    count+=1
+
+        return (ret[0]/count, ret[1]/count) if count > 0 else (0,0)
+
     def get_f(self, pixel, mean, probability):
         x, y = pixel
         norm = math.sqrt((self.img[x][y][0] - mean[0])**2 + (self.img[x][y][1] - mean[1])**2 +(self.img[x][y][2] - mean[2])**2)
         p = 1 - (norm/math.sqrt(3*(255**2)))
+        return -1 if p < probability else 1
+
+    def get_f(self, pixel, mean, probability, hsv_tracking):
+        x, y = pixel
+
+        if not hsv_tracking:
+            norm = math.sqrt((self.img[x][y][0] - mean[0])**2 + (self.img[x][y][1] - mean[1])**2 +(self.img[x][y][2] - mean[2])**2)
+            p = 1 - (norm/math.sqrt(3*(255**2)))
+
+        else:
+            h, s, v = colorsys.rgb_to_hsv(*self.img[x][y])
+            _hdiff = abs(h - mean[0])
+            hdiff = _hdiff if _hdiff <= 0.5 else (1 - _hdiff)
+            sdiff = abs(s - mean[1])
+            norm = math.sqrt(hdiff**2 + sdiff**2)
+            p = 1 - (norm/math.sqrt(2))
+
         return -1 if p < probability else 1

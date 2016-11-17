@@ -161,11 +161,6 @@ class ImageAbstraction:
         mult = [[a*b for a,b in zip(m[i],gauss3x3[i])] for i in range(3)]
         return sum(map(sum, mult))
 
-    # def get_fs(self, pixel, phi):
-    #     m = self._get_sorrounding(phi, pixel[0], pixel[1], 5)
-    #     mult = [[a*b for a,b in zip(m[i],gauss5x5[i])] for i in range(5)]
-    #     return sum(map(sum, mult))
-
     def is_lin(self, pixel, phi):
         x, y = pixel
 
@@ -244,20 +239,20 @@ class ImageAbstraction:
             lin.add((x, y+1))
             phi[x][y+1] = -1
 
-    def first_cycle(self, lin, lout, phi, mean, probability):
+    def first_cycle(self, lin, lout, phi, mean, probability, hsv_tracking):
         for each in list(lout):
-            f = self.get_f(each, mean, probability)
+            f = self.get_f(each, mean, probability, hsv_tracking)
             if f > 0:
                 self.expand_contour(each, lin, lout, phi)
         self.filter_lin(lin, phi)
 
         for each in list(lin):
-            f = self.get_f(each, mean, probability)
+            f = self.get_f(each, mean, probability, hsv_tracking)
             if f < 0:
                 self.contract_contour(each, lin, lout, phi)
         self.filter_lout(lout, phi)
 
-    def second_cycle(self, lin, lout, phi):
+    def second_cycle(self, lin, lout, phi, hsv_tracking):
         for each in list(lout):
             f = self.get_fs(each, phi)
             if f < 0:
@@ -270,33 +265,33 @@ class ImageAbstraction:
                 self.contract_contour(each, lin, lout, phi)
         self.filter_lout(lout, phi)
 
-    def check_end(self, lin, lout, mean, probability):
+    def check_end(self, lin, lout, mean, probability, hsv_tracking):
         for each in lin:
-            f = self.get_f(each, mean, probability)
+            f = self.get_f(each, mean, probability, hsv_tracking)
             if f < 0:
                 return False
         for each in lout:
-            f = self.get_f(each, mean, probability)
+            f = self.get_f(each, mean, probability, hsv_tracking)
             if f > 0:
                 return False
         return True
 
-    def contour_detection_method(self, lin, lout, nmax, phi, mean, probability, full_tracking):
+    def contour_detection_method(self, lin, lout, nmax, phi, mean, probability, full_tracking, hsv_tracking):
         
         iterations = 0
 
         while iterations < nmax:
 
-            self.first_cycle(lin, lout, phi, mean, probability)
+            self.first_cycle(lin, lout, phi, mean, probability, hsv_tracking)
 
-            if self.check_end(lin, lout, mean, probability):
+            if self.check_end(lin, lout, mean, probability, hsv_tracking):
                 break
 
             if full_tracking:
 
                 self.second_cycle(lin, lout, phi)
 
-                if self.check_end(lin, lout, mean, probability):
+                if self.check_end(lin, lout, mean, probability, hsv_tracking):
                     break
 
             iterations+=1
