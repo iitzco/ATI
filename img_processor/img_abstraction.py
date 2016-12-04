@@ -277,7 +277,6 @@ class ImageAbstraction:
         return True
 
     def contour_detection_method(self, lin, lout, nmax, phi, mean, probability, full_tracking, hsv_tracking):
-        
         iterations = 0
 
         while iterations < nmax:
@@ -295,5 +294,5 @@ class ImageAbstraction:
                     break
 
             iterations+=1
-        
+
         return lin, lout, phi

@@ -61,7 +61,7 @@ class GUI(tk.Frame):
         self.menu = Menu(self)
 
         self.studio.pack(fill=tk.BOTH, expand=tk.YES, side=tk.LEFT)
-        self.menu.pack(fill=tk.Y, expand=tk.YES, side=tk.RIGHT)
+        self.menu.pack(fill=tk.Y, expand=tk.NO, side=tk.RIGHT)
 
         self.menu.discover()
         self.original.discover()

@@ -424,6 +424,10 @@ class ImageManager:
             probability, full_tracking, hsv_tracking):
 
         time_list = []
+        frames = 0
+
+        average_displacement = 0,0
+        last_center_of_mass = None
 
         phi = self.image.init_phi_matrix(lin, lout)
         if hsv_tracking:
@@ -438,9 +442,33 @@ class ImageManager:
                 lin, lout, nmax, phi, mean, probability, full_tracking,
                 hsv_tracking)
             time_list.append(time.time() - t)
+            
+            c = self.get_center_of_mass(lin)
+
+            if frames >= 1:
+                average_displacement = self.get_new_displacement(average_displacement, frames, c, last_center_of_mass)
+
+            frames += 1
+
+            last_center_of_mass = c
+
             show_callback(lin)
 
         return time_list[1:]
+
+    def get_new_displacement(self, avg_displacement, frames, current_center, last_center):
+        total_displacement = avg_displacement[0]*(frames-1), avg_displacement[1]*(frames-1)
+        displacement = current_center[0] - last_center[0], current_center[1] - last_center[1]
+        total_displacement = total_displacement[0] + displacement[0], total_displacement[1] + displacement[1]
+        return total_displacement[0]/frames, total_displacement[1]/frames
+
+    def get_center_of_mass(self, lin):
+        sum_x, sum_y = 0,0
+        for each in lin:
+            sum_x += each[0]
+            sum_y += each[1]
+
+        return (sum_x/len(lin), sum_y/len(lin))
 
     def get_image_with_marks(self, img, marks):
         if img.mode != 'RGB':
