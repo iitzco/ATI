@@ -482,23 +482,24 @@ class ImageManager:
                                                 full_tracking, hsv_tracking)
             time_list.append(time.time() - t)
 
-            c = self.get_center_of_mass(t_container.lin)
-            area = self.get_area(t_container.phi)
+            if len(t_container.lin) > 0:
+                c = self.get_center_of_mass(t_container.lin)
+                area = self.get_area(t_container.phi)
 
-            if area > max_area:
-                max_area = area
+                if area > max_area:
+                    max_area = area
 
-            if t_container.frame >= 1:
-                average_displacement = self.get_new_displacement(
-                    average_displacement, t_container.frame, c,
-                    last_center_of_mass)
+                if t_container.frame >= 1:
+                    average_displacement = self.get_new_displacement(
+                        average_displacement, t_container.frame, c,
+                        last_center_of_mass)
 
-                if area < 0.5 * max_area:
-                    self.analyze_possible_oclussion(t_container, average_displacement)
+                    if area < 0.5 * max_area:
+                        self.analyze_possible_oclussion(t_container, average_displacement)
 
-            t_container.frame += 1
+                t_container.frame += 1
 
-            last_center_of_mass = c
+                last_center_of_mass = c
 
             show_callback(t_container.lin)
 
