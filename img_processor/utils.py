@@ -1,3 +1,4 @@
+import math
 
 def max_matrix(matrix):
     return max([max(each) for each in matrix])
@@ -23,12 +24,17 @@ def generic_transformation(min_from, max_from, min_to, max_to, v):
 def transform_to_std(min_v, max_v, v):
     if min_v == max_v:
         return 0 if min_v < 128 else 255
-    
+
     return generic_transformation(min_v, max_v, 0, 255, v)
 
 
 def transform_from_std(min_v, max_v, v):
     return generic_transformation(0, 255, min_v, max_v, v)
+
+
+def vector_to_versor(v):
+    norm = math.sqrt(v[0]**2 + v[1]**2)
+    return (v[0]/norm, v[1]/norm)
 
 
 def sign(x):
@@ -113,6 +119,7 @@ def get_angle(angle):
         return 90
     if p_angle >= 112.5 and p_angle < 157.5:
         return 135
+
 
 def get_alligned_pixels(m, angle):
     if angle == 0:

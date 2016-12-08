@@ -22,6 +22,11 @@ class TrackingContainer:
         self.phi = phi
         self.mean = mean
         self.frame = 0
+        self.max_area = -1
+
+    def reset(self):
+        self.frame = 0
+        self.max_area = -1
 
 
 class ImageManager:
@@ -94,12 +99,12 @@ class ImageManager:
         self.backup = copy.deepcopy(self.image)
         self.undo_list = []
 
-        self.cached_backup = Image.frombytes(
-            self.backup.get_mode(), self.backup.get_size_tuple(),
-            self.backup.get_image_bytes())
-        self.cached_image = Image.frombytes(
-            self.image.get_mode(), self.image.get_size_tuple(),
-            self.image.get_image_bytes())
+        self.cached_backup = Image.frombytes(self.backup.get_mode(),
+                                             self.backup.get_size_tuple(),
+                                             self.backup.get_image_bytes())
+        self.cached_image = Image.frombytes(self.image.get_mode(),
+                                            self.image.get_size_tuple(),
+                                            self.image.get_image_bytes())
         self.modified = False
 
     def get_image_width(self):
@@ -463,7 +468,6 @@ class ImageManager:
         frames = 0
 
         average_displacement = 0, 0
-        max_area = -1
         last_center_of_mass = None
 
         phi = self.image.init_phi_matrix(lin, lout)
@@ -486,17 +490,18 @@ class ImageManager:
                 c = self.get_center_of_mass(t_container.lin)
                 area = self.get_area(t_container.phi)
 
-                if area > max_area:
-                    max_area = area
+                if area > t_container.max_area:
+                    t_container.max_area = area
 
                 if t_container.frame >= 1:
                     average_displacement = self.get_new_displacement(
                         average_displacement, t_container.frame, c,
                         last_center_of_mass)
 
-                    if area < 0.5 * max_area:
-                        self.analyze_possible_oclussion(t_container,
-                                                        average_displacement)
+                    if area < 0.5 * t_container.max_area:
+                        self.image.analyze_possible_oclussion(
+                            t_container, average_displacement, c, probability,
+                            hsv_tracking)
 
                 t_container.frame += 1
 
@@ -523,10 +528,6 @@ class ImageManager:
             sum_y += each[1]
 
         return (sum_x / len(lin), sum_y / len(lin))
-
-    def analyze_possible_oclussion(self, tracking_container, displacement):
-        # If oclussion happens, remember to set frame in 0.
-        pass
 
     def get_area(self, phi):
         count = 0

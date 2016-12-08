@@ -295,3 +295,53 @@ class ImageAbstraction:
 
             iterations+=1
 
+    def analyze_possible_oclussion(self, tracking_container, displacement, center_mass, probability, hsv_tracking):
+        d = utils.vector_to_versor(displacement)
+        diagonal = math.sqrt(self.w**2 + self.h**2)
+
+        # Moves each 10%
+        for percent in range(1,11):
+            movement = d[0]*diagonal*(percent/10), d[1]*diagonal*(percent/10)
+            new_center = int(center_mass[0] + movement[0]), int(center_mass[1] + movement[1])
+
+            if not self.inside_image(new_center):
+                return
+
+            f = self.get_f(new_center, tracking_container.mean, probability, hsv_tracking)
+            if f > 0:
+                if self.surrounding_in_contour(new_center, tracking_container.mean, probability, hsv_tracking):
+                    tracking_container.lin, tracking_container.lout = self.initialize_box(new_center)
+                    tracking_container.phi = self.init_phi_matrix(tracking_container.lin, tracking_container.lout)
+                    tracking_container.reset()
+                    return
+                                
+
+    def surrounding_in_contour(self, center, mean, probability, hsv_tracking):
+        # Analyze 10x10 surrounding box
+        for i in range(center[0]-5, center[0]+6):
+            for j in range(center[1]-5, center[1]+6):
+                p = i, j
+                if self.inside_image(p):
+                    if not self.get_f(p, mean, probability, hsv_tracking):
+                        return False
+        return True
+
+    def initialize_box(self, center):
+        lout, lin = set(), set()
+        for i in range(center[0]-1, center[0]+2):
+            lin.add((i, center[1] - 1))
+            lin.add((i, center[1] + 1))
+            if i!=center[0]:
+                lin.add((i, center[1]))
+        for i in range(center[0]-2, center[0]+3):
+            lout.add((i, center[1] - 2))
+            lout.add((i, center[1] + 2))
+            if abs(i-center[0]) == 2:
+                lout.add((i, center[1]-1))
+                lout.add((i, center[1]))
+                lout.add((i, center[1]+1))
+
+        return lin, lout
+
+    def inside_image(self, p):
+        return p[0] >= 0 and p[0] < self.w and p[1] >=0 and p[1] < self.h
