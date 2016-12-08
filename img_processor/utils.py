@@ -21,6 +21,9 @@ def generic_transformation(min_from, max_from, min_to, max_to, v):
 
 
 def transform_to_std(min_v, max_v, v):
+    if min_v == max_v:
+        return 0 if min_v < 128 else 255
+    
     return generic_transformation(min_v, max_v, 0, 255, v)
 
 

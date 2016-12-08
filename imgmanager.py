@@ -94,12 +94,12 @@ class ImageManager:
         self.backup = copy.deepcopy(self.image)
         self.undo_list = []
 
-        self.cached_backup = Image.frombytes(self.backup.get_mode(),
-                                             self.backup.get_size_tuple(),
-                                             self.backup.get_image_bytes())
-        self.cached_image = Image.frombytes(self.image.get_mode(),
-                                            self.image.get_size_tuple(),
-                                            self.image.get_image_bytes())
+        self.cached_backup = Image.frombytes(
+            self.backup.get_mode(), self.backup.get_size_tuple(),
+            self.backup.get_image_bytes())
+        self.cached_image = Image.frombytes(
+            self.image.get_mode(), self.image.get_size_tuple(),
+            self.image.get_image_bytes())
         self.modified = False
 
     def get_image_width(self):
@@ -495,7 +495,8 @@ class ImageManager:
                         last_center_of_mass)
 
                     if area < 0.5 * max_area:
-                        self.analyze_possible_oclussion(t_container, average_displacement)
+                        self.analyze_possible_oclussion(t_container,
+                                                        average_displacement)
 
                 t_container.frame += 1
 

@@ -572,7 +572,8 @@ class GUI(tk.Frame):
             probability, self.full_tracking, self.hsv_tracking)
         avg = sum(stats) / len(stats)
         fps = int(1 / avg)
-        self.menu.show_unmark_button()
+        if lin:
+            self.menu.show_unmark_button()
         tkinter.messagebox.showinfo(
             'Info',
             'Average processing time for each frame: {}.\nFPS: {}'.format(avg,
@@ -606,7 +607,8 @@ class GUI(tk.Frame):
         self.load_images()
         tkinter.messagebox.showinfo(
             'Info',
-            'This is the first image of the video where the object is present. Select object region.')
+            'This is the first image of the video where the object is present. Select object region.'
+        )
         self.selection_for_video = True
 
     def video_tracking(self):
