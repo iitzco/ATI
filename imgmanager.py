@@ -494,7 +494,7 @@ class ImageManager:
                     last_center_of_mass)
 
                 if area < 0.5 * max_area:
-                    pass
+                    self.analyze_possible_oclussion(t_container, average_displacement)
 
             t_container.frame += 1
 
@@ -522,8 +522,9 @@ class ImageManager:
 
         return (sum_x / len(lin), sum_y / len(lin))
 
-    def analyze_possible_oclussion(self, displacement, lin, lout, phi):
-        return lin, lout, phi
+    def analyze_possible_oclussion(self, tracking_container, displacement):
+        # If oclussion happens, remember to set frame in 0.
+        pass
 
     def get_area(self, phi):
         count = 0
