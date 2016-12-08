@@ -201,98 +201,97 @@ class ImageAbstraction:
                 x, y = each
                 phi[x][y] = 3
 
-    def expand_contour(self, pixel, lin, lout, phi):
-        lout.remove(pixel)
-        lin.add(pixel)
+    def expand_contour(self, pixel, tracking_container):
+        tracking_container.lout.remove(pixel)
+        tracking_container.lin.add(pixel)
         x,y = pixel
-        phi[x][y] = -1
+        tracking_container.phi[x][y] = -1
 
-        if x-1 >= 0 and phi[x-1][y] == 3:
-            lout.add((x-1, y))
-            phi[x-1][y] = 1
-        if x+1 < self.w and phi[x+1][y] == 3:
-            lout.add((x+1, y))
-            phi[x+1][y] = 1
-        if y-1 >= 0 and phi[x][y-1] == 3:
-            lout.add((x, y-1))
-            phi[x][y-1] = 1
-        if y+1 < self.h and phi[x][y+1] == 3:
-            lout.add((x, y+1))
-            phi[x][y+1] = 1
+        if x-1 >= 0 and tracking_container.phi[x-1][y] == 3:
+            tracking_container.lout.add((x-1, y))
+            tracking_container.phi[x-1][y] = 1
+        if x+1 < self.w and tracking_container.phi[x+1][y] == 3:
+            tracking_container.lout.add((x+1, y))
+            tracking_container.phi[x+1][y] = 1
+        if y-1 >= 0 and tracking_container.phi[x][y-1] == 3:
+            tracking_container.lout.add((x, y-1))
+            tracking_container.phi[x][y-1] = 1
+        if y+1 < self.h and tracking_container.phi[x][y+1] == 3:
+            tracking_container.lout.add((x, y+1))
+            tracking_container.phi[x][y+1] = 1
 
-    def contract_contour(self, pixel, lin, lout, phi):
-        lin.remove(pixel)
-        lout.add(pixel)
+    def contract_contour(self, pixel, tracking_container):
+        tracking_container.lin.remove(pixel)
+        tracking_container.lout.add(pixel)
         x, y = pixel
-        phi[x][y] = 1
+        tracking_container.phi[x][y] = 1
 
-        if x-1 >= 0 and phi[x-1][y] == -3:
-            lin.add((x-1, y))
-            phi[x-1][y] = -1
-        if x+1 < self.w and phi[x+1][y] == -3:
-            lin.add((x+1, y))
-            phi[x+1][y] = -1
-        if y-1 >= 0 and phi[x][y-1] == -3:
-            lin.add((x, y-1))
-            phi[x][y-1] = -1
-        if y+1 < self.h and phi[x][y+1] == -3:
-            lin.add((x, y+1))
-            phi[x][y+1] = -1
+        if x-1 >= 0 and tracking_container.phi[x-1][y] == -3:
+            tracking_container.lin.add((x-1, y))
+            tracking_container.phi[x-1][y] = -1
+        if x+1 < self.w and tracking_container.phi[x+1][y] == -3:
+            tracking_container.lin.add((x+1, y))
+            tracking_container.phi[x+1][y] = -1
+        if y-1 >= 0 and tracking_container.phi[x][y-1] == -3:
+            tracking_container.lin.add((x, y-1))
+            tracking_container.phi[x][y-1] = -1
+        if y+1 < self.h and tracking_container.phi[x][y+1] == -3:
+            tracking_container.lin.add((x, y+1))
+            tracking_container.phi[x][y+1] = -1
 
-    def first_cycle(self, lin, lout, phi, mean, probability, hsv_tracking):
-        for each in list(lout):
-            f = self.get_f(each, mean, probability, hsv_tracking)
+    def first_cycle(self, tracking_container, probability, hsv_tracking):
+        for each in list(tracking_container.lout):
+            f = self.get_f(each, tracking_container.mean, probability, hsv_tracking)
             if f > 0:
-                self.expand_contour(each, lin, lout, phi)
-        self.filter_lin(lin, phi)
+                self.expand_contour(each, tracking_container)
+        self.filter_lin(tracking_container.lin, tracking_container.phi)
 
-        for each in list(lin):
-            f = self.get_f(each, mean, probability, hsv_tracking)
+        for each in list(tracking_container.lin):
+            f = self.get_f(each, tracking_container.mean, probability, hsv_tracking)
             if f < 0:
-                self.contract_contour(each, lin, lout, phi)
-        self.filter_lout(lout, phi)
+                self.contract_contour(each, tracking_container)
+        self.filter_lout(tracking_container.lout, tracking_container.phi)
 
-    def second_cycle(self, lin, lout, phi, hsv_tracking):
-        for each in list(lout):
-            f = self.get_fs(each, phi)
+    def second_cycle(self, tracking_container, hsv_tracking):
+        for each in list(tracking_container.lout):
+            f = self.get_fs(each, tracking_container.phi)
             if f < 0:
-                self.expand_contour(each, lin, lout, phi)
-        self.filter_lin(lin, phi)
+                self.expand_contour(each, tracking_container)
+        self.filter_lin(tracking_container.lin, tracking_container.phi)
 
-        for each in list(lin):
-            f = self.get_fs(each, phi)
+        for each in list(tracking_container.lin):
+            f = self.get_fs(each, tracking_container.phi)
             if f > 0:
-                self.contract_contour(each, lin, lout, phi)
-        self.filter_lout(lout, phi)
+                self.contract_contour(each, tracking_container)
+        self.filter_lout(tracking_container.lout, tracking_container.phi)
 
-    def check_end(self, lin, lout, mean, probability, hsv_tracking):
-        for each in lin:
-            f = self.get_f(each, mean, probability, hsv_tracking)
+    def check_end(self, tracking_container, probability, hsv_tracking):
+        for each in tracking_container.lin:
+            f = self.get_f(each, tracking_container.mean, probability, hsv_tracking)
             if f < 0:
                 return False
-        for each in lout:
-            f = self.get_f(each, mean, probability, hsv_tracking)
+        for each in tracking_container.lout:
+            f = self.get_f(each, tracking_container.mean, probability, hsv_tracking)
             if f > 0:
                 return False
         return True
 
-    def contour_detection_method(self, lin, lout, nmax, phi, mean, probability, full_tracking, hsv_tracking):
+    def contour_detection_method(self, tracking_container, nmax, probability, full_tracking, hsv_tracking):
         iterations = 0
 
         while iterations < nmax:
 
-            self.first_cycle(lin, lout, phi, mean, probability, hsv_tracking)
+            self.first_cycle(tracking_container, probability, hsv_tracking)
 
-            if self.check_end(lin, lout, mean, probability, hsv_tracking):
+            if self.check_end(tracking_container, probability, hsv_tracking):
                 break
 
             if full_tracking:
 
-                self.second_cycle(lin, lout, phi)
+                self.second_cycle(tracking_container, hsv_tracking)
 
-                if self.check_end(lin, lout, mean, probability, hsv_tracking):
+                if self.check_end(tracking_container, probability, hsv_tracking):
                     break
 
             iterations+=1
 
-        return lin, lout, phi

@@ -15,6 +15,15 @@ import time
 ZOOM_INTENSITY = 50
 
 
+class TrackingContainer:
+    def __init__(self, lin, lout, phi, mean):
+        self.lin = lin
+        self.lout = lout
+        self.phi = phi
+        self.mean = mean
+        self.frame = 0
+
+
 class ImageManager:
     def __init__(self):
         pass
@@ -411,65 +420,6 @@ class ImageManager:
     def hugh_for_circles(self, p, r, epsilon):
         return self.image.hugh_for_circles(p, r, epsilon)
 
-    def contour_detection_method(self, lin, lout, nmax, probability,
-                                 full_tracking):
-        phi = self.image.init_phi_matrix(lin, lout)
-        mean = self.image.get_mean(phi)
-
-        return self.image.contour_detection_method(
-            lin, lout, nmax, phi, mean, probability, full_tracking)[0]
-
-    def contour_detection_video_method(
-            self, lin, lout, nmax, file_map, starting_number, show_callback,
-            probability, full_tracking, hsv_tracking):
-
-        time_list = []
-        frames = 0
-
-        average_displacement = 0,0
-        last_center_of_mass = None
-
-        phi = self.image.init_phi_matrix(lin, lout)
-        if hsv_tracking:
-            mean = self.image.get_hsv_mean(phi)
-        else:
-            mean = self.image.get_mean(phi)
-
-        for i in range(starting_number, len(file_map) + 1):
-            self.load_temporal_image(Image.open(file_map[i][0]))
-            t = time.time()
-            lin, lout, phi = self.image.contour_detection_method(
-                lin, lout, nmax, phi, mean, probability, full_tracking,
-                hsv_tracking)
-            time_list.append(time.time() - t)
-            
-            c = self.get_center_of_mass(lin)
-
-            if frames >= 1:
-                average_displacement = self.get_new_displacement(average_displacement, frames, c, last_center_of_mass)
-
-            frames += 1
-
-            last_center_of_mass = c
-
-            show_callback(lin)
-
-        return time_list[1:]
-
-    def get_new_displacement(self, avg_displacement, frames, current_center, last_center):
-        total_displacement = avg_displacement[0]*(frames-1), avg_displacement[1]*(frames-1)
-        displacement = current_center[0] - last_center[0], current_center[1] - last_center[1]
-        total_displacement = total_displacement[0] + displacement[0], total_displacement[1] + displacement[1]
-        return total_displacement[0]/frames, total_displacement[1]/frames
-
-    def get_center_of_mass(self, lin):
-        sum_x, sum_y = 0,0
-        for each in lin:
-            sum_x += each[0]
-            sum_y += each[1]
-
-        return (sum_x/len(lin), sum_y/len(lin))
-
     def get_image_with_marks(self, img, marks):
         if img.mode != 'RGB':
             img = img.convert('RGB')
@@ -492,3 +442,93 @@ class ImageManager:
 
         return Image.frombytes(image.get_mode(), image.get_size_tuple(),
                                image.get_image_bytes())
+
+    def contour_detection_method(self, lin, lout, nmax, probability,
+                                 full_tracking):
+        phi = self.image.init_phi_matrix(lin, lout)
+        mean = self.image.get_mean(phi)
+
+        t_container = TrackingContainer(lin, lout, phi, mean)
+
+        self.image.contour_detection_method(t_container, nmax, probability,
+                                            full_tracking, False)
+
+        return t_container.lin
+
+    def contour_detection_video_method(
+            self, lin, lout, nmax, file_map, starting_number, show_callback,
+            probability, full_tracking, hsv_tracking):
+
+        time_list = []
+        frames = 0
+
+        average_displacement = 0, 0
+        max_area = -1
+        last_center_of_mass = None
+
+        phi = self.image.init_phi_matrix(lin, lout)
+        if hsv_tracking:
+            mean = self.image.get_hsv_mean(phi)
+        else:
+            mean = self.image.get_mean(phi)
+
+        t_container = TrackingContainer(lin, lout, phi, mean)
+
+        for i in range(starting_number, len(file_map) + 1):
+            self.load_temporal_image(Image.open(file_map[i][0]))
+            t = time.time()
+
+            self.image.contour_detection_method(t_container, nmax, probability,
+                                                full_tracking, hsv_tracking)
+            time_list.append(time.time() - t)
+
+            c = self.get_center_of_mass(t_container.lin)
+            area = self.get_area(t_container.phi)
+
+            if area > max_area:
+                max_area = area
+
+            if t_container.frame >= 1:
+                average_displacement = self.get_new_displacement(
+                    average_displacement, t_container.frame, c,
+                    last_center_of_mass)
+
+                if area < 0.5 * max_area:
+                    pass
+
+            t_container.frame += 1
+
+            last_center_of_mass = c
+
+            show_callback(t_container.lin)
+
+        return time_list[1:]
+
+    def get_new_displacement(self, avg_displacement, frames, current_center,
+                             last_center):
+        total_displacement = avg_displacement[0] * (
+            frames - 1), avg_displacement[1] * (frames - 1)
+        displacement = current_center[0] - last_center[0], current_center[
+            1] - last_center[1]
+        total_displacement = total_displacement[0] + displacement[
+            0], total_displacement[1] + displacement[1]
+        return total_displacement[0] / frames, total_displacement[1] / frames
+
+    def get_center_of_mass(self, lin):
+        sum_x, sum_y = 0, 0
+        for each in lin:
+            sum_x += each[0]
+            sum_y += each[1]
+
+        return (sum_x / len(lin), sum_y / len(lin))
+
+    def analyze_possible_oclussion(self, displacement, lin, lout, phi):
+        return lin, lout, phi
+
+    def get_area(self, phi):
+        count = 0
+        for each in phi:
+            for elem in each:
+                if elem == -3:
+                    count += 1
+        return count
