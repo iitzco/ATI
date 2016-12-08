@@ -501,7 +501,7 @@ class ImageManager:
                     if area < 0.5 * t_container.max_area:
                         self.image.analyze_possible_oclussion(
                             t_container, average_displacement, c, probability,
-                            hsv_tracking)
+                            hsv_tracking, nmax, full_tracking)
 
                 t_container.frame += 1
 

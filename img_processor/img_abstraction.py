@@ -295,7 +295,7 @@ class ImageAbstraction:
 
             iterations+=1
 
-    def analyze_possible_oclussion(self, tracking_container, displacement, center_mass, probability, hsv_tracking):
+    def analyze_possible_oclussion(self, tracking_container, displacement, center_mass, probability, hsv_tracking, nmax, full_tracking):
         d = utils.vector_to_versor(displacement)
         diagonal = math.sqrt(self.w**2 + self.h**2)
 
@@ -313,6 +313,7 @@ class ImageAbstraction:
                     tracking_container.lin, tracking_container.lout = self.initialize_box(new_center)
                     tracking_container.phi = self.init_phi_matrix(tracking_container.lin, tracking_container.lout)
                     tracking_container.reset()
+                    self.contour_detection_method(tracking_container, nmax, probability, full_tracking, hsv_tracking)
                     return
                                 
 
