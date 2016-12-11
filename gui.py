@@ -583,7 +583,7 @@ class GUI(tk.Frame):
     def _video_tracking(self):
         dname = askdirectory()
         self.file_map = {}
-        regex = re.compile('[a-zA-Z|0]+(?P<number>\d+)\.[a-zA-Z]+')
+        regex = re.compile('[a-zA-Z|0|_]*(?P<number>\d+)\.[a-zA-Z]+')
         if not dname:
             return
         self.starting_number = askinteger(
