@@ -8,32 +8,13 @@ from img_processor.img_abstraction import ImageAbstraction
 from img_processor.bw_img_abstraction import BWImageAbstraction
 from img_processor.rgb_img_abstraction import RGBImageAbstraction
 
+from util_classes import TrackingContainer
+
 import math
 import copy
 import time
 
 ZOOM_INTENSITY = 50
-
-
-class TrackingContainer:
-    def __init__(self, lin, lout, phi, mean, nmax, probability, full_tracking,
-                 hsv_tracking, occlusion_tracking):
-        self.lin = lin
-        self.lout = lout
-        self.phi = phi
-        self.mean = mean
-        self.nmax = nmax
-        self.probability = probability
-        self.hsv_tracking = hsv_tracking
-        self.full_tracking = full_tracking
-        self.occlusion_tracking = occlusion_tracking
-
-        self.frame = 0
-        self.max_area = -1
-
-    def reset(self):
-        self.frame = 0
-        self.max_area = -1
 
 
 class ImageManager:
@@ -470,7 +451,7 @@ class ImageManager:
 
     def contour_detection_video_method(
             self, lin, lout, nmax, file_map, starting_number, show_callback,
-            probability, full_tracking, hsv_tracking, occlusion_tracking):
+            probability, tracking_parameters):
 
         time_list = []
         frames = 0
@@ -479,14 +460,12 @@ class ImageManager:
         last_center_of_mass = None
 
         phi = self.image.init_phi_matrix(lin, lout)
-        if hsv_tracking:
+        if tracking_parameters.hsv_tracking:
             mean = self.image.get_hsv_mean(phi)
         else:
             mean = self.image.get_mean(phi)
 
-        t_container = TrackingContainer(lin, lout, phi, mean, nmax,
-                                        probability, full_tracking,
-                                        hsv_tracking, occlusion_tracking)
+        t_container = TrackingContainer(lin, lout, phi, mean, nmax, probability, tracking_parameters)
 
         for i in range(starting_number, len(file_map) + 1):
             self.load_temporal_image(Image.open(file_map[i][0]))
@@ -496,7 +475,7 @@ class ImageManager:
 
             time_list.append(time.time() - t)
 
-            if occlusion_tracking:
+            if tracking_parameters.occlusion_tracking:
                 if len(t_container.lin) > 0:
                     c = self.get_center_of_mass(t_container.lin)
                     area = self.get_area(t_container.phi)

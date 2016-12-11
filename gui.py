@@ -13,6 +13,8 @@ from components.menu import Menu
 from components.image_workspace import ImageWorkspace, OriginalImageWorkspace, StudioImageWorkspace
 from imgmanager import ImageManager
 
+from util_classes import TrackingParameters
+
 import sys
 
 ZOOM_INTENSITY = 40
@@ -31,7 +33,6 @@ class GUI(tk.Frame):
         self.contour_detection.set(False)
 
         self.selection_for_video = False
-        self.hsv_tracking = False
 
         self.image_manager = ImageManager()
 
@@ -569,7 +570,7 @@ class GUI(tk.Frame):
             return
         stats = self.image_manager.contour_detection_video_method(
             lin, lout, nmax, self.file_map, self.starting_number, callback,
-            probability, self.full_tracking, self.hsv_tracking, True)
+            probability, self.tracking_parameters)
         avg = sum(stats) / len(stats)
         fps = int(1 / avg)
         if lin:
@@ -611,16 +612,23 @@ class GUI(tk.Frame):
         self.selection_for_video = True
 
     def video_tracking(self):
-        self.full_tracking = False
+        self.tracking_parameters = TrackingParameters(hsv_tracking=False, full_tracking=False, occlusion_tracking=False)
         self._video_tracking()
 
     def video_tracking_hsv(self):
-        self.full_tracking = False
-        self.hsv_tracking = True
+        self.tracking_parameters = TrackingParameters(hsv_tracking=True, full_tracking=False, occlusion_tracking=False)
+        self._video_tracking()
+
+    def video_tracking_occlusion(self):
+        self.tracking_parameters = TrackingParameters(hsv_tracking=False, full_tracking=False, occlusion_tracking=True)
+        self._video_tracking()
+
+    def video_tracking_hsv_occlusion(self):
+        self.tracking_parameters = TrackingParameters(hsv_tracking=True, full_tracking=False, occlusion_tracking=True)
         self._video_tracking()
 
     def full_video_tracking(self):
-        self.full_tracking = True
+        self.tracking_parameters = TrackingParameters(hsv_tracking=False, full_tracking=True, occlusion_tracking=False)
         self._video_tracking()
 
 
