@@ -569,7 +569,7 @@ class GUI(tk.Frame):
             return
         stats = self.image_manager.contour_detection_video_method(
             lin, lout, nmax, self.file_map, self.starting_number, callback,
-            probability, self.full_tracking, self.hsv_tracking)
+            probability, self.full_tracking, self.hsv_tracking, True)
         avg = sum(stats) / len(stats)
         fps = int(1 / avg)
         if lin:

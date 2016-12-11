@@ -16,11 +16,18 @@ ZOOM_INTENSITY = 50
 
 
 class TrackingContainer:
-    def __init__(self, lin, lout, phi, mean):
+    def __init__(self, lin, lout, phi, mean, nmax, probability, full_tracking,
+                 hsv_tracking, occlusion_tracking):
         self.lin = lin
         self.lout = lout
         self.phi = phi
         self.mean = mean
+        self.nmax = nmax
+        self.probability = probability
+        self.hsv_tracking = hsv_tracking
+        self.full_tracking = full_tracking
+        self.occlusion_tracking = occlusion_tracking
+
         self.frame = 0
         self.max_area = -1
 
@@ -453,16 +460,17 @@ class ImageManager:
         phi = self.image.init_phi_matrix(lin, lout)
         mean = self.image.get_mean(phi)
 
-        t_container = TrackingContainer(lin, lout, phi, mean)
+        t_container = TrackingContainer(lin, lout, phi, mean, nmax,
+                                        probability, full_tracking, False,
+                                        False)
 
-        self.image.contour_detection_method(t_container, nmax, probability,
-                                            full_tracking, False)
+        self.image.contour_detection_method(t_container)
 
         return t_container.lin
 
     def contour_detection_video_method(
             self, lin, lout, nmax, file_map, starting_number, show_callback,
-            probability, full_tracking, hsv_tracking):
+            probability, full_tracking, hsv_tracking, occlusion_tracking):
 
         time_list = []
         frames = 0
@@ -476,36 +484,38 @@ class ImageManager:
         else:
             mean = self.image.get_mean(phi)
 
-        t_container = TrackingContainer(lin, lout, phi, mean)
+        t_container = TrackingContainer(lin, lout, phi, mean, nmax,
+                                        probability, full_tracking,
+                                        hsv_tracking, occlusion_tracking)
 
         for i in range(starting_number, len(file_map) + 1):
             self.load_temporal_image(Image.open(file_map[i][0]))
             t = time.time()
 
-            self.image.contour_detection_method(t_container, nmax, probability,
-                                                full_tracking, hsv_tracking)
+            self.image.contour_detection_method(t_container)
+
             time_list.append(time.time() - t)
 
-            if len(t_container.lin) > 0:
-                c = self.get_center_of_mass(t_container.lin)
-                area = self.get_area(t_container.phi)
+            if occlusion_tracking:
+                if len(t_container.lin) > 0:
+                    c = self.get_center_of_mass(t_container.lin)
+                    area = self.get_area(t_container.phi)
 
-                if area > t_container.max_area:
-                    t_container.max_area = area
+                    if area > t_container.max_area:
+                        t_container.max_area = area
 
-                if t_container.frame >= 1:
-                    average_displacement = self.get_new_displacement(
-                        average_displacement, t_container.frame, c,
-                        last_center_of_mass)
+                    if t_container.frame >= 1:
+                        average_displacement = self.get_new_displacement(
+                            average_displacement, t_container.frame, c,
+                            last_center_of_mass)
 
-                    if area < 0.5 * t_container.max_area:
-                        self.image.analyze_possible_oclussion(
-                            t_container, average_displacement, c, probability,
-                            hsv_tracking, nmax, full_tracking)
+                        if area < 0.5 * t_container.max_area:
+                            self.image.analyze_possible_oclussion(
+                                t_container, average_displacement, c)
 
-                t_container.frame += 1
+                    t_container.frame += 1
 
-                last_center_of_mass = c
+                    last_center_of_mass = c
 
             show_callback(t_container.lin)
 

@@ -239,20 +239,20 @@ class ImageAbstraction:
             tracking_container.lin.add((x, y+1))
             tracking_container.phi[x][y+1] = -1
 
-    def first_cycle(self, tracking_container, probability, hsv_tracking):
+    def first_cycle(self, tracking_container):
         for each in list(tracking_container.lout):
-            f = self.get_f(each, tracking_container.mean, probability, hsv_tracking)
+            f = self.get_f(each, tracking_container.mean, tracking_container.probability, tracking_container.hsv_tracking)
             if f > 0:
                 self.expand_contour(each, tracking_container)
         self.filter_lin(tracking_container.lin, tracking_container.phi)
 
         for each in list(tracking_container.lin):
-            f = self.get_f(each, tracking_container.mean, probability, hsv_tracking)
+            f = self.get_f(each, tracking_container.mean, tracking_container.probability, tracking_container.hsv_tracking)
             if f < 0:
                 self.contract_contour(each, tracking_container)
         self.filter_lout(tracking_container.lout, tracking_container.phi)
 
-    def second_cycle(self, tracking_container, hsv_tracking):
+    def second_cycle(self, tracking_container):
         for each in list(tracking_container.lout):
             f = self.get_fs(each, tracking_container.phi)
             if f < 0:
@@ -265,37 +265,37 @@ class ImageAbstraction:
                 self.contract_contour(each, tracking_container)
         self.filter_lout(tracking_container.lout, tracking_container.phi)
 
-    def check_end(self, tracking_container, probability, hsv_tracking):
+    def check_end(self, tracking_container):
         for each in tracking_container.lin:
-            f = self.get_f(each, tracking_container.mean, probability, hsv_tracking)
+            f = self.get_f(each, tracking_container.mean, tracking_container.probability, tracking_container.hsv_tracking)
             if f < 0:
                 return False
         for each in tracking_container.lout:
-            f = self.get_f(each, tracking_container.mean, probability, hsv_tracking)
+            f = self.get_f(each, tracking_container.mean, tracking_container.probability, tracking_container.hsv_tracking)
             if f > 0:
                 return False
         return True
 
-    def contour_detection_method(self, tracking_container, nmax, probability, full_tracking, hsv_tracking):
+    def contour_detection_method(self, tracking_container):
         iterations = 0
 
-        while iterations < nmax:
+        while iterations < tracking_container.nmax:
 
-            self.first_cycle(tracking_container, probability, hsv_tracking)
+            self.first_cycle(tracking_container)
 
-            if self.check_end(tracking_container, probability, hsv_tracking):
+            if self.check_end(tracking_container):
                 break
 
-            if full_tracking:
+            if tracking_container.full_tracking:
 
-                self.second_cycle(tracking_container, hsv_tracking)
+                self.second_cycle(tracking_container)
 
-                if self.check_end(tracking_container, probability, hsv_tracking):
+                if self.check_end(tracking_container):
                     break
 
             iterations+=1
 
-    def analyze_possible_oclussion(self, tracking_container, displacement, center_mass, probability, hsv_tracking, nmax, full_tracking):
+    def analyze_possible_oclussion(self, tracking_container, displacement, center_mass):
         d = utils.vector_to_versor(displacement)
         diagonal = math.sqrt(self.w**2 + self.h**2)
 
@@ -307,13 +307,13 @@ class ImageAbstraction:
             if not self.inside_image(new_center):
                 return
 
-            f = self.get_f(new_center, tracking_container.mean, probability, hsv_tracking)
+            f = self.get_f(new_center, tracking_container.mean, tracking_container.probability, tracking_container.hsv_tracking)
             if f > 0:
-                if self.surrounding_in_contour(new_center, tracking_container.mean, probability, hsv_tracking):
+                if self.surrounding_in_contour(new_center, tracking_container.mean, tracking_container.probability, tracking_container.hsv_tracking):
                     tracking_container.lin, tracking_container.lout = self.initialize_box(new_center)
                     tracking_container.phi = self.init_phi_matrix(tracking_container.lin, tracking_container.lout)
                     tracking_container.reset()
-                    self.contour_detection_method(tracking_container, nmax, probability, full_tracking, hsv_tracking)
+                    self.contour_detection_method(tracking_container)
                     return
                                 
 
