@@ -16,6 +16,8 @@ import time
 
 ZOOM_INTENSITY = 50
 
+PERCENTAGE_OCCLUDED = 0.3
+
 
 class ImageManager:
     def __init__(self):
@@ -449,9 +451,9 @@ class ImageManager:
 
         return t_container.lin
 
-    def contour_detection_video_method(
-            self, lin, lout, nmax, file_map, starting_number, show_callback,
-            probability, tracking_parameters):
+    def contour_detection_video_method(self, lin, lout, nmax, file_map,
+                                       starting_number, show_callback,
+                                       probability, tracking_parameters):
 
         time_list = []
         frames = 0
@@ -465,7 +467,8 @@ class ImageManager:
         else:
             mean = self.image.get_mean(phi)
 
-        t_container = TrackingContainer(lin, lout, phi, mean, nmax, probability, tracking_parameters)
+        t_container = TrackingContainer(lin, lout, phi, mean, nmax,
+                                        probability, tracking_parameters)
 
         for i in range(starting_number, len(file_map) + 1):
             self.load_temporal_image(Image.open(file_map[i][0]))
@@ -488,7 +491,7 @@ class ImageManager:
                             average_displacement, t_container.frame, c,
                             last_center_of_mass)
 
-                        if area < 0.5 * t_container.max_area:
+                        if area < PERCENTAGE_OCCLUDED * t_container.max_area:
                             self.image.analyze_possible_oclussion(
                                 t_container, average_displacement, c)
 

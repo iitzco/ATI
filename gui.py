@@ -612,23 +612,28 @@ class GUI(tk.Frame):
         self.selection_for_video = True
 
     def video_tracking(self):
-        self.tracking_parameters = TrackingParameters(hsv_tracking=False, full_tracking=False, occlusion_tracking=False)
+        self.tracking_parameters = TrackingParameters(
+            hsv_tracking=False, full_tracking=False, occlusion_tracking=False)
         self._video_tracking()
 
     def video_tracking_hsv(self):
-        self.tracking_parameters = TrackingParameters(hsv_tracking=True, full_tracking=False, occlusion_tracking=False)
+        self.tracking_parameters = TrackingParameters(
+            hsv_tracking=True, full_tracking=False, occlusion_tracking=False)
         self._video_tracking()
 
     def video_tracking_occlusion(self):
-        self.tracking_parameters = TrackingParameters(hsv_tracking=False, full_tracking=False, occlusion_tracking=True)
+        self.tracking_parameters = TrackingParameters(
+            hsv_tracking=False, full_tracking=False, occlusion_tracking=True)
         self._video_tracking()
 
     def video_tracking_hsv_occlusion(self):
-        self.tracking_parameters = TrackingParameters(hsv_tracking=True, full_tracking=False, occlusion_tracking=True)
+        self.tracking_parameters = TrackingParameters(
+            hsv_tracking=True, full_tracking=False, occlusion_tracking=True)
         self._video_tracking()
 
     def full_video_tracking(self):
-        self.tracking_parameters = TrackingParameters(hsv_tracking=False, full_tracking=True, occlusion_tracking=False)
+        self.tracking_parameters = TrackingParameters(
+            hsv_tracking=False, full_tracking=True, occlusion_tracking=False)
         self._video_tracking()
 
 
