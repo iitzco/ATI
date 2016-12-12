@@ -583,12 +583,13 @@ class GUI(tk.Frame):
     def _video_tracking(self):
         dname = askdirectory()
         self.file_map = {}
+        aux_list = []
         regex = re.compile('[a-zA-Z|0|_]*(?P<number>\d+)\.[a-zA-Z]+')
         if not dname:
             return
         self.starting_number = askinteger(
             "Parameters",
-            "Starting number? (first appearance of object)",
+            "Starting number of frame? (first appearance of object)",
             minvalue=1)
         if not self.starting_number:
             self.starting_number = 1
@@ -598,7 +599,12 @@ class GUI(tk.Frame):
                 mat = regex.match(file_name)
                 if mat:
                     number = int(mat.groupdict()['number'])
-                    self.file_map[number] = (full_path, file_name)
+                    aux_tuple = (number, full_path, file_name)
+                    aux_list.append(aux_tuple)
+
+        min_number = min(each[0] for each in aux_list)
+        for each in aux_list:
+            self.file_map[each[0] - min_number + 1] = (each[1], each[2])
 
         img = Image.open(self.file_map[self.starting_number][0])
         try:
