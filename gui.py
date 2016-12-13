@@ -562,6 +562,7 @@ class GUI(tk.Frame):
             gui.studio.show_image()
             gui.studio.mark_pixels(lin, 3)
             gui.studio.update()
+            self.lin = lin
 
         self.selection_for_video = False
         nmax = askinteger("Parameters", "Max iterations?")
@@ -573,7 +574,7 @@ class GUI(tk.Frame):
             probability, self.tracking_parameters)
         avg = sum(stats) / len(stats)
         fps = int(1 / avg)
-        if lin:
+        if self.lin:
             self.menu.show_unmark_button()
         tkinter.messagebox.showinfo(
             'Info',

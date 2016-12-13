@@ -499,6 +499,11 @@ class ImageManager:
 
                     last_center_of_mass = c
 
+                else:
+                    if t_container.frame >= 1:
+                        self.image.analyze_possible_oclussion(
+                            t_container, average_displacement, c)
+
             show_callback(t_container.lin)
 
         return time_list[1:]
