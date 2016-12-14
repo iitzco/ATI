@@ -198,5 +198,11 @@ class RGBImageAbstraction(ImageAbstraction):
             sdiff = abs(s - mean[1])
             norm = math.sqrt(hdiff**2 + sdiff**2)
             p = 1 - (norm/math.sqrt(2))
+            # h, s, v = colorsys.rgb_to_hsv(*self.img[x][y])
+            # p1 = utils.get_cartesian_vales(h, s)
+            # p2 = utils.get_cartesian_vales(*mean)
+            # distance = utils.distance(p1[0], p1[1], p2[0], p2[1])
+            # p = 1 - (distance/2)
 
         return -1 if p < probability else 1
+        

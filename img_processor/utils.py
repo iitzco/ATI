@@ -41,6 +41,15 @@ def sign(x):
     return 1 if x >= 0 else -1
 
 
+def distance(x1, y1, x2, y2):
+    return math.sqrt((x1-x2)**2 + (y1-y2)**2)
+
+
+def get_cartesian_vales(a, r):
+    angle = math.radians(a*360)
+    return r*math.cos(angle), r*math.sin(angle)
+
+
 def map_matrix(matrix, w, h, f):
     ret = []
     for i in range(w):
