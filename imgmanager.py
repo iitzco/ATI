@@ -441,7 +441,10 @@ class ImageManager:
     def contour_detection_method(self, lin, lout, nmax, probability,
                                  tracking_parameters):
         phi = self.image.init_phi_matrix(lin, lout)
-        mean = self.image.get_mean(phi)
+        if tracking_parameters.hsv_tracking:
+            mean = self.image.get_hsv_mean(phi)
+        else:
+            mean = self.image.get_mean(phi)
 
         t_container = TrackingContainer(lin, lout, phi, mean, nmax,
                                         probability, tracking_parameters)
@@ -475,7 +478,6 @@ class ImageManager:
 
             self.image.contour_detection_method(t_container)
 
-            time_list.append(time.time() - t)
 
             if tracking_parameters.occlusion_tracking:
                 if len(t_container.lin) > 0:
@@ -502,6 +504,8 @@ class ImageManager:
                     if t_container.frame >= 1:
                         self.image.analyze_possible_oclussion(
                             t_container, average_displacement, c)
+
+            time_list.append(time.time() - t)
 
             show_callback(t_container.lin)
 

@@ -58,6 +58,9 @@ class ImageAbstraction:
     def inside_image(self, p):
         return p[0] >= 0 and p[0] < self.w and p[1] >=0 and p[1] < self.h
 
+    def inside_image_margin(self, p):
+        return p[0] >= 1 and p[0] < self.w-1 and p[1] >=1 and p[1] < self.h-1
+
     def _get_sorrounding(self, img, x, y, size):
         half = size // 2
         r = range(-(half), half + 1)
@@ -302,14 +305,14 @@ class ImageAbstraction:
         d = utils.vector_to_versor(displacement)
         diagonal = math.sqrt(self.w**2 + self.h**2)
 
-        # Moves each 10%
+        # Moves each 5%
         for per_five_percent in range(1,21):
             p = (per_five_percent*5)/100
             movement = d[0]*diagonal*p, d[1]*p
 
             new_center = int(center_mass[0] + movement[0]), int(center_mass[1] + movement[1])
 
-            if not self.inside_image(new_center):
+            if not self.inside_image_margin(new_center):
                 return
 
             f = self.get_f(new_center, tracking_container.mean, tracking_container.probability, tracking_container.hsv_tracking)
@@ -342,17 +345,15 @@ class ImageAbstraction:
 
     def initialize_box(self, center):
         lout, lin = set(), set()
-        for i in range(center[0]-1, center[0]+2):
-            lin.add((i, center[1] - 1))
-            lin.add((i, center[1] + 1))
-            if i!=center[0]:
-                lin.add((i, center[1]))
-        for i in range(center[0]-2, center[0]+3):
-            lout.add((i, center[1] - 2))
-            lout.add((i, center[1] + 2))
-            if abs(i-center[0]) == 2:
-                lout.add((i, center[1]-1))
-                lout.add((i, center[1]))
-                lout.add((i, center[1]+1))
+        lin.add(center)
+
+        lout.add((center[0]-1, center[1]-1))
+        lout.add((center[0]-1, center[1]))
+        lout.add((center[0]-1, center[1]+1))
+        lout.add((center[0], center[1]-1))
+        lout.add((center[0], center[1]+1))
+        lout.add((center[0]+1, center[1]-1))
+        lout.add((center[0]+1, center[1]))
+        lout.add((center[0]+1, center[1]+1))
 
         return lin, lout
