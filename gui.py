@@ -551,8 +551,11 @@ class GUI(tk.Frame):
                                                     "Apply second cycle?")
         if not nmax or not probability:
             return
+
+        tracking_parameters = TrackingParameters(hsv_tracking=False, full_tracking=full_tracking, occlusion_tracking=False)
+
         p = self.image_manager.contour_detection_method(
-            lin, lout, nmax, probability, full_tracking)
+                lin, lout, nmax, probability, tracking_parameters)
         self.studio.mark_pixels(p, 1)
         self.menu.show_unmark_button()
 

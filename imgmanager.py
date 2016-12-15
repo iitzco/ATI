@@ -439,13 +439,12 @@ class ImageManager:
                                image.get_image_bytes())
 
     def contour_detection_method(self, lin, lout, nmax, probability,
-                                 full_tracking):
+                                 tracking_parameters):
         phi = self.image.init_phi_matrix(lin, lout)
         mean = self.image.get_mean(phi)
 
         t_container = TrackingContainer(lin, lout, phi, mean, nmax,
-                                        probability, full_tracking, False,
-                                        False)
+                                        probability, tracking_parameters)
 
         self.image.contour_detection_method(t_container)
 
